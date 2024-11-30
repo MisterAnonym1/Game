@@ -3,6 +3,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.particles.values.MeshSpawnShapeValue;
@@ -22,14 +23,15 @@ class Entity extends Actor
     TextureRegion texture;
     double maxspeed, curspeed, acceleration;
     boolean collisionOn, ismoving;
-    Rectangle hitbox;//hitbox kann in den Unterklassen unterschiedliche Formen haben
+    Rectangle hitbox;//zukünftig ein Polygon
     Vector2 movement;
     FitViewport viewport;
     Arrow ar;
-    float hitboxOffsetX, weight;
-    float hitboxOffsetY;
+    float hitboxOffsetX, weight,hitboxOffsetY,worldboundsMinX,worldboundsMaxX,worldboundsMinY,worldboundsMaxY;
+    Rectangle worldbounds;
     EntityStatus status;
-    enum EntityStatus { inactiv, idle, engaging }
+
+    public enum EntityStatus { inactiv, idle, engaging }
     Entity(float x, float y, String filepath, FitViewport viewport)
     {
         super();
@@ -47,8 +49,16 @@ class Entity extends Actor
         hitboxOffsetX = getWidth();
         hitboxOffsetY = getHeight();
     }
+
+    public void draw (Batch batch, float parentAlpha)
+    {
+       batch.setColor(getColor());
+        batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+
+    }
+
     void sethealth(int health, boolean ignoremax)
-    //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
+    //ignoriert (bei true)den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
     {
         if(health > maxhealth) {
             if(ignoremax)
@@ -63,6 +73,11 @@ class Entity extends Actor
         else {
             curhealth = health;
         }
+    }
+    void sethealth(int health)
+    //ignoriert den als Limit für die Max Health gesetzten Wert
+    {
+        curhealth=health;
     }
     void updatemovement(Vector2 direction)
     {
@@ -135,6 +150,15 @@ class Entity extends Actor
         }
         return false;
     }
+    public boolean inradiusof(float xpos,float ypos, float radius)
+    {
+
+        if(getdistance(xpos,ypos) <= radius)
+        {
+            return true;
+        }
+        return false;
+    }
     public float getdistance(Entity other)
     {
         float distancex = other.getCenterX() - getCenterX();
@@ -160,6 +184,7 @@ class Entity extends Actor
 
         //checkt ob dieses Entity vorhanden ist in
         // einem quadratischen Bereich etwas größer als der Screen
+
         float wx = viewport.getScreenX();
         float wy = viewport.getScreenY();
         if(getCenterX() > wx - 200 && getCenterX() < wx + 1000) {
@@ -224,13 +249,14 @@ class Arrow extends Sprite {
     {
 
        shape.begin(ShapeRenderer.ShapeType.Filled);
-       shape.setColor(0.1F, 0.1F, 0.8F, 0.1F);
-        // shape.identity();
-        //  //shape.translate(getOriginX(),getOriginY() ,1);
-        //  //shape.rotate(0,0,1,getRotation()-shaperotation);
-        //  //shaperotation=getRotation();
+       shape.setColor(0.1F, 0.1F, 0.8F, 0.5F);
+         //shape.identity();
+         //shape.translate(getOriginX(),getOriginY() ,0);
+        //shape.translate(1,1 ,0);
+         //shape.rotate(0,0,1,-getRotation()-shaperotation);
+         //shaperotation=getRotation();
 
-        shape.rect(getX(),getY(),dborderwidth*10,dborderwidth);
+        shape.rect(1,1,dborderwidth*10,dborderwidth);
        shape.triangle(getX() + dborderwidth * 10, getY() + dborderwidth *2, getX() + dborderwidth * 10, getY() - dborderwidth , (float) (getX() + dborderwidth * 10 + dborderwidth * 2.5), getY()+dborderwidth/2);
        shape.end();
     }
@@ -247,4 +273,64 @@ class Arrow extends Sprite {
     }
 
 
+}
+class HealthBar extends Sprite {
+    Rectangle h1;
+    Rectangle h2;
+    Rectangle h3;
+    float maxHealth;
+    float maxLaenge;
+    float currentHealth;
+    HealthBar(int xPos, int yPos, float maxhealth, float size) {
+        h1 = new Rectangle(xPos, yPos, 300, 50);
+        h3 = new Rectangle(xPos + 7, yPos + 6, 286, 38);
+        h2 = new Rectangle(xPos + 7, yPos + 6, 286, 38);
+        /*h1.setStatic(true);
+        h2.setStatic(true);
+        h3.setStatic(true);
+        h1.setFillColor(new Color(80, 74, 74));
+
+        h2.setFillColor(Color.chartreuse);
+        h3.setFillColor(Color.chartreuse, 0.2);*/
+        maxLaenge = h2.getWidth();
+        this.maxHealth = maxhealth;
+        currentHealth = maxHealth;
+    }
+
+    void takeDamage(float damage) {
+        currentHealth -= damage;
+        h2.setWidth((maxLaenge * currentHealth / maxHealth)<0?0:maxLaenge * currentHealth / maxHealth);
+
+    }
+    void draw(ShapeRenderer shape)
+    {
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(80/256,74/256,74/256,100/256);
+        shape.rect(h1.x,h1.y,h1.width,h1.height);
+
+        shape.setColor(Color.CHARTREUSE);
+        shape.rect(h2.x,h2.y,h2.width,h2.height);
+
+        shape.rect(h3.x,h3.y,h3.width,h3.height);
+        shape.end();
+    }
+    void healTo(float health)
+    {
+        currentHealth = health;
+        h2.setWidth(maxLaenge * currentHealth / maxHealth);
+    }
+    void heal(float heal)
+    {
+        currentHealth += heal;
+        currentHealth = Math.min(currentHealth, maxHealth);
+        h2.setWidth(maxLaenge * currentHealth / maxHealth);
+    }
+
+    void setVisible(boolean visible) {
+       setAlpha(visible?1:0);
+    }
+    void bringtofront()
+    {
+
+    }
 }

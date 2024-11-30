@@ -6,13 +6,18 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -25,8 +30,13 @@ public class Main implements ApplicationListener {
     Texture dropTexture;
     Sound dropSound;
     Music music;
+    TiledMap map;
+    private OrthogonalTiledMapRenderer renderer;
+    public static Label.LabelStyle labelStyle;
+    OrthographicCamera ocam;
     SpriteBatch spriteBatch;
     FitViewport viewport;
+    Batch batch;
     Sprite Player;
     Vector2 touchPos;
     Arrow ar;
@@ -44,16 +54,26 @@ public class Main implements ApplicationListener {
         dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
         music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
         spriteBatch = new SpriteBatch();
+
         viewport = new FitViewport(8, 5);
         Player = new Sprite(new Texture("Al Assad.png"));
         Player.setSize(1, 2);
         touchPos = new Vector2();
+        ocam=new OrthographicCamera(50,50);
+        //ocam.translate(-10,0);
         dropSprites = new Array<>();
         bucketRectangle = new Rectangle();
         dropRectangle = new Rectangle();
+        map = new TmxMapLoader().load("Test Karte 2.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font= new BitmapFont();
         music.setLooping(true);
-        music.setVolume(.5f);
+        music.setVolume(.1f);
         music.play();
+
+
+
     }
 
     @Override
@@ -74,8 +94,10 @@ public class Main implements ApplicationListener {
 
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             Player.translateX(speed * delta);
+            ocam.translate(speed*delta,0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             Player.translateX(-speed * delta);
+            ocam.translate(-speed*delta,0);
         }
 
         if (Gdx.input.isTouched()) {
@@ -86,8 +108,10 @@ public class Main implements ApplicationListener {
             vec.setLength(Math.min(speed*delta,vec.len()));
             Player.translateX(vec.x);
             ar.translateX(vec.x);
-            //ar.rotateTo(-vec.angleDeg());
-
+            ocam.translate(vec.x,0);
+            ocam.update();
+            ar.rotateTo(vec.angleDeg());
+            //viewport.getCamera().rotate(new Vector3(0,0,1), (float) Math.random()*4-2);
         }
     }
 
@@ -97,7 +121,7 @@ public class Main implements ApplicationListener {
         float bucketWidth = Player.getWidth();
         float bucketHeight = Player.getHeight();
 
-        Player.setX(MathUtils.clamp(Player.getX(), 0, worldWidth - bucketWidth));
+        Player.setX(MathUtils.clamp(Player.getX(), 0, 99999));
 
         float delta = Gdx.graphics.getDeltaTime();
         bucketRectangle.set(Player.getX(), Player.getY(), bucketWidth, bucketHeight);
@@ -129,23 +153,34 @@ public class Main implements ApplicationListener {
 
         viewport.apply();
         shape.setProjectionMatrix(viewport.getCamera().combined);
-        //ar.draw(shape);
+
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
         //shape.setProjectionMatrix(viewport.getCamera().combined);
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
-
+        //renderer.setView(ocam);
+        //renderer.render();
 
         spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
         spriteBatch.end();
-
+        ar.draw(shape);
         spriteBatch.begin();
         Player.draw(spriteBatch);
 
 
         for (Sprite dropSprite : dropSprites) {
+            spriteBatch.end();
+            float dropWidth = dropSprite.getWidth();
+            float dropHeight = dropSprite.getHeight();
+            shape.begin(ShapeRenderer.ShapeType.Filled);
+            shape.setColor(0.4F, 0.4F, 0.4F, 0.30F);
+            shape.rect(dropSprite.getX(), dropSprite.getY(), dropWidth, dropHeight);
+            shape.end();
+            spriteBatch.begin();
             dropSprite.draw(spriteBatch);
+
+
         }
         spriteBatch.end();
         //ar.draw(shape);
