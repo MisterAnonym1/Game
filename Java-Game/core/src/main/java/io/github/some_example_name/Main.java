@@ -107,6 +107,7 @@ public class Main implements ApplicationListener {
             Vector2 vec= new Vector2(touchPos.x-Player.getX()-Player.getWidth()/2,0);
             vec.setLength(Math.min(speed*delta,vec.len()));
             Player.translateX(vec.x);
+            System.out.println(touchPos.x+"x "+ touchPos.y+"y ");
             ar.translateX(vec.x);
             ocam.translate(vec.x,0);
             ocam.update();
