@@ -37,9 +37,9 @@ public class Main implements ApplicationListener {
     SpriteBatch spriteBatch;
     FitViewport viewport;
     Batch batch;
-    Sprite Player;
+    Player Player;
     Vector2 touchPos;
-    Arrow ar;
+
     Array<Sprite> dropSprites;
     float dropTimer;
     Rectangle bucketRectangle;
@@ -48,7 +48,7 @@ public class Main implements ApplicationListener {
     @Override
     public void create() {
         backgroundTexture = new Texture("background.png");
-        ar = new Arrow(1,1,1,0);
+
         shape= new ShapeRenderer();
         dropTexture = new Texture("drop.png");
         dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
@@ -56,8 +56,9 @@ public class Main implements ApplicationListener {
         spriteBatch = new SpriteBatch();
 
         viewport = new FitViewport(8, 5);
-        Player = new Sprite(new Texture("Al Assad.png"));
-        Player.setSize(1, 2);
+        Player = new Player(3,4,3,100,viewport);
+        //Player.setSize(1, 2);
+        Player.setWorldbounds(0,8,0,5);
         touchPos = new Vector2();
         ocam=new OrthographicCamera(50,50);
         //ocam.translate(-10,0);
@@ -92,28 +93,29 @@ public class Main implements ApplicationListener {
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
 
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+        /*if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             Player.translateX(speed * delta);
             ocam.translate(speed*delta,0);
         } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             Player.translateX(-speed * delta);
             ocam.translate(-speed*delta,0);
-        }
+        }*/
 
-        if (Gdx.input.isTouched()) {
+        /*if (Gdx.input.isTouched()) {
             touchPos.set(Gdx.input.getX(), Gdx.input.getY());
             viewport.unproject(touchPos);
             //Player.setCenterX(touchPos.x);
             Vector2 vec= new Vector2(touchPos.x-Player.getX()-Player.getWidth()/2,0);
             vec.setLength(Math.min(speed*delta,vec.len()));
-            Player.translateX(vec.x);
+
+            Player.moveBy(vec.x,vec.y);
             System.out.println(touchPos.x+"x "+ touchPos.y+"y ");
-            ar.translateX(vec.x);
+
             ocam.translate(vec.x,0);
             ocam.update();
-            ar.rotateTo(vec.angleDeg());
+
             //viewport.getCamera().rotate(new Vector3(0,0,1), (float) Math.random()*4-2);
-        }
+        }*/
     }
 
     private void logic() {
@@ -122,9 +124,12 @@ public class Main implements ApplicationListener {
         float bucketWidth = Player.getWidth();
         float bucketHeight = Player.getHeight();
 
-        Player.setX(MathUtils.clamp(Player.getX(), 0, 99999));
-
         float delta = Gdx.graphics.getDeltaTime();
+
+        Player.updatemove(delta);
+        //Player.setX(MathUtils.clamp(Player.getX(), 0, 99999));
+        Player.loopWorldbounds();
+        System.out.println(Player.getX()+"x "+ Player.getY()+"y ");
         bucketRectangle.set(Player.getX(), Player.getY(), bucketWidth, bucketHeight);
 
         for (int i = dropSprites.size - 1; i >= 0; i--) {
@@ -151,7 +156,7 @@ public class Main implements ApplicationListener {
 
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
-
+        System.out.println(Color.BLACK.a);
         viewport.apply();
         shape.setProjectionMatrix(viewport.getCamera().combined);
 
@@ -164,20 +169,25 @@ public class Main implements ApplicationListener {
         //renderer.render();
 
         spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+
+
         spriteBatch.end();
-        ar.draw(shape);
+
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        //shape.rect(Player.worldbounds.getX(),Player.worldbounds.getY(),Player.worldbounds.getWidth(),Player.worldbounds.getHeight());
+        Player.drawHitbox(shape);
+
+        shape.end();
+
         spriteBatch.begin();
-        Player.draw(spriteBatch);
+        Player.draw(spriteBatch,shape,1f);
 
 
         for (Sprite dropSprite : dropSprites) {
             spriteBatch.end();
             float dropWidth = dropSprite.getWidth();
             float dropHeight = dropSprite.getHeight();
-            shape.begin(ShapeRenderer.ShapeType.Filled);
-            shape.setColor(0.4F, 0.4F, 0.4F, 0.30F);
-            shape.rect(dropSprite.getX(), dropSprite.getY(), dropWidth, dropHeight);
-            shape.end();
+
             spriteBatch.begin();
             dropSprite.draw(spriteBatch);
 
@@ -189,7 +199,7 @@ public class Main implements ApplicationListener {
     }
 
     private void createDroplet() {
-        float dropWidth = 1;
+        float dropWidth = 1.5f;
         float dropHeight = 1;
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();

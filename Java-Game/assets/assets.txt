@@ -1,4 +1,3 @@
-A.java
 Al Assad.png
 background.png
 bucket.png
@@ -6,6 +5,7 @@ drop.mp3
 drop.png
 El_Karltoffel.png
 libgdx.png
+Lines.txt
 Loadingsheet.png
 music.mp3
 own Watertile 2.png
