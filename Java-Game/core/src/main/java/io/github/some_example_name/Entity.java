@@ -20,14 +20,14 @@ class Entity extends Actor
 {
     int maxhealth, curhealth;
     float maxspeed, acceleration;
-    boolean collisionOn, ismoving;
+    boolean collisionOn, ismoving, isattacking;
     Rectangle hitbox;//hitbox kann in den Unterklassen unterschiedliche Formen haben
     Vector2 movement;
     Vector2 additionalForce;
     TextureRegion texture;
     float hitboxOffsetX=0, weight, hitboxOffsetY=0;
     static float hitboxalpha = 0.5f;
-
+    float animationstateTime=10f;
     EntityStatus status;
     //Ellipse shadow;
     FitViewport viewport;
@@ -208,8 +208,8 @@ class Entity extends Actor
     void updatemovement(Vector2 direction,float deltatime)
     {
 
-            reduceSpeed(1,1);
-
+        reduceSpeed(1,1);
+        direction.setLength(acceleration);
         if(ismoving) {
             movement = movement.add(direction);
         }
@@ -268,6 +268,11 @@ class Entity extends Actor
         moveBy(x, y);
         //mit dieser Methode kann man einen genauen Winkel angeben, in welchen sich die Entity bewegen soll
 
+    }
+
+    void centerAt(float x, float y)
+    {
+        setPosition(x-hitbox.getWidth()/2+hitboxOffsetX,y-hitbox.getHeight()/2+hitboxOffsetY);
     }
 
 
@@ -393,7 +398,7 @@ class Entity extends Actor
 
 
 
-class Arrow extends Sprite {
+class Arrow1 extends Sprite {
 
 
 
@@ -401,7 +406,7 @@ class Arrow extends Sprite {
 
     float shaperotation=0;
      float dborderwidth = 10;
-    Arrow(float x1, float y1, float length, float angle)
+    Arrow1(float x1, float y1, float length, float angle)
     {
         setOrigin(x1, y1);
         setPosition(x1,y1);
@@ -456,9 +461,9 @@ class HealthBar extends Sprite {
     float maxLaenge;
     float currentHealth;
     HealthBar(int xPos, int yPos, float maxhealth, float size) {
-        h1 = new Rectangle(xPos, yPos, 3, 0.50f);
-        h3 = new Rectangle(xPos + 0.07f, yPos + 0.06f, 2.86f, 0.38f);
-        h2 = new Rectangle(xPos + 0.07f, yPos + 0.06f, 2.86f, 0.38f);
+        h1 = new Rectangle(xPos, yPos, 300, 50f);
+        h3 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
+        h2 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
         /*h1.setStatic(true);
         h2.setStatic(true);
         h3.setStatic(true);

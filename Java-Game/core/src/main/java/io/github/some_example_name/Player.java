@@ -2,8 +2,10 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -17,6 +19,7 @@ class Player extends Entity
     int swingduration = 0;
     String anistatus;
     HealthBar healthbar;
+    Animation<TextureRegion> walkAnimation;
     boolean ismirrored;
     boolean isattacking;
     Player(float x, float y, float speed, int leben, FitViewport view) {
@@ -24,17 +27,16 @@ class Player extends Entity
 
         super(x, y,"Al Assad.png", view);
         toBack();
-
         weight = 0.5f;
         maxspeed = speed;
         acceleration = speed;
         curhealth = leben;
         maxhealth = leben;
-        healthbar = new HealthBar(1, 4, maxhealth, 1);
+        healthbar = new HealthBar(100, 400, maxhealth, 1);
         //healthbar.setVisible(false);
-        setSize(1, 2);
+        setSize(200, 200);
         scale(1f);
-
+       walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.1f);
 
     }
 
@@ -48,7 +50,13 @@ class Player extends Entity
 
 
     public void draw(Batch batch,ShapeRenderer shape,float parentAlpha) {
-        super.draw(batch, parentAlpha);
+        //super.draw(batch, parentAlpha);
+        batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
+        animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
+        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
+
+        batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+
         batch.end();
         healthbar.draw(shape);
         batch.begin();

@@ -28,7 +28,7 @@ public class Main implements ApplicationListener {
     Texture backgroundTexture;
     ShapeRenderer shape;
     Texture dropTexture;
-    Sound dropSound;
+
     Music music;
     TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
@@ -39,7 +39,7 @@ public class Main implements ApplicationListener {
     Batch batch;
     Player Player;
     Vector2 touchPos;
-
+    Testentity werther;
     Array<Sprite> dropSprites;
     float dropTimer;
     Rectangle bucketRectangle;
@@ -51,15 +51,15 @@ public class Main implements ApplicationListener {
 
         shape= new ShapeRenderer();
         dropTexture = new Texture("drop.png");
-        dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
-        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
         spriteBatch = new SpriteBatch();
 
-        viewport = new FitViewport(8, 5);
-        Player = new Player(3,4,3,100,viewport);
+        viewport = new FitViewport(800, 500);
+        Player = new Player(3,4,300,100,viewport);
         //Player.setSize(1, 2);
-        Player.setWorldbounds(0,8,0,5);
+        Player.setWorldbounds(0-Player.getWidth(),800+Player.getWidth(),0,500);
         touchPos = new Vector2();
+        werther= new Testentity(200,200,viewport,this);
         ocam=new OrthographicCamera(50,50);
         //ocam.translate(-10,0);
         dropSprites = new Array<>();
@@ -70,7 +70,7 @@ public class Main implements ApplicationListener {
         labelStyle = new Label.LabelStyle();
         labelStyle.font= new BitmapFont();
         music.setLooping(true);
-        music.setVolume(.1f);
+        music.setVolume(.2f);
         music.play();
 
 
@@ -125,11 +125,15 @@ public class Main implements ApplicationListener {
         float bucketHeight = Player.getHeight();
 
         float delta = Gdx.graphics.getDeltaTime();
+        System.out.println(1.0/delta+" frames");
+        delta=Math.min(delta,1/30.0f);
 
         Player.updatemove(delta);
-        //Player.setX(MathUtils.clamp(Player.getX(), 0, 99999));
+
+        werther.update(delta);
         Player.loopWorldbounds();
-        System.out.println(Player.getX()+"x "+ Player.getY()+"y ");
+        //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
+
         bucketRectangle.set(Player.getX(), Player.getY(), bucketWidth, bucketHeight);
 
         for (int i = dropSprites.size - 1; i >= 0; i--) {
@@ -137,18 +141,18 @@ public class Main implements ApplicationListener {
             float dropWidth = dropSprite.getWidth();
             float dropHeight = dropSprite.getHeight();
 
-            dropSprite.translateY(-2f * delta);
+            dropSprite.translateY(-200f * delta);
             dropRectangle.set(dropSprite.getX(), dropSprite.getY(), dropWidth, dropHeight);
 
             if (dropSprite.getY() < -dropHeight) dropSprites.removeIndex(i);
             else if (bucketRectangle.overlaps(dropRectangle)) {
                 dropSprites.removeIndex(i);
-                dropSound.play();
+
             }
         }
 
         dropTimer += delta;
-        if (dropTimer > 1f) {
+        if (dropTimer > 0.4f) {
             dropTimer = 0;
             createDroplet();
         }
@@ -167,10 +171,20 @@ public class Main implements ApplicationListener {
         float worldHeight = viewport.getWorldHeight();
         //renderer.setView(ocam);
         //renderer.render();
-
+        spriteBatch.setColor(1,1,1,1);
         spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
 
+        werther.draw(spriteBatch,0.4f);
+        for (Sprite dropSprite : dropSprites) {
+            spriteBatch.end();
+            float dropWidth = dropSprite.getWidth();
+            float dropHeight = dropSprite.getHeight();
 
+            spriteBatch.begin();
+            dropSprite.draw(spriteBatch);
+
+
+        }
         spriteBatch.end();
 
         shape.begin(ShapeRenderer.ShapeType.Filled);
@@ -183,24 +197,15 @@ public class Main implements ApplicationListener {
         Player.draw(spriteBatch,shape,1f);
 
 
-        for (Sprite dropSprite : dropSprites) {
-            spriteBatch.end();
-            float dropWidth = dropSprite.getWidth();
-            float dropHeight = dropSprite.getHeight();
 
-            spriteBatch.begin();
-            dropSprite.draw(spriteBatch);
-
-
-        }
         spriteBatch.end();
         //ar.draw(shape);
 
     }
 
     private void createDroplet() {
-        float dropWidth = 1.5f;
-        float dropHeight = 1;
+        float dropWidth = 100f;
+        float dropHeight = 100;
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
 
