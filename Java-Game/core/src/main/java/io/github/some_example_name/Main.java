@@ -1,103 +1,233 @@
-package io.github.some_example_name;
+package io.github.some_example_name;//package com.Game2;
 
-import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-import javax.swing.*;
-import java.awt.*;
 
-import static java.awt.Color.black;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class Main extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private Texture image;
+public class Main implements ApplicationListener {
     Texture backgroundTexture;
-    FitViewport viewport;
-    Texture bucketTexture;
+    ShapeRenderer shape;
     Texture dropTexture;
-    Sound dropSound;
-    Sprite bucketSprite;
+
     Music music;
-int i=0;
+    TiledMap map;
+    private OrthogonalTiledMapRenderer renderer;
+    public static Label.LabelStyle labelStyle;
+    OrthographicCamera ocam;
+    SpriteBatch spriteBatch;
+    FitViewport viewport;
+    Batch batch;
+    Player Player;
+    Vector2 touchPos;
+    Testentity werther;
+    Array<Sprite> dropSprites;
+    float dropTimer;
+    Rectangle bucketRectangle;
+    Rectangle dropRectangle;
+
     @Override
     public void create() {
-        viewport = new FitViewport(8, 5);
-        batch = new SpriteBatch();
         backgroundTexture = new Texture("background.png");
-        bucketTexture = new Texture("bucket.png");
-        dropTexture = new Texture("drop.png");
-        image = new Texture("libgdx.png");
-        dropSound = Gdx.audio.newSound(Gdx.files.internal("drop.mp3"));
-        music = Gdx.audio.newMusic(Gdx.files.internal("music.mp3"));
 
-        bucketSprite = new Sprite(bucketTexture); // Initialize the sprite based on the texture
-        bucketSprite.setSize(1, 1);
+        shape= new ShapeRenderer();
+        dropTexture = new Texture("drop.png");
+        music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
+        spriteBatch = new SpriteBatch();
+
+        viewport = new FitViewport(800, 500);
+        Player = new Player(3,4,300,100,viewport);
+        //Player.setSize(1, 2);
+        Player.setWorldbounds(0-Player.getWidth(),800+Player.getWidth(),0,500);
+        touchPos = new Vector2();
+        werther= new Testentity(200,200,viewport,this);
+        ocam=new OrthographicCamera(50,50);
+        //ocam.translate(-10,0);
+        dropSprites = new Array<>();
+        bucketRectangle = new Rectangle();
+        dropRectangle = new Rectangle();
+        map = new TmxMapLoader().load("Test Karte 2.tmx");
+        renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font= new BitmapFont();
+        music.setLooping(true);
+        music.setVolume(.2f);
+        music.play();
+
+
 
     }
 
     @Override
+    public void resize(int width, int height) {
+        viewport.update(width, height, true);
+    }
 
+    @Override
     public void render() {
-        // organize code into three methods
         input();
         logic();
         draw();
     }
 
+    private void input() {
+        float speed = 4f;
+        float delta = Gdx.graphics.getDeltaTime();
 
-        private void input()
-        {
-            float speed = 1.0f;
-            float delta = Gdx.graphics.getDeltaTime(); // retrieve the current delta
+        /*if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            Player.translateX(speed * delta);
+            ocam.translate(speed*delta,0);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            Player.translateX(-speed * delta);
+            ocam.translate(-speed*delta,0);
+        }*/
 
-            if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                bucketSprite.translateX(speed * delta); // Move the bucket right
-            }
+        /*if (Gdx.input.isTouched()) {
+            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
+            viewport.unproject(touchPos);
+            //Player.setCenterX(touchPos.x);
+            Vector2 vec= new Vector2(touchPos.x-Player.getX()-Player.getWidth()/2,0);
+            vec.setLength(Math.min(speed*delta,vec.len()));
 
-        }
+            Player.moveBy(vec.x,vec.y);
+            System.out.println(touchPos.x+"x "+ touchPos.y+"y ");
+
+            ocam.translate(vec.x,0);
+            ocam.update();
+
+            //viewport.getCamera().rotate(new Vector3(0,0,1), (float) Math.random()*4-2);
+        }*/
+    }
 
     private void logic() {
+        float worldWidth = viewport.getWorldWidth();
+        float worldHeight = viewport.getWorldHeight();
+        float bucketWidth = Player.getWidth();
+        float bucketHeight = Player.getHeight();
 
-    }
-    @Override
-    public void resize(int width, int height) {
-        viewport.update(width, height, true); // true centers the camera
-    }
+        float delta = Gdx.graphics.getDeltaTime();
+        System.out.println(1.0/delta+" frames");
+        delta=Math.min(delta,1/30.0f);
 
+        Player.updatemove(delta);
+
+        werther.update(delta);
+        Player.loopWorldbounds();
+        //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
+
+        bucketRectangle.set(Player.getX(), Player.getY(), bucketWidth, bucketHeight);
+
+        for (int i = dropSprites.size - 1; i >= 0; i--) {
+            Sprite dropSprite = dropSprites.get(i);
+            float dropWidth = dropSprite.getWidth();
+            float dropHeight = dropSprite.getHeight();
+
+            dropSprite.translateY(-200f * delta);
+            dropRectangle.set(dropSprite.getX(), dropSprite.getY(), dropWidth, dropHeight);
+
+            if (dropSprite.getY() < -dropHeight) dropSprites.removeIndex(i);
+            else if (bucketRectangle.overlaps(dropRectangle)) {
+                dropSprites.removeIndex(i);
+
+            }
+        }
+
+        dropTimer += delta;
+        if (dropTimer > 0.4f) {
+            dropTimer = 0;
+            createDroplet();
+        }
+    }
 
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
+        System.out.println(Color.BLACK.a);
         viewport.apply();
-        batch.setProjectionMatrix(viewport.getCamera().combined);
-        batch.begin();
+        shape.setProjectionMatrix(viewport.getCamera().combined);
+
+        spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+        spriteBatch.begin();
+        //shape.setProjectionMatrix(viewport.getCamera().combined);
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
-        batch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
+        //renderer.setView(ocam);
+        //renderer.render();
+        spriteBatch.setColor(1,1,1,1);
+        spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
 
-        i++;
-        //batch.draw(bucketTexture, (float) (i*0.02), 0, 1, 1); // draw the bucket with width/height of 1 meter
-        bucketSprite.draw(batch);
-        batch.end();
+        werther.draw(spriteBatch,0.4f);
+        for (Sprite dropSprite : dropSprites) {
+            spriteBatch.end();
+            float dropWidth = dropSprite.getWidth();
+            float dropHeight = dropSprite.getHeight();
+
+            spriteBatch.begin();
+            dropSprite.draw(spriteBatch);
+
+
+        }
+        spriteBatch.end();
+
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        //shape.rect(Player.worldbounds.getX(),Player.worldbounds.getY(),Player.worldbounds.getWidth(),Player.worldbounds.getHeight());
+        Player.drawHitbox(shape);
+
+        shape.end();
+
+        spriteBatch.begin();
+        Player.draw(spriteBatch,shape,1f);
+
+
+
+        spriteBatch.end();
+        //ar.draw(shape);
+
     }
 
+    private void createDroplet() {
+        float dropWidth = 100f;
+        float dropHeight = 100;
+        float worldWidth = viewport.getWorldWidth();
+        float worldHeight = viewport.getWorldHeight();
 
+        Sprite dropSprite = new Sprite(dropTexture);
+        dropSprite.setSize(dropWidth, dropHeight);
+        dropSprite.setX(MathUtils.random(0f, worldWidth - dropWidth));
+        dropSprite.setY(worldHeight);
+        dropSprites.add(dropSprite);
+    }
 
+    @Override
+    public void pause() {
+
+    }
+
+    @Override
+    public void resume() {
+
+    }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        image.dispose();
+
     }
 }
