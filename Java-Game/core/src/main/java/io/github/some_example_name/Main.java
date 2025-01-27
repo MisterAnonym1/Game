@@ -57,7 +57,7 @@ public class Main implements ApplicationListener {
         viewport = new FitViewport(800, 500);
         Player = new Player(3,4,300,100,viewport);
         //Player.setSize(1, 2);
-        Player.setWorldbounds(0-Player.getWidth(),800+Player.getWidth(),0,500);
+        Player.setWorldbounds(0,800,0,500);
         touchPos = new Vector2();
         werther= new Testentity(200,200,viewport,this);
         ocam=new OrthographicCamera(50,50);
@@ -131,7 +131,7 @@ public class Main implements ApplicationListener {
         Player.updatemove(delta);
 
         werther.update(delta);
-        Player.loopWorldbounds();
+        Player.stayinWorldbounds();
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
 
         bucketRectangle.set(Player.getX(), Player.getY(), bucketWidth, bucketHeight);
@@ -152,9 +152,9 @@ public class Main implements ApplicationListener {
         }
 
         dropTimer += delta;
-        if (dropTimer > 0.4f) {
+        if (dropTimer > 10f) {
             dropTimer = 0;
-            createDroplet();
+            //createDroplet();
         }
     }
 

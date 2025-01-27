@@ -1,6 +1,10 @@
 package io.github.some_example_name;
 
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -12,7 +16,7 @@ public class Testentity extends Entity {
     int spawnx;
     int spawny;
     int delay;
-
+    Animation<TextureRegion> walkAnimation;
     boolean collides = false;
     Main logic;
 
@@ -28,12 +32,20 @@ public class Testentity extends Entity {
         logic = log;
         hitboxOffsetX = 0;
         hitboxOffsetY = 0;
-
+        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.1f);
         direction = new Vector2(0, 0);
         targetpos = new Position(spawnx , spawny );
         gotopoint(targetpos.x, targetpos.y);
     }
 
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        //super.draw(batch, parentAlpha);
+        animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
+        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
+
+        batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+    }
 
     void setrandompoint(float centerx, float centery, float radius)
     {

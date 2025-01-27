@@ -19,7 +19,7 @@ class Player extends Entity
     int swingduration = 0;
     String anistatus;
     HealthBar healthbar;
-    Animation<TextureRegion> walkAnimation;
+
     boolean ismirrored;
     boolean isattacking;
     Player(float x, float y, float speed, int leben, FitViewport view) {
@@ -34,9 +34,9 @@ class Player extends Entity
         maxhealth = leben;
         healthbar = new HealthBar(100, 400, maxhealth, 1);
         //healthbar.setVisible(false);
-        setSize(200, 200);
+        setSize(100, 200);
         scale(1f);
-       walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.1f);
+
 
     }
 
@@ -53,9 +53,9 @@ class Player extends Entity
         //super.draw(batch, parentAlpha);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
-        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
+        //TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
-        batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
 
         batch.end();
         healthbar.draw(shape);
@@ -131,13 +131,6 @@ class Player extends Entity
         }
     }*/
 
-   /* public void draw (SpriteBatch batch, float parentAlpha)
-    {
-
-        //batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY());
-        batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
-
-    }*/
 
 
     public void updatemove(float deltatime)
