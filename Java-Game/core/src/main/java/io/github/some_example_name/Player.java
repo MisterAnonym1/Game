@@ -20,12 +20,12 @@ class Player extends Entity
     String anistatus;
     HealthBar healthbar;
 
-    boolean ismirrored;
+
     boolean isattacking;
-    Player(float x, float y, float speed, int leben, FitViewport view) {
+    Player(float x, float y, float speed, int leben) {
 
 
-        super(x, y,"Al Assad.png", view);
+        super(x, y,"Al Assad.png");
         toBack();
         weight = 0.5f;
         maxspeed = speed;
@@ -131,12 +131,12 @@ class Player extends Entity
         }
     }*/
 
+    @Override
 
-
-    public void updatemove(float deltatime)
+    public void act(float deltatime)
     {
 
-
+        super.act(deltatime);
 
         isxmoving = false;
         isymoving = false;

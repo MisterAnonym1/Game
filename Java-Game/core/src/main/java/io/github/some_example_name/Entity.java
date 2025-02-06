@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 
@@ -27,30 +28,44 @@ class Entity extends Actor
     TextureRegion texture;
     float hitboxOffsetX=0, weight, hitboxOffsetY=0;
     static float hitboxalpha = 0.5f;
+    boolean ismirrored;
     float animationstateTime=10f;
     EntityStatus status;
     //Ellipse shadow;
-    FitViewport viewport;
     Rectangle worldbounds;
 
     public enum EntityStatus { inactiv, idle, engaging }
-    Entity(float x, float y, String filepath, FitViewport viewport)
+
+    Entity(float x, float y, TextureRegion tex)
     {
         super();
-
-        texture=new TextureRegion(new Texture(filepath));
-        setWidth(texture.getTexture().getWidth());
-        setHeight(texture.getTexture().getHeight());
-
+        texture=tex;
+        setWidth(texture.getRegionWidth());
+        setHeight(texture.getRegionHeight());
         collisionOn = true;
         additionalForce = new Vector2(0, 0);
         movement = new Vector2(0, 0);
         curhealth = 100;
         weight = 1;
-        this.viewport=viewport;
         status = EntityStatus.inactiv;
         initializeHitbox();
         setPosition(x,y);
+    }
+    Entity(float x, float y, String filepath)
+    {
+        super();
+        texture=new TextureRegion(new Texture(filepath));
+        setWidth(texture.getTexture().getWidth());
+        setHeight(texture.getTexture().getHeight());
+        collisionOn = true;
+        additionalForce = new Vector2(0, 0);
+        movement = new Vector2(0, 0);
+        curhealth = 100;
+        weight = 1;
+        status = EntityStatus.inactiv;
+        initializeHitbox();
+        setPosition(x,y);
+
     }
 
     public void draw (Batch batch, float parentAlpha)
@@ -58,8 +73,6 @@ class Entity extends Actor
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         //batch.setColor(getColor().r,getColor().g,getColor().b, hitboxalpha);
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
-
-
     }
     public void drawHitbox(ShapeRenderer shape)
     {
@@ -67,13 +80,18 @@ class Entity extends Actor
         shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
 
         shape.setColor(0.1f, 0.1f, 0.1f, 0.4f  );
-        shape.ellipse( getCenterX()-getWidth() *0.6f, getY()-getWidth()/4 , getWidth() *1.2f, getWidth() / 2);
+        drawShadow(shape);
+    }
+    public void drawShadow(ShapeRenderer shape)
+    {
+        shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
+
     }
 
-    @Override
+    /*@Override
     public void act(float delta) {
         super.act(Math.min(delta,1/30f));
-    }
+    }*/
 
     void sethealth(int health, boolean ignoremax)
     //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
@@ -106,6 +124,8 @@ class Entity extends Actor
         float factorh =height/getHeight();
         super.setSize(width, height);
         hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
+        hitboxOffsetX*=factorw;
+        hitboxOffsetY*= factorh;
     }
 
     boolean damageby(int damage)
@@ -261,12 +281,17 @@ class Entity extends Actor
         movement.setLength( movement.x * (1 - haftreibungsKoeffizient*delta));
     }
 
-    public void moveatAngle(double length, float angle)
+    public void moveatAngle(float length, float angle)
     {
         float x = (float) (length * Math.cos(angle * Math.PI / 180));
         float y = (float) ( length * Math.sin((angle * Math.PI) / 180));
         moveBy(x, y);
         //mit dieser Methode kann man einen genauen Winkel angeben, in welchen sich die Entity bewegen soll
+
+    }
+    public void moveatAngle(Vector2 vector)
+    {
+        moveBy(vector.x,vector.y);
 
     }
 
@@ -279,22 +304,26 @@ class Entity extends Actor
     @Override
     public void setX(float x) {
         super.setX(x);
-        hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+       // hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
 
     @Override
     public void setY(float y) {
         super.setY(y);
-        hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
 
     @Override
     public void moveBy(float x, float y) {
         super.moveBy(x, y);
-        hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
 
     @Override
     public void setPosition(float x, float y) {
         super.setPosition(x, y);
-        hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
 
 
 
@@ -336,21 +365,7 @@ class Entity extends Actor
     {
         return false;
     }
-    boolean inloadedworld()
-    {
-        //checked ob dieses Entity vorhanden ist in
-        // einem quadratischen Bereich etwas größer als der Screen
 
-        float wx = viewport.getScreenX();
-        float wy = viewport.getScreenY();
-        if(getCenterX() > wx - 200 && getCenterX() < wx + 1000) {
-            if(getCenterY() > wy - 200 && getCenterY() < wy + 1000)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
     boolean isactiv()
     {
         if(status == EntityStatus.inactiv) {
@@ -371,6 +386,7 @@ class Entity extends Actor
         texture.getTexture().dispose();
         if ( getStage()!=null){
             clear();
+
             //addAction(Actions.removeActor())
         }
         remove();
