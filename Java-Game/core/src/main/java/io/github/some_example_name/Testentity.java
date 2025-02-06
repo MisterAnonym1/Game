@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -13,25 +14,25 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 public class Testentity extends Entity {
     Vector2 direction;
-    int spawnx;
-    int spawny;
-    int delay;
+    int spawnx=0;
+    int spawny=0;
+    float delay=0;
     Animation<TextureRegion> walkAnimation;
     boolean collides = false;
     Main logic;
 
     Position targetpos;
-    Testentity(float x, float y, FitViewport view, Main log) {
-        super(x, y, "drop.png",view );
+    Testentity(float x, float y,  Main log) {
+        super(x, y, new TextureRegion(new Texture("slime_move.png"),1,1,80,72));
         acceleration = 100;
         maxspeed = 100;
-        setSize(100,100);
-
+        setSize(200,200);
+        hitboxOffsetX=10;
+        hitboxOffsetY=10;
         spawnx = (int)x;
         spawny = (int)y;
         logic = log;
-        hitboxOffsetX = 0;
-        hitboxOffsetY = 0;
+        scale(1.4f);
         walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.1f);
         direction = new Vector2(0, 0);
         targetpos = new Position(spawnx , spawny );
@@ -47,9 +48,16 @@ public class Testentity extends Entity {
         batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
 
+    @Override
+    void initializeHitbox() {
+        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/4.1f, getHeight()/4.62f);
+        hitboxOffsetX=10;
+        hitboxOffsetY=10;
+    }
+
     void setrandompoint(float centerx, float centery, float radius)
     {
-        delay = MathUtils.round(MathUtils.random() * 30 + 20);
+        delay = MathUtils.round((float) (MathUtils.random() * 1.0 + 0.6f));
         boolean collides=false;
         while (true) {
             float angle = MathUtils.random(0,360);
@@ -103,11 +111,12 @@ public class Testentity extends Entity {
         super.moveatAngle(length, angle);
 
     }
-
-    public void update(float delta) {
+    @Override
+    public void act(float delta) {
+        super.act(delta);
         if(isatdestination())
         {
-            delay--;
+            delay-=delta;
             if(delay <= 0) {
                 while (isatdestination())
                 {

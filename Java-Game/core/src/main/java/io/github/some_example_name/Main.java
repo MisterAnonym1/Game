@@ -17,6 +17,9 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -38,6 +41,7 @@ public class Main implements ApplicationListener {
     FitViewport viewport;
     Batch batch;
     Player Player;
+    Stage entityStage;
     Vector2 touchPos;
     Testentity werther;
     Array<Sprite> dropSprites;
@@ -55,11 +59,14 @@ public class Main implements ApplicationListener {
         spriteBatch = new SpriteBatch();
 
         viewport = new FitViewport(800, 500);
-        Player = new Player(3,4,300,100,viewport);
+        entityStage= new Stage(viewport,spriteBatch);
+        //entityStage= new Stage();
+        Player = new Player(3,4,300,100);
         //Player.setSize(1, 2);
         Player.setWorldbounds(0,800,0,500);
         touchPos = new Vector2();
-        werther= new Testentity(200,200,viewport,this);
+        werther= new Testentity(200,200,this);
+        entityStage.addActor(werther);
         ocam=new OrthographicCamera(50,50);
         //ocam.translate(-10,0);
         dropSprites = new Array<>();
@@ -93,6 +100,9 @@ public class Main implements ApplicationListener {
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
 
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+            entityStage.addActor(new FireBall(Player.getX(),Player.getY(),new Vector2(Player.movement.x,Player.movement.y)));
+        }
         /*if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             Player.translateX(speed * delta);
             ocam.translate(speed*delta,0);
@@ -125,12 +135,14 @@ public class Main implements ApplicationListener {
         float bucketHeight = Player.getHeight();
 
         float delta = Gdx.graphics.getDeltaTime();
-        System.out.println(1.0/delta+" frames");
+        System.out.println(delta+" frames");
         delta=Math.min(delta,1/30.0f);
+        delta=(float)(delta/1.0);
 
-        Player.updatemove(delta);
+        Player.act(delta);
 
-        werther.update(delta);
+        //werther.addAction(Actions.rotateBy(0.1f));
+        entityStage.act(delta);
         Player.stayinWorldbounds();
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
 
@@ -174,7 +186,7 @@ public class Main implements ApplicationListener {
         spriteBatch.setColor(1,1,1,1);
         spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
 
-        werther.draw(spriteBatch,0.4f);
+
         for (Sprite dropSprite : dropSprites) {
             spriteBatch.end();
             float dropWidth = dropSprite.getWidth();
@@ -188,12 +200,16 @@ public class Main implements ApplicationListener {
         spriteBatch.end();
 
         shape.begin(ShapeRenderer.ShapeType.Filled);
+
         //shape.rect(Player.worldbounds.getX(),Player.worldbounds.getY(),Player.worldbounds.getWidth(),Player.worldbounds.getHeight());
         Player.drawHitbox(shape);
-
+        werther.drawHitbox(shape);
         shape.end();
 
+        entityStage.draw();
+
         spriteBatch.begin();
+        //werther.draw(spriteBatch,0.4f);
         Player.draw(spriteBatch,shape,1f);
 
 
