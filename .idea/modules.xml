@@ -2,7 +2,13 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Game.iml" filepath="$PROJECT_DIR$/.idea/Game.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Java-Game.iml" filepath="$PROJECT_DIR$/.idea/modules/Java-Game.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/Java-Game.core.iml" filepath="$PROJECT_DIR$/.idea/modules/core/Java-Game.core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/Java-Game.core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core/Java-Game.core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core/Java-Game.core.test.iml" filepath="$PROJECT_DIR$/.idea/modules/core/Java-Game.core.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lwjgl3/Java-Game.lwjgl3.iml" filepath="$PROJECT_DIR$/.idea/modules/lwjgl3/Java-Game.lwjgl3.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lwjgl3/Java-Game.lwjgl3.main.iml" filepath="$PROJECT_DIR$/.idea/modules/lwjgl3/Java-Game.lwjgl3.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/lwjgl3/Java-Game.lwjgl3.test.iml" filepath="$PROJECT_DIR$/.idea/modules/lwjgl3/Java-Game.lwjgl3.test.iml" />
     </modules>
   </component>
 </project>
