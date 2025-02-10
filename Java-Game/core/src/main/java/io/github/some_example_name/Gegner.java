@@ -13,7 +13,7 @@ class Gegner extends Entity
     Level curlevel;
     float targetx;
     float targety;
-    int counter = 0;
+    int counter = ;
     Player spieler;
     Main logic;
     ArrayList<MyTile> queue = new ArrayList<>();
@@ -30,7 +30,7 @@ class Gegner extends Entity
         super(x, y, filepath); //viewport war hier mal das Problem
 
         acceleration = 5;
-        maxspeed = 10;
+        maxspeed = 11;
         spawnx = x;
         spawny = y;
         curlevel = logic.currentlevel;
