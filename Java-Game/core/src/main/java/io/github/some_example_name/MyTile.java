@@ -60,7 +60,9 @@ class MyTile extends Sprite {
     }
 
 
-
+public void destroy(){
+        texture.getTexture().dispose();
+    }
 
     /*
      * Verschiebt das Tile ohne Animation sofort zur Tile-Position (column, row).
@@ -88,19 +90,7 @@ class Box extends MyTile {
 
     }
 
-    void destroy()
-    {
-        if(isexploding == true)
-        {
-            /*explosion = new Sprite(getCenterX(), getCenterY(), SpriteLibrary.Space_Shooter_1, 12);
-            explosion.scale(4);
-            explosion.playAnimation(12, 21, RepeatType.once, 40);
-            Sound.playSound(Sound.cannon_boom);*/
 
-        }
-
-
-    }
     void act()
     {
         if(isexploding == true)
