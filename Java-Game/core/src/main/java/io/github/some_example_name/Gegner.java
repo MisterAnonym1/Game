@@ -13,7 +13,7 @@ class Gegner extends Entity
     Level curlevel;
     float targetx;
     float targety;
-    int counter = ;
+    int counter = 0;
     Player spieler;
     Main logic;
     ArrayList<MyTile> queue = new ArrayList<>();
@@ -26,7 +26,7 @@ class Gegner extends Entity
     int delay;
 
 
-    Gegner(Main logic, double x, double y,String filepath) {
+    Gegner(Main logic, float x, float y,String filepath) {
         super(x, y, filepath); //viewport war hier mal das Problem
 
         acceleration = 5;
