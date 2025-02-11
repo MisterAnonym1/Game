@@ -1,8 +1,12 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 
 import java.util.ArrayList;
+
+
 
 class Level {
 
@@ -15,17 +19,20 @@ class Level {
     ArrayList<Testentity> testentitys = new ArrayList<>();
     ArrayList<Gegner> gegnerliste = new ArrayList<>();
     ArrayList<NPC> npcs = new ArrayList<>();
+    ArrayList<Projectile> projectiles = new ArrayList<>();
+    Main log;
     //ArrayList<Item> itemlist = new ArrayList<Item>();
-
+    int[]rownotwalls;
     int doorsnummer;
 
 
     double xcoplayer;
     double ycoplayer;
 
-    Level(String[] rows) {
+    Level(String[] rows,Main log) {
         this.rows = rows;
-
+        this.log=log;
+        rownotwalls = new int[rows.length];
 
 
         doorsnummer = 0;
@@ -66,16 +73,17 @@ class Level {
             npc.destroy();
         }
         npcs.clear();
+        for (Projectile prc : projectiles) {
+            prc.destroy();
+        }
+        projectiles.clear();
         //itemlist.clear();
 
     }
 
 
-    /**
-     * Erzeugt aus dem String-kodierten Level-Format (siehe http://sokobano.de/wiki/index.php?title=Level_format)
-     * alle benötigten Kachel-Sprites und die Kisten und setzt die Spielerfigur auf die Startposition (Zeichen @).
-     */
-    public void render(Main log) {
+
+    public void render() {
         // Gehe von oben her alle Zeilen durch:
         for (int line = 0; line < rows.length; line++) {
             // Hole den String-Wert, in dem die aktuelle Zeile kodiert ist
@@ -89,6 +97,7 @@ class Level {
 
                 switch(tilechar) {
                     case '#' : // wall
+
                         int randomn = MathUtils.random(1, 20);
                         if(randomn <= 2)
                         { newtilewall(column, line, 3); }
@@ -98,70 +107,96 @@ class Level {
                             { newtilewall(column, line, 4); }
                             else
                             { if(randomn <= 6)
-                            { newtilewall(column, line, 5); }
+                            { newtilewall(column, line, 5);
+                            }
                             else
                             { if(randomn <= 8)
                             { newtilewall(column, line, 8); }
                             else
-                            { MyTile tili = new MyTile(column, line, SpriteLibrary.pixelmon, 7, true);
+                            { MyTile tili = new MyTile(column, line, "bucket.png", true);
+                                //print(tili.getWidth()/2+"\n");
                                 walls.add(tili);
 
                             }
                             }
                             }
                         }
-
-
-
                         break;
+
                     case 'n' :
-                        npcs.add(new NPC(column * 128, line * 128, SpriteLibrary.Characters_1, 0, 2, 0));
-                        notWallsTiles.add(new MyTile(column, line, SpriteLibrary.pixelmon, 24, false));
+                        npcs.add(new NPC(column * 128, line * 128, "", 2, 0));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
+                        rownotwalls[line]++;
                         break;
                     case 'd' :
-                        teleporters.add(new MyTile(column, line, SpriteLibrary.pixelmon, 31, true));
+                        teleporters.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), true));
+
                         break;
                     case 'i' :
                   /*ItemType type= Item.getrandomtype();
                   itemlist.add(new Item(column * 128, line * 128, Item.getInType(type),type ));*/
-                        notWallsTiles.add(new MyTile(column, line, SpriteLibrary.pixelmon, 24, false));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
+                        rownotwalls[line]++;
+
                         break;
                     case ' ' :
-                        notWallsTiles.add(new MyTile(column, line, SpriteLibrary.pixelmon, 24, false));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
+                        rownotwalls[line]++;
                         break;
                     case 't' :
-                        testentitys.add(new Testetity(column * 128, line * 128, log));
-                        notWallsTiles.add(new MyTile(column, line, SpriteLibrary.pixelmon, 24, false));
+                        testentitys.add(new Testentity(column * 128, line * 128, log));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
+                        rownotwalls[line]++;
                         break;
                     case '$' :
                         break;
                     case '@' :
                         xcoplayer = column * 128;
                         ycoplayer = line * 128;
-                        notWallsTiles.add(new MyTile(column, line, SpriteLibrary.pixelmon, 24, false));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
+                        rownotwalls[line]++;
                         break;
-                    case 'x' :
-
+                    case 'm' :
+                        gegnerliste.add(new Mage(log, column * 128, line * 128));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
                         break;
                     case 'k' :
                         //notWallsTiles.add(new MyTile(column, line, SpriteLibrary.Hamster, 2));
                         break;
                     case 'g' :
-                        gegnerliste.add(new Gegner(log, column * 128, line * 128));
-                        notWallsTiles.add(new MyTile(column, line, SpriteLibrary.pixelmon, 24, false));
+                        gegnerliste.add(new Schlange(log, column * 128, line * 128));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
+                        rownotwalls[line]++;
                         break;
                     default :
-                        notWallsTiles.add(new MyTile(column, line, SpriteLibrary.pixelmon, 24, false));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
+                        rownotwalls[line]++;
 
                 }
 
             }
         }
-        System.out.print(testentitys.size());
+
+
+
+        for (MyTile tile : notWallsTiles) {
+            int row = tile.row;
+            int column = tile.column;
+
+            tile.setNorth(getnotwallTile(column, row - 1));
+            tile.setEast(getnotwallTile(column + 1, row));
+            tile.setSouth(getnotwallTile(column, row + 1));
+            tile.setWest(getnotwallTile(column - 1, row));
+        }
+        for (MyTile tile : teleporters) {
+
+        }
+        //System.out.print(testentitys.size());
     }
 
 
-    public MyTile getnotwallTile(int column, int row) {
+
+    public MyTile getnotwallTile2(int column, int row) {
         for (MyTile tile : notWallsTiles) {
 
             if(tile.column == column && tile.row == row) {
@@ -178,6 +213,42 @@ class Level {
         return null;
 
     }
+    public MyTile getnotwallTile(int column, int row) {
+        if(row < 0 || column < 0) {
+            return null;
+        }
+        if(row + 1 > rows.length || column > rows[row].length()) {
+            return null;
+        }
+        int listnr = 0;
+        for (int i = 0; i < row; i++) {
+            listnr += rownotwalls[i];
+        }
+        MyTile tile;
+        for (int i = listnr; i < listnr + rownotwalls[row]; i++) {
+            tile = notWallsTiles.get(i);
+            if(tile.column == column && tile.row == row) {
+                return tile;
+            }
+        }
+        // listnr += column;
+        return null;
+
+    }
+    int getLength()
+    {
+        int length = 0;
+        for (int i = 0; i < rows.length; i++) {
+            if(rows[i].length() > length) {
+                length = rows[i].length();
+            }
+        }
+        return length;
+    }
+    int getHeight()
+    {
+        return rows.length;
+    }
     /**
 
      *
@@ -185,14 +256,70 @@ class Level {
      * dx: Um so viele Kacheln soll die Spielerfigur nach rechts bewegt werden.
      * dy: Um so viele Kacheln soll die Spielerfigur nach unten bewegt werden.
      */
-    void newtilewall(int column, int line, int num)
+    void newtilewall(int column, int line, TextureRegion tex)
     {
-        MyTile tili = new MyTile(column, line, SpriteLibrary.pixelmon, num, true);
+        MyTile tili = new MyTile(column, line, tex, true);
 
         walls.add(tili);
 
     }
 
+    void showHitboxes()
+    {
+        MyTile.hitboxalpha = 1;
+        Entity.hitboxalpha = 0.5f;
+        Projectile.hitboxalpha = 0.5f;
+        Testentity.hitboxalpha = 0.5f;
 
+        /*for (MyTile wall : walls) {
+            wall.hitbox.setAlpha(1);
+        }
+        for (MyTile tele : teleporters) {
+            tele.hitbox.setAlpha(0.5);
+        }
+        for (Projectile prc : projectiles)
+        {
+            prc.hitbox.setAlpha(0.5);
+        }
+        for (NPC npc : npcs) {
+            npc.hitbox.setAlpha(0.5);
+        }
+        for (Gegner geg : gegnerliste) {
+            geg.hitbox.setAlpha(0.5);
+        }
+        for (Testentity enti : testentitys) {
+            enti.hitbox.setAlpha(0.5);
+        }*/
+    }
+
+
+    void hideHitboxes()
+    {
+        MyTile.hitboxalpha = 0;
+        Entity.hitboxalpha = 0;
+        Projectile.hitboxalpha = 0;
+        Testentity.hitboxalpha = 0;
+
+        /*for (MyTile wall : walls) {
+            wall.hitbox.setAlpha(0);
+        }
+        for (MyTile tele : teleporters) {
+            tele.hitbox.setAlpha(0);
+        }
+        for (NPC npc : npcs) {
+            npc.hitbox.setAlpha(0);
+        }
+        for (Projectile prc : projectiles)
+        {
+            prc.hitbox.setAlpha(0);
+        }
+        for (Gegner geg : gegnerliste) {
+            geg.hitbox.setAlpha(0);
+
+        }
+        for (TestEntity enti : testentitys) {
+            enti.hitbox.setAlpha(0);
+        }*/
+    }
 
 }

@@ -29,17 +29,17 @@ class Entity extends Actor
     float hitboxOffsetX=0, weight, hitboxOffsetY=0;
     static float hitboxalpha = 0.5f;
     boolean ismirrored;
-    float animationstateTime=10f;
+    float animationstateTime=0f;
     EntityStatus status;
-    //Ellipse shadow;
     Rectangle worldbounds;
-
+    Player player;
     public enum EntityStatus { inactiv, idle, engaging }
 
-    Entity(float x, float y, TextureRegion tex)
+    Entity(float x, float y, TextureRegion tex, Player player)
     {
         super();
         texture=tex;
+        this.player=player;
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         collisionOn = true;
@@ -51,10 +51,11 @@ class Entity extends Actor
         initializeHitbox();
         setPosition(x,y);
     }
-    Entity(float x, float y, String filepath)
+    Entity(float x, float y, String filepath,Player player)
     {
         super();
         texture=new TextureRegion(new Texture(filepath));
+        this.player=player;
         setWidth(texture.getTexture().getWidth());
         setHeight(texture.getTexture().getHeight());
         collisionOn = true;
@@ -469,6 +470,7 @@ class Arrow1 extends Sprite {
 
 
 }
+
 class HealthBar extends Sprite {
     Rectangle h1;
     Rectangle h2;

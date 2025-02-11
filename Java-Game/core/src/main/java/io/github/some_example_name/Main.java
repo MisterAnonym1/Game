@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -198,7 +199,8 @@ public class Main implements ApplicationListener {
 
         }
         spriteBatch.end();
-
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shape.begin(ShapeRenderer.ShapeType.Filled);
 
         //shape.rect(Player.worldbounds.getX(),Player.worldbounds.getY(),Player.worldbounds.getWidth(),Player.worldbounds.getHeight());

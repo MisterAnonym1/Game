@@ -1,6 +1,5 @@
 package io.github.some_example_name;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -13,7 +12,7 @@ class Gegner extends Entity
     Level curlevel;
     float targetx;
     float targety;
-    int counter = ;
+    int counter = 0;
     Player spieler;
     Main logic;
     ArrayList<MyTile> queue = new ArrayList<>();
@@ -26,8 +25,8 @@ class Gegner extends Entity
     int delay;
 
 
-    Gegner(Main logic, double x, double y,String filepath) {
-        super(x, y, filepath); //viewport war hier mal das Problem
+    Gegner(Main logic, float x, float y,String filepath) {
+        super(x, y, filepath, logic.Player); //viewport war hier mal das Problem
 
         acceleration = 5;
         maxspeed = 11;
@@ -46,20 +45,15 @@ class Gegner extends Entity
     }
 
     void sterben() {
-
-
-
         spieler.damageby(40);
         destroy();
 
     }
 
-    void setplayer(Player player)
-    {
-        this.spieler = player;
-    }
-    void act() {
 
+
+    public void act(float delta) {
+    super.act(delta);
     }
 
     public boolean update() {
@@ -83,11 +77,11 @@ class Gegner extends Entity
         sethealth(0, true);
         counter = 3;
         //this.stopActing();
+
         //Sprite expose = new Sprite(getCenterX(), getCenterY(), SpriteLibrary.Space_Shooter_1, 12);
 
 
         //Sound einfügen
-
 
     }
 
