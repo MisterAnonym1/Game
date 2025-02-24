@@ -13,8 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 class Entity extends Actor
@@ -478,15 +477,14 @@ class HealthBar extends Sprite {
     float maxHealth;
     float maxLaenge;
     float currentHealth;
-    HealthBar(int xPos, int yPos, float maxhealth, float size) {
+    Viewport viewport;
+    HealthBar(int xPos, int yPos, float maxhealth, float size, Viewport view) {
         h1 = new Rectangle(xPos, yPos, 300, 50f);
         h3 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
         h2 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
-        /*h1.setStatic(true);
-        h2.setStatic(true);
-        h3.setStatic(true);
-        h1.setFillColor(new Color(80, 74, 74));
-
+       viewport=view;
+       
+       /* h1.setFillColor(new Color(80, 74, 74))
         h2.setFillColor(Color.chartreuse);
         h3.setFillColor(Color.chartreuse, 0.2);*/
         maxLaenge = h2.getWidth();
@@ -503,12 +501,12 @@ class HealthBar extends Sprite {
     {
         shape.begin(ShapeRenderer.ShapeType.Filled);
         shape.setColor(80/256,74/256,74/256,100/256);
-        shape.rect(h1.x,h1.y,h1.width,h1.height);
+        shape.rect(viewport.getScreenX()+h1.x,viewport.getScreenY()+h1.y,h1.width,h1.height);
 
         shape.setColor(Color.CHARTREUSE);
-        shape.rect(h2.x,h2.y,h2.width,h2.height);
+        shape.rect(viewport.getScreenX()+h2.x,viewport.getScreenY()+h2.y,h2.width,h2.height);
 
-        shape.rect(h3.x,h3.y,h3.width,h3.height);
+        shape.rect(viewport.getScreenX()+h3.x,viewport.getScreenY()+h3.y,h3.width,h3.height);
         shape.end();
     }
     void healTo(float health)

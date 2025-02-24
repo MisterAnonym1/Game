@@ -62,7 +62,7 @@ public class Main implements ApplicationListener {
         viewport = new FitViewport(800, 500);
         entityStage= new Stage(viewport,spriteBatch);
         //entityStage= new Stage();
-        Player = new Player(3,4,300,100);
+        Player = new Player(3,4,300,100, viewport);
         //Player.setSize(1, 2);
         Player.setWorldbounds(0,800,0,500);
         touchPos = new Vector2();

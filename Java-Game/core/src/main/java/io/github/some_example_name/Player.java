@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 class Player extends Entity
 {
@@ -22,17 +23,18 @@ class Player extends Entity
 
 
     boolean isattacking;
-    Player(float x, float y, float speed, int leben) {
+    Player(float x, float y, float speed, int leben, Viewport view) {
 
 
-        super(x, y,"Al Assad.png");
+        super(x, y,"Al Assad.png",null);
         toBack();
+        player=this;
         weight = 0.5f;
         maxspeed = speed;
         acceleration = speed;
         curhealth = leben;
         maxhealth = leben;
-        healthbar = new HealthBar(100, 400, maxhealth, 1);
+        healthbar = new HealthBar(100, 400, maxhealth, 1, view);
         //healthbar.setVisible(false);
         setSize(100, 200);
         scale(1f);
