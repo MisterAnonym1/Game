@@ -1,5 +1,6 @@
 package io.github.some_example_name;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 class MeeleWeapon extends TextureActor
 {
@@ -19,14 +20,10 @@ class MeeleWeapon extends TextureActor
     void rotateTo(float angle)
     {
 
-        rotate(-getRotation() - angle);
+        rotateBy(-getRotation() - angle);
 
     }
-    void rotate(float angle)
-    {
-        super.rotateBy(angle);
-        //hitbox.rotateBy(angle);
-    }
+
     void defineCenter(float x, float y)
     {
         super.setOrigin(x, y);
@@ -39,11 +36,9 @@ class MeeleWeapon extends TextureActor
         hitbox.setPosition(x - getWidth() / 2.0f, y + getWidth() / 1.8f);
     }
 
-    void schlagen() {
-      /*rotate(20);
-      SystemTools.pause(100);
-      rotate(-20);*/
-
+    void attack() {
+        addAction(Actions.timeScale(0.9f,Actions.rotateBy(30,0.2f)));
+        addAction(Actions.after(Actions.rotateBy(-30,0.2f)));
     }
 }
 

@@ -9,18 +9,23 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.TimeScaleAction;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.ArrayList;
 
 class Player extends Entity
 {
     boolean isxmoving;
     boolean isymoving;
     boolean invincible = false;
+    MeeleWeapon weapon;
     int swingduration = 0;
     String anistatus;
     HealthBar healthbar;
-
+    ArrayList<Entity> gegnerhitliste = new ArrayList<>();
 
     boolean isattacking;
     Player(float x, float y, float speed, int leben, Viewport view) {
@@ -35,6 +40,7 @@ class Player extends Entity
         curhealth = leben;
         maxhealth = leben;
         healthbar = new HealthBar(100, 400, maxhealth, 1, view);
+        weapon=new Pipe(x,y);
         //healthbar.setVisible(false);
         setSize(100, 200);
         scale(1f);
@@ -58,7 +64,7 @@ class Player extends Entity
         //TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
-
+        weapon.draw(batch,parentAlpha);
         batch.end();
         healthbar.draw(shape);
         batch.begin();
@@ -139,6 +145,21 @@ class Player extends Entity
     {
 
         super.act(deltatime);
+        weapon.act(deltatime);
+            //Math.sin(((float)swingduration / 5) * 3.14159) * 30 * (ismirrored ? -1 : 1)
+
+            //print(" " + Math.sin(((float)swingduration / 50) * 3.14159) * 360 + " ");
+
+        if(!weapon.hasActions())
+        { isattacking = false;}
+
+            if(!isattacking&&Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                weapon.attack();
+                gegnerhitliste.clear();
+                isattacking = true;
+
+            }
+
 
         isxmoving = false;
         isymoving = false;
