@@ -29,7 +29,7 @@ class Gegner extends Entity
     Gegner(Main logic, float x, float y,String filepath) {
         super(x, y, filepath); //viewport war hier mal das Problem
 
-        acceleration = 5;
+        acceleration = 6;
         maxspeed = 11;
         spawnx = x;
         spawny = y;
