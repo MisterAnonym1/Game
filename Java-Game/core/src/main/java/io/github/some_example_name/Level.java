@@ -18,7 +18,7 @@ class Level {
     ArrayList<MyTile> teleporters = new ArrayList<MyTile>();
     ArrayList<Testentity> testentitys = new ArrayList<>();
     ArrayList<Gegner> gegnerliste = new ArrayList<>();
-    ArrayList<NPC> npcs = new ArrayList<>();
+    //ArrayList<NPC> npcs = new ArrayList<>();
     ArrayList<Projectile> projectiles = new ArrayList<>();
     Main log;
     //ArrayList<Item> itemlist = new ArrayList<Item>();
@@ -42,7 +42,7 @@ class Level {
 
     /**
      * Zerstört das Level, d.h. alle angezeigten Tiles und Kisten
-     */
+*/
     public void destroy() {
         for (MyTile wall : walls) {
             wall.destroy();
@@ -69,10 +69,10 @@ class Level {
         }
         gegnerliste.clear();
 
-        for (NPC npc : npcs) {
-            npc.destroy();
-        }
-        npcs.clear();
+        //for (NPC npc : npcs) {
+          //  npc.destroy();
+        //}
+        //npcs.clear();
         for (Projectile prc : projectiles) {
             prc.destroy();
         }
@@ -100,18 +100,18 @@ class Level {
 
                         int randomn = MathUtils.random(1, 20);
                         if(randomn <= 2)
-                        { newtilewall(column, line, 3); }
+                        { newtilewall(column, line, new TextureRegion(new Texture("bucket.png"))); }
                         else
                         {
                             if(randomn <= 4)
-                            { newtilewall(column, line, 4); }
+                            { newtilewall(column, line, new TextureRegion(new Texture("bucket.png"))); }
                             else
                             { if(randomn <= 6)
-                            { newtilewall(column, line, 5);
+                            { newtilewall(column, line, new TextureRegion(new Texture("bucket.png")));
                             }
                             else
                             { if(randomn <= 8)
-                            { newtilewall(column, line, 8); }
+                            { newtilewall(column, line, new TextureRegion(new Texture("bucket.png"))); }
                             else
                             { MyTile tili = new MyTile(column, line, "bucket.png", true);
                                 //print(tili.getWidth()/2+"\n");
@@ -124,7 +124,7 @@ class Level {
                         break;
 
                     case 'n' :
-                        npcs.add(new NPC(column * 128, line * 128, "", 2, 0));
+                        ///npcs.add(new NPC(column * 128, line * 128, "", 2, 0));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
                         rownotwalls[line]++;
                         break;
@@ -134,9 +134,9 @@ class Level {
                         break;
                     case 'i' :
                   /*ItemType type= Item.getrandomtype();
-                  itemlist.add(new Item(column * 128, line * 128, Item.getInType(type),type ));*/
+                  itemlist.add(new Item(column * 128, line * 128, Item.getInType(type),type ));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
-                        rownotwalls[line]++;
+                        rownotwalls[line]++;*/
 
                         break;
                     case ' ' :
@@ -157,14 +157,14 @@ class Level {
                         rownotwalls[line]++;
                         break;
                     case 'm' :
-                        gegnerliste.add(new Mage(log, column * 128, line * 128));
+                        ///gegnerliste.add(new Mage(log, column * 128, line * 128));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
                         break;
                     case 'k' :
                         //notWallsTiles.add(new MyTile(column, line, SpriteLibrary.Hamster, 2));
                         break;
                     case 'g' :
-                        gegnerliste.add(new Schlange(log, column * 128, line * 128));
+                        ///gegnerliste.add(new Schlange(log, column * 128, line * 128));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
                         rownotwalls[line]++;
                         break;
@@ -255,7 +255,7 @@ class Level {
      * column/row: Aktuelle Kachel-Position der Spielerfigur
      * dx: Um so viele Kacheln soll die Spielerfigur nach rechts bewegt werden.
      * dy: Um so viele Kacheln soll die Spielerfigur nach unten bewegt werden.
-     */
+*/
     void newtilewall(int column, int line, TextureRegion tex)
     {
         MyTile tili = new MyTile(column, line, tex, true);
