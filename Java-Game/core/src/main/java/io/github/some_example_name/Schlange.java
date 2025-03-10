@@ -17,8 +17,7 @@ class Schlange extends Gegner
 
         hitboxOffsetX = 30;
         hitboxOffsetY = 5;
-        //hitbox = new Rectangle(getCenterX() - hitboxOffsetX, getCenterY() - hitboxOffsetY, 50, 35);
-        //hitbox.setAlpha(hitboxalpha);
+
     }
 
     void sterben() {
