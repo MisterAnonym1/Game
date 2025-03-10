@@ -26,6 +26,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import static java.lang.Math.*;
 
 
 public class Main implements ApplicationListener {
@@ -39,6 +40,7 @@ public class Main implements ApplicationListener {
     public static Label.LabelStyle labelStyle;
     OrthographicCamera ocam;
     SpriteBatch spriteBatch;
+    Level currentlevel;
     FitViewport viewport;
     Batch batch;
     Player Player;
@@ -53,7 +55,6 @@ public class Main implements ApplicationListener {
     @Override
     public void create() {
         backgroundTexture = new Texture("background.png");
-
         shape= new ShapeRenderer();
         dropTexture = new Texture("drop.png");
         music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
@@ -100,9 +101,14 @@ public class Main implements ApplicationListener {
     private void input() {
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
-
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-            entityStage.addActor(new FireBall(Player.getX(),Player.getY(),new Vector2(Player.movement.x,Player.movement.y)));
+        if (Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        {
+            //System.out.println("space wird gedrückt");
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+             Vector2 vec= new Vector2(1,1);
+            vec.setAngleDeg(Player.directionline);
+            entityStage.addActor(new FireBall(Player.getX(),Player.getY(),new Vector2(vec.x,vec.y)));
         }
         /*if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             Player.translateX(speed * delta);
@@ -137,7 +143,7 @@ public class Main implements ApplicationListener {
 
         float delta = Gdx.graphics.getDeltaTime();
         System.out.println(delta+" frames");
-        delta=Math.min(delta,1/30.0f);
+        delta= Math.min(delta,1/30.0f);
         delta=(float)(delta/1.0);
 
         Player.act(delta);

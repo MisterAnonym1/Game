@@ -147,13 +147,13 @@ class Player extends Entity
         Vector2 vecright = new Vector2(1, 0);
         //zwei Vectoren werden erschaffen um die Laufrichtung des Spielers zu definieren
 
-        if((Gdx.input.isKeyPressed(Input.Keys.UP)))
+        if((Gdx.input.isKeyPressed(Input.Keys.UP))|| Gdx.input.isKeyPressed(Input.Keys.W))
         {
 
             vecup = vecup.rotateDeg(90);
             isymoving = true;
         }
-        if((Gdx.input.isKeyPressed(Input.Keys.DOWN)))
+        else if((Gdx.input.isKeyPressed(Input.Keys.DOWN))|| Gdx.input.isKeyPressed(Input.Keys.S))
         {
 
             vecup = vecup.rotateDeg(-90);

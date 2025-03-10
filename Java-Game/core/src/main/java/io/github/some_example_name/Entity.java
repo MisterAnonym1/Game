@@ -19,7 +19,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 class Entity extends Actor
 {
     int maxhealth, curhealth;
-    float maxspeed, acceleration;
+    float maxspeed, acceleration, directionline=0;
     boolean collisionOn, ismoving, isattacking;
     Rectangle hitbox;//hitbox kann in den Unterklassen unterschiedliche Formen haben
     Vector2 movement;
@@ -109,6 +109,11 @@ class Entity extends Actor
         else {
             curhealth = health;
         }
+    }
+    void sethealth(int health)
+    //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
+    {
+       sethealth(health,false);
     }
     void scale(float factor)
     {
@@ -237,7 +242,10 @@ class Entity extends Actor
         if(ismoving) {
 
             movement = direction;
-
+            if(movement.len()>0)
+            {
+               directionline=movement.angleDeg();
+            }
         }
         else
         {
@@ -336,6 +344,15 @@ class Entity extends Actor
         }
         return false;
     }
+    public boolean inradiusof(Sprite other, float radius)
+    {
+
+        if(getdistance(other) <= radius)
+        {
+            return true;
+        }
+        return false;
+    }
 
     public float getCenterX()
     {
@@ -350,6 +367,13 @@ class Entity extends Actor
     {
         float distancex = other.getCenterX() - getCenterX();
         float distancey = other.getCenterY() - getCenterY();
+        return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
+        //Überprüft ob etwas in einem gewissen Radius von diesem Entity ist
+    }
+    public float getdistance(Sprite other)
+    {
+        float distancex = other.getX() - getX();
+        float distancey = other.getY() - getY();
         return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
         //Überprüft ob etwas in einem gewissen Radius von diesem Entity ist
     }
@@ -483,7 +507,7 @@ class HealthBar extends Sprite {
         h3 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
         h2 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
        viewport=view;
-       
+
        /* h1.setFillColor(new Color(80, 74, 74))
         h2.setFillColor(Color.chartreuse);
         h3.setFillColor(Color.chartreuse, 0.2);*/

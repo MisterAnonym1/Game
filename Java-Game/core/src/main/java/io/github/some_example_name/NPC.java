@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
-public class NPC extends Entity
+/*public class NPC extends Entity
 {
     Revtext text;
     Sprite hintergrund;
@@ -91,4 +91,4 @@ public class NPC extends Entity
         hintergrund.setVisible(false);
         text.setVisible(false);
     }
-}
+}*/
