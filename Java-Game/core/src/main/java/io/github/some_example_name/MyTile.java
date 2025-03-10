@@ -4,98 +4,132 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-
-class MyTile extends Sprite {
 
 
-
-    // Position im Tile-Raster:
-    int column;    // Wievieltes Tile von links her (0 bedeutet: ganz links)
-    int row;       // Wievieltes Tile von obern her (0 bedeutet: ganz oben)
-    double destinationX;
-    double destinationY;
-    boolean isCurrentlyMoving = false;
-    boolean isMirrored = false;
-    Rectangle hitbox;
-    TextureRegion texture;
+    class MyTile extends Sprite {
 
 
-    public MyTile(int column, int row, String filepath,boolean hasHitbox) {
-        super();
-        setPosition(columnToX(column), rowToY(row));
-        texture=new TextureRegion(new Texture(filepath));
+        boolean visited = false;
+        MyTile previoustile;
+        MyTile northNeighbour;
+        MyTile eastNeighbour;
+        MyTile southNeighbour;
+        MyTile westNeighbour;
 
 
-        scale(6.46F);
+        int column;    // Wievieltes Tile von links her (0 bedeutet: ganz links)
+        int row;       // Wievieltes Tile von obern her (0 bedeutet: ganz oben)
+        double destinationX;
+        double destinationY;
+        boolean isCurrentlyMoving = false;
+        boolean isMirrored = false;
+        Rectangle hitbox;
+        static float hitboxalpha = 0;
+        //TextureRegion texture;
 
-
-        this.column = column;
-        this.row = row;
-
-
-
-        if(hasHitbox){
-            hitbox = new Rectangle(columnToX(column) - getWidth() / 2, rowToY(row) - getHeight() / 2, getWidth(), getHeight());
-
+        public MyTile(int column, int row, String filepath,boolean hasHitbox) {
+            super(new TextureRegion(new Texture(filepath)));
+            setPosition(columnToX(column), rowToY(row));
+            scale(6.46f);
+            this.column = column;
+            this.row = row;
+            if(hasHitbox) {
+                hitbox = new Rectangle(columnToX(column) - getWidth() / 2, rowToY(row) - getHeight() / 2, getWidth(), getHeight());
+            }
         }
-    }
+        public MyTile(int column, int row, TextureRegion texreg,boolean hasHitbox) {
+            super(texreg);
+            setPosition(columnToX(column), rowToY(row));
+            scale(6.46f);
+            this.column = column;
+            this.row = row;
+            if(hasHitbox) {
+                hitbox = new Rectangle(columnToX(column) - getWidth() / 2, rowToY(row) - getHeight() / 2, getWidth(), getHeight());}
+        }
 
-    float columnToX(int column) {
-        return 128 * column;
-    }
+        int columnToX(int column) {
+            return 128 * column;
+        }
+        public int rowToY(int row) {
+            return 128 * row;
+        }
 
-
-    public float rowToY(int row) {
-        return 128 * row;
-    }
-
-    public float getCenterX()
-    {
-        return getX()+getWidth()/2;
-    }
-    public float getCenterY()
-    {
-        return getY()+getHeight()/2;
-    }
-
-
-public void destroy(){
-        texture.getTexture().dispose();
-    }
-
-    /*
-     * Verschiebt das Tile ohne Animation sofort zur Tile-Position (column, row).
-     */
-    public void moveTo(int column, int row) {
-
-        setPosition(columnToX(column), rowToY(row));
-        this.column = column;
-        this.row = row;
-    }
-
-}
-
-/**
- * Kiste mit Sprengstoff
- */
-class Box extends MyTile {
-
-    // isAtDestination == true genau dann, wenn sich die Box auf einem Zielpunkt befindet
-    boolean isexploding;
-    Sprite explosion;
-    Box(int column, int row,  boolean isexplosion) {
-        super(column, row, "own Watertile 2.png" ,true);
-        isexploding = isexplosion;
-
-    }
-
-
-    void act()
-    {
-        if(isexploding == true)
+        void setNorth(MyTile neighboor)
         {
+            if(neighboor == null) {
+                return;
+            }
+            northNeighbour = neighboor;
+            neighboor.southNeighbour = this;
+        }
+        void setEast(MyTile neighboor)
+        { if(neighboor == null) {
+            return;
+        }
+            eastNeighbour = neighboor;
+            neighboor.westNeighbour = this;
+        }
+        void setSouth(MyTile neighboor)
+        { if(neighboor == null) {
+            return;
+        }
+            southNeighbour = neighboor;
+            neighboor.northNeighbour = this;
+        }
+        void setWest(MyTile neighboor)
+        { if(neighboor == null) {
+            return;
+        }
+            westNeighbour = neighboor;
+            neighboor.eastNeighbour = this;
+        }
+
+        public float getCenterX()
+        {
+            return getX()+getWidth()/2;
+        }
+        public float getCenterY()
+        {
+            return getY()+getHeight()/2;
+        }
+
+        public void setPosition(int column, int row) {
+
+            super.setPosition(columnToX(column), rowToY(row));
+            this.column = column;
+            this.row = row;
+        }
+
+       void destroy()
+       {
+           getTexture().dispose();
+       }
+}
+
+    /**
+     * Kiste mit Sprengstoff
+     */
+    class Box extends MyTile {
+
+        // isAtDestination == true genau dann, wenn sich die Box auf einem Zielpunkt befindet
+        boolean isexploding;
+        Sprite explosion;
+        Box(int column, int row, boolean isexplosion) {
+            super(column, row, "Fireball.png", true);
+            isexploding = isexplosion;
 
         }
+
+        void destroy()
+        {
+            if(isexploding == true)
+            {
+                /*explosion = new Sprite(getCenterX(), getCenterY(), SpriteLibrary.Space_Shooter_1, 12);
+                explosion.scale(4);
+                explosion.playAnimation(12, 21, RepeatType.once, 40);
+                Sound.playSound(Sound.cannon_boom);*/
+
+            }
+            getTexture().dispose();
+        }
     }
-}

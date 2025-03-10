@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.12.1/a2d066c09329c457045c284c42d6f37122840aa/gdx-1.12.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.12.1/ab23b5d3982f3d89ba30f1c4db509aa7568c3024/gdx-1.12.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>
