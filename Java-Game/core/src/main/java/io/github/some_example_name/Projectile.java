@@ -22,6 +22,7 @@ class PartikelSprite extends TextureActor
     {
         super(filepath, xTexture, yTexture, width, heigth);
         setPosition(x,y);
+
         delay =  vanishInSecs;
     }
     @Override

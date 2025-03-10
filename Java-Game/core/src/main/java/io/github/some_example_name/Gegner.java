@@ -1,6 +1,5 @@
 package io.github.some_example_name;
 
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
@@ -27,9 +26,9 @@ class Gegner extends Entity
 
 
     Gegner(Main logic, float x, float y,String filepath) {
-        super(x, y, filepath); //viewport war hier mal das Problem
+        super(x, y, filepath, logic.Player); //viewport war hier mal das Problem
 
-        acceleration = 5;
+        acceleration = 6;
         maxspeed = 11;
         spawnx = x;
         spawny = y;
@@ -46,23 +45,19 @@ class Gegner extends Entity
     }
 
     void sterben() {
-
-
-
         spieler.damageby(40);
         destroy();
 
     }
 
-    void setplayer(Player player)
-    {
-        this.spieler = player;
-    }
-    void act() {
 
+
+    public void act(float delta) {
+    super.act(delta);
+    update(delta);
     }
 
-    public boolean update() {
+    public boolean update(float delta) {
         //Diese Methode wird später diffiniert
         if(curhealth <= 0) {
             counter--;
@@ -72,7 +67,7 @@ class Gegner extends Entity
             }
         }
         else {
-            engagePlayer();
+            engagePlayer(delta);
         }
         return false;
     }
@@ -83,11 +78,11 @@ class Gegner extends Entity
         sethealth(0, true);
         counter = 3;
         //this.stopActing();
+
         //Sprite expose = new Sprite(getCenterX(), getCenterY(), SpriteLibrary.Space_Shooter_1, 12);
 
 
         //Sound einfügen
-
 
     }
 
@@ -97,18 +92,18 @@ class Gegner extends Entity
         return false;
     }
 
-    void checkPathToPlayer()
+    void checkPathToPlayer(float delta)
     {
         counter = 0;
         movement = new Vector2(-getCenterX() + spieler.getCenterX(), getCenterY() - spieler.getCenterY());
         ismoving = true;
-        updatemovement(movement);
+        updatemovement(movement, delta);
     }
-    void followPath()
+    void followPath(float delta)
     {
         if(goalfields.size() <= 0)
         {
-            checkPathToPlayer();
+            checkPathToPlayer(delta);
             return;
         }
         movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
@@ -119,18 +114,18 @@ class Gegner extends Entity
             goalfields.removeFirst();
             if(goalfields.size() <= 0)
             {
-                checkPathToPlayer();
+                checkPathToPlayer(delta);
                 return;
             }
             else {
                 movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
             }
         }
-        if(logic.devmenu.onscreen) {
+        /*if(logic.devmenu.onscreen) {
             goalfields.get(0).tint(Color.blue);
-        }
+        }*/
         ismoving = true;
-        updatemovement(movement);
+        updatemovement(movement,delta);
     }
 
     void setPath(MyTile start, MyTile target)
@@ -181,7 +176,7 @@ class Gegner extends Entity
             //targettile.tint(Color.white);
         }
         movement = new Vector2(-getCenterX() + spieler.getCenterX(), getCenterY() - spieler.getCenterY());
-        if(movement.len() >= mindistance && movement.getLength() <= maxdistance) {
+        if(movement.len() >= mindistance && movement.len() <= maxdistance) {
             queue.clear();
             MyTile currenttile = curlevel.getnotwallTile(Math.round(getCenterX() / 128), Math.round(getCenterY() / 128));
             targettile = curlevel.getnotwallTile(Math.round(spieler.getCenterX() / 128), Math.round(spieler.getCenterY() / 128));
@@ -191,7 +186,7 @@ class Gegner extends Entity
             while (currenttile != null && inradiusof(currenttile, 1264))
             {
                 if(currenttile == targettile) {
-                    break
+                    break;
                 }
                 queue.addAll(getneighbours(currenttile));
                 queue.remove(currenttile);
@@ -212,22 +207,22 @@ class Gegner extends Entity
                 goalfields.clear();
                 while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
                 {
-                    if(logic.devmenu.onscreen) {
+                    /*if(logic.devmenu.onscreen) {
                         //currenttile.tint(Color.blueviolet);
-                    }
+                    }*/
                     goalfields.add(0, currenttile);
                     currenttile = currenttile.previoustile;
 
                 }
 
-                followPath();
+                //followPath(); eigentlich aktiv
 
             }
 
      }
     }
 
-    public void engagePlayer()
+    public void engagePlayer(float delta)
 
     {
         //counter--;
@@ -241,7 +236,7 @@ class Gegner extends Entity
         }
         else {
 
-            followPath();
+            followPath(delta);
 
         }
 
@@ -276,3 +271,221 @@ class Gegner extends Entity
     }
 
 }
+/*abstract class Gegner extends Entity
+{
+    double spawnx;
+    double spawny;
+    Level curlevel;
+    int counter = 0;
+    int attackdelay = 0;
+    Player player;
+    Main logic;
+    ArrayList<MyTile> queue = new ArrayList<>();
+    ArrayList<MyTile> goalfields = new ArrayList<>();
+    ArrayList<MyTile> visitedfields = new ArrayList<>();
+    MyTile targettile;
+    Rectangle lineofsight;
+    boolean isatdestination = false;
+    boolean collides = false;
+    int delay;
+    abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
+    abstract boolean update();// soll acten zurückgeben ob gegner aus liste entfernt werden soll
+    abstract void engagePlayer();
+    abstract void sterben();
+
+    Gegner(float x, float y, Main logic, String filepath) {
+        super(x, y, filepath, logic.Player); //viewport war hier mal das Problem
+
+        acceleration = 10;
+        maxspeed = 10;
+        spawnx = x;
+        spawny = y;
+        curlevel = logic.currentlevel;
+        this.logic = logic;
+        maxhealth = 100;
+        curhealth = 100;
+        this.player = logic.Player;
+        hitboxOffsetX = 30;
+        hitboxOffsetY = 5;
+        hitbox = new Rectangle(getCenterX() - hitboxOffsetX, getCenterY() - hitboxOffsetY, 50, 35);
+        //hitbox.setVisible(false);
+        hitbox.setAlpha(hitboxalpha);
+        lineofsight = new Rectangle(hitbox.getCenterX(), hitbox.getCenterY() - 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()) / 2, 1, 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()));
+        lineofsight.setFillColor(Color.blue, hitboxalpha);
+        //lineofsight.defineCenterRelative(hitbox.getCenterX(), hitbox.getCenterY());
+    }
+    void destroy()
+    {
+        super.destroy();
+        lineofsight.destroy();
+    }
+
+    boolean playerinview()
+    { Vector2 vec = new Vector2(player.getCenterX() - getCenterX(), -player.getCenterY() + getCenterY());
+        lineofsight.destroy();
+        lineofsight = new Rectangle(hitbox.getCenterX(), hitbox.getCenterY() /*-hitbox.getHeight()-lineofsight.getHeight()* - 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()) / 2, vec.getLength()-player.getWidth()/2, 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()));
+        lineofsight.defineCenter(hitbox.getCenterX(), hitbox.getCenterY());
+
+        lineofsight.rotate(vec.getAngleDeg());
+        if(logic.devmenu.onscreen) {
+            lineofsight.setAlpha(0.5);
+        }
+        else {
+            lineofsight.setAlpha(0);
+        }
+
+        for (MyTile tile : logic.loadedwalls) {
+            if(lineofsight.collidesWith(tile.hitbox))
+            {
+                //lineofsight.destroy();
+                return false;
+            }
+        }
+        //lineofsight.destroy();
+        return true;
+    }
+
+    void checkPathToPlayer()
+    {
+        counter = 0;
+        if(playerinview()) {
+
+            movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
+            ismoving = true;
+            updatemovement(movement);
+        }
+    }
+
+    void followPath()
+    {
+        if(goalfields.size() <= 0)
+        {
+            checkPathToPlayer();
+            return;
+        }
+        movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
+        if(movement.getLength() <= maxspeed / 2) {
+            goalfields.get(0).tint(Color.white);
+            counter--;
+
+            goalfields.remove(0);
+
+            if(goalfields.size() <= 0)
+            {
+                checkPathToPlayer();
+                return;
+            }
+            else {
+                movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
+            }
+        }
+      /*if(logic.devmenu.onscreen) {
+         goalfields.get(0).tint(Color.blue);
+      }*
+        ismoving = true;
+        updatemovement(movement);
+    }
+
+
+    void setPath(MyTile start, MyTile target, Vector2 vec)
+    {
+        queue.clear();
+        if(start == null) {
+            while (true) {
+                goalfields.clear();
+                return;
+            }
+        }
+        MyTile currenttile = start;
+        currenttile.visited = true;
+        currenttile.previoustile = null;
+        visitedfields.add(currenttile);
+        queue.add(currenttile);
+        while (queue.size() > 0 && inradiusof(currenttile, 1270))
+        {
+            currenttile = queue.get(0);
+            queue.remove(0);
+            if(currenttile == target) {
+                break
+            }
+            queue.addAll(getneighbours(currenttile));
+
+        }
+
+        if(currenttile != target) {
+            deactivate();
+        }
+        else {
+
+            goalfields.clear();
+            currenttile = target;
+            while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
+            {
+                if(logic.devmenu.onscreen) {
+                    currenttile.tint(Color.blueviolet);
+                }
+                goalfields.add(0, currenttile);
+                currenttile = currenttile.previoustile;
+
+            }
+
+            //followPath();
+        }
+    }
+
+
+    void locateplayer(float mindistance, float maxdistance)
+    {
+        for (MyTile tile : visitedfields)
+        {
+            tile.tint(Color.white);
+        }
+        visitedfields.clear();
+        movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
+        if(movement.getLength() >= mindistance && movement.getLength() <= maxdistance) {
+            setPath(curlevel.getnotwallTile(Math.round(getCenterX() / 129.2), Math.round(getCenterY() / 129.2)), curlevel.getnotwallTile(Math.round(player.getCenterX() / 129.2), Math.round(player.getCenterY() / 129.2)), movement);
+
+      }
+        for (MyTile tile : visitedfields)
+        {
+            tile.visited = false;
+            tile.previoustile = null;
+        }
+
+    }
+
+
+
+    ArrayList<MyTile> getneighbours(MyTile feld)
+    {
+        ArrayList<MyTile> neighbors = new ArrayList<>();
+
+        if(feld.southNeighbour != null && !feld.southNeighbour.visited) {
+            neighbors.add(feld.southNeighbour);
+            feld.southNeighbour.visited = true;
+            visitedfields.add(feld.southNeighbour);
+            feld.southNeighbour.previoustile = feld;
+        }
+        if(feld.eastNeighbour != null && !feld.eastNeighbour.visited) {
+            neighbors.add(feld.eastNeighbour);
+            feld.eastNeighbour.visited = true;
+            visitedfields.add(feld.eastNeighbour);
+            feld.eastNeighbour.previoustile = feld;
+        }
+        if(feld.northNeighbour != null && !feld.northNeighbour.visited) {
+            neighbors.add(feld.northNeighbour);
+            feld.northNeighbour.visited = true;
+            visitedfields.add(feld.northNeighbour);
+            feld.northNeighbour.previoustile = feld;
+        }
+        if(feld.westNeighbour != null && !feld.westNeighbour.visited) {
+            neighbors.add(feld.westNeighbour);
+            feld.westNeighbour.visited = true;
+            visitedfields.add(feld.westNeighbour);
+            feld.westNeighbour.previoustile = feld;
+        }
+        return neighbors;
+
+    }
+
+}*/

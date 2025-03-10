@@ -23,7 +23,7 @@ public class Testentity extends Entity {
 
     Position targetpos;
     Testentity(float x, float y,  Main log) {
-        super(x, y, new TextureRegion(new Texture("slime_move.png"),1,1,80,72));
+        super(x, y, new TextureRegion(new Texture("slime_move.png"),1,1,80,72),log.Player);
         acceleration = 100;
         maxspeed = 100;
         setSize(200,200);

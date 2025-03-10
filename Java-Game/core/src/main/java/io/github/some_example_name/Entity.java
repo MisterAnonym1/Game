@@ -13,14 +13,13 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 class Entity extends Actor
 {
     int maxhealth, curhealth;
-    float maxspeed, acceleration;
+    float maxspeed, acceleration, directionline=0;
     boolean collisionOn, ismoving, isattacking;
     Rectangle hitbox;//hitbox kann in den Unterklassen unterschiedliche Formen haben
     Vector2 movement;
@@ -29,17 +28,17 @@ class Entity extends Actor
     float hitboxOffsetX=0, weight, hitboxOffsetY=0;
     static float hitboxalpha = 0.5f;
     boolean ismirrored;
-    float animationstateTime=10f;
+    float animationstateTime=0f;
     EntityStatus status;
-    //Ellipse shadow;
     Rectangle worldbounds;
-
+    Player player;
     public enum EntityStatus { inactiv, idle, engaging }
 
-    Entity(float x, float y, TextureRegion tex)
+    Entity(float x, float y, TextureRegion tex, Player player)
     {
         super();
         texture=tex;
+        this.player=player;
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         collisionOn = true;
@@ -51,10 +50,11 @@ class Entity extends Actor
         initializeHitbox();
         setPosition(x,y);
     }
-    Entity(float x, float y, String filepath)
+    Entity(float x, float y, String filepath,Player player)
     {
         super();
         texture=new TextureRegion(new Texture(filepath));
+        this.player=player;
         setWidth(texture.getTexture().getWidth());
         setHeight(texture.getTexture().getHeight());
         collisionOn = true;
@@ -109,6 +109,11 @@ class Entity extends Actor
         else {
             curhealth = health;
         }
+    }
+    void sethealth(int health)
+    //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
+    {
+       sethealth(health,false);
     }
     void scale(float factor)
     {
@@ -237,7 +242,10 @@ class Entity extends Actor
         if(ismoving) {
 
             movement = direction;
-
+            if(movement.len()>0)
+            {
+               directionline=movement.angleDeg();
+            }
         }
         else
         {
@@ -336,6 +344,15 @@ class Entity extends Actor
         }
         return false;
     }
+    public boolean inradiusof(Sprite other, float radius)
+    {
+
+        if(getdistance(other) <= radius)
+        {
+            return true;
+        }
+        return false;
+    }
 
     public float getCenterX()
     {
@@ -350,6 +367,13 @@ class Entity extends Actor
     {
         float distancex = other.getCenterX() - getCenterX();
         float distancey = other.getCenterY() - getCenterY();
+        return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
+        //Überprüft ob etwas in einem gewissen Radius von diesem Entity ist
+    }
+    public float getdistance(Sprite other)
+    {
+        float distancex = other.getX() - getX();
+        float distancey = other.getY() - getY();
         return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
         //Überprüft ob etwas in einem gewissen Radius von diesem Entity ist
     }
@@ -469,6 +493,7 @@ class Arrow1 extends Sprite {
 
 
 }
+
 class HealthBar extends Sprite {
     Rectangle h1;
     Rectangle h2;
@@ -476,15 +501,14 @@ class HealthBar extends Sprite {
     float maxHealth;
     float maxLaenge;
     float currentHealth;
-    HealthBar(int xPos, int yPos, float maxhealth, float size) {
+    Viewport viewport;
+    HealthBar(int xPos, int yPos, float maxhealth, float size, Viewport view) {
         h1 = new Rectangle(xPos, yPos, 300, 50f);
         h3 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
         h2 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
-        /*h1.setStatic(true);
-        h2.setStatic(true);
-        h3.setStatic(true);
-        h1.setFillColor(new Color(80, 74, 74));
+       viewport=view;
 
+       /* h1.setFillColor(new Color(80, 74, 74))
         h2.setFillColor(Color.chartreuse);
         h3.setFillColor(Color.chartreuse, 0.2);*/
         maxLaenge = h2.getWidth();
@@ -501,12 +525,12 @@ class HealthBar extends Sprite {
     {
         shape.begin(ShapeRenderer.ShapeType.Filled);
         shape.setColor(80/256,74/256,74/256,100/256);
-        shape.rect(h1.x,h1.y,h1.width,h1.height);
+        shape.rect(viewport.getScreenX()+h1.x,viewport.getScreenY()+h1.y,h1.width,h1.height);
 
         shape.setColor(Color.CHARTREUSE);
-        shape.rect(h2.x,h2.y,h2.width,h2.height);
+        shape.rect(viewport.getScreenX()+h2.x,viewport.getScreenY()+h2.y,h2.width,h2.height);
 
-        shape.rect(h3.x,h3.y,h3.width,h3.height);
+        shape.rect(viewport.getScreenX()+h3.x,viewport.getScreenY()+h3.y,h3.width,h3.height);
         shape.end();
     }
     void healTo(float health)
