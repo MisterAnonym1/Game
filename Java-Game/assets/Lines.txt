@@ -5,18 +5,16 @@ Tile _/
 Entity_/
 Animations_/
 Testentitys_/
-Particle_/
-Projectile_/
 
 Gegner
-Menus
-
+Particle
+Projectile
 Mage
 Revtext
 Script
 NPCs
 Buttons
-
+Menus
 Waffe
 Gamelogic
 Levelliste

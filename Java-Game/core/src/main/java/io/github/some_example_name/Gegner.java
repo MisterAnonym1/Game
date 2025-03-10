@@ -13,6 +13,7 @@ class Gegner extends Entity
     float targetx;
     float targety;
     int counter = 0;
+    float attackdelay;
     Player spieler;
     Main logic;
     ArrayList<MyTile> queue = new ArrayList<>();
