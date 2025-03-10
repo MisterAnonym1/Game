@@ -5,11 +5,10 @@ Tile _/
 Entity_/
 Animations_/
 Testentitys_/
-Particle_/
-Projectile_/
 
 Gegner
-
+Particle
+Projectile
 Mage
 Revtext
 Script
