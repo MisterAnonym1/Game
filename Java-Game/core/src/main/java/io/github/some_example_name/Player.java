@@ -224,7 +224,7 @@ class Player extends Entity
         //vecup.setLength((float) maxspeed);
 
         updatemovement(vecup,deltatime);
-
+        weapon.moveTo(getCenterX() + (ismirrored ? -30 : 30), getCenterY());
 
     }
 }
