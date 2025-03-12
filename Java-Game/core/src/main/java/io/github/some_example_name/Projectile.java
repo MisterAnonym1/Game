@@ -101,7 +101,7 @@ class FireBall extends Projectile
     {
         super(x,y,"Fireball.png",vel,20);
         vel.setLength(300);
-        scale(2);
+        scale(0.8f);
     }
 
 }

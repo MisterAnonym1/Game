@@ -40,10 +40,11 @@ class Player extends Entity
         curhealth = leben;
         maxhealth = leben;
         healthbar = new HealthBar(100, 400, maxhealth, 1, view);
-        weapon=new Pipe(x,y);
+        weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
         setSize(100, 200);
         scale(1f);
+        texture.flip(true,false);
 
 
     }
@@ -64,6 +65,14 @@ class Player extends Entity
         //TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        batch.end();
+        shape.begin(ShapeRenderer.ShapeType.Line);
+        shape.setColor(1,1,1,0.6f);
+        weapon.setDebug(true);
+        weapon.drawDebug(shape);
+        shape.end();
+        batch.begin();
+
         weapon.draw(batch,parentAlpha);
         batch.end();
         healthbar.draw(shape);
@@ -131,13 +140,21 @@ class Player extends Entity
             //waffe.rotateTo((ismirrored ? -20 : 20));
 
             playAnimation(firstpic, lastpic, RepeatType.loop, fps);
-            anistatus = firstpic + "" + lastpic + "" + mirrored + fps;
+            anistatus = firstpic + " " + lastpic + "" + mirrored + fps;
 
         }
         else {
             resumeAnimation();
         }
     }*/
+    void flip(boolean shouldBeMirrored)
+    {
+        if(( ismirrored!=shouldBeMirrored))
+        {  texture.flip(true,false); ismirrored=true;
+            weapon.mirror();
+            ismirrored=shouldBeMirrored;
+        }
+    }
 
     @Override
 
@@ -204,15 +221,20 @@ class Player extends Entity
         if(ismoving) {
 
             if(vecup.angleDeg() > 180) {
+                flip(true);
                 //playAnimationrepeat(15, 17, (int) (3 + Math.round(maxspeed)), true);
             }
             else if(vecup.angleDeg() > 10 && vecup.angleDeg() < 180) {
+                flip(false);
+
                 //playAnimationrepeat(12, 14, (int) (3 + Math.round(maxspeed)), false);
             }
             else if(Math.round(vecup.angleDeg()) == 0) {
+                flip(false);
                 //playAnimationrepeat(18, 20, (int) (3 + Math.round(maxspeed)), false);
             }
             else if(Math.round(vecup.angleDeg()) == 180) {
+                flip(true);
                 //playAnimationrepeat(18, 20, (int) (3 + Math.round(maxspeed)), true);
             }
         }
@@ -224,7 +246,10 @@ class Player extends Entity
         //vecup.setLength((float) maxspeed);
 
         updatemovement(vecup,deltatime);
-        weapon.moveTo(getCenterX() + (ismirrored ? -30 : 30), getCenterY());
-
+        if(!isattacking){  weapon.rotateTo((ismirrored ? 30 : -30)); }
+        else ismoving = false;
+        //weapon.setOrigin((ismirrored ? 100 : 0),0);
+        //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
+        weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
     }
 }

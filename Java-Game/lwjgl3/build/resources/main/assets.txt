@@ -19,6 +19,7 @@ sand.png
 sand2.png
 Seatile_.png
 slime_move.png
+steel-weapons.png
 Test Karte 2.tmx
 ui/font-list.fnt
 ui/font-subtitle.fnt
