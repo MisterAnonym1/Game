@@ -3,9 +3,10 @@ package io.github.some_example_name;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
+import java.awt.*;
 import java.util.ArrayList;
 
-class Gegner extends Entity
+/*class Gegner extends Entity
 {
     double spawnx;
     double spawny;
@@ -123,7 +124,7 @@ class Gegner extends Entity
         }
         /*if(logic.devmenu.onscreen) {
             goalfields.get(0).tint(Color.blue);
-        }*/
+        }*
         ismoving = true;
         updatemovement(movement,delta);
     }
@@ -175,11 +176,11 @@ class Gegner extends Entity
         if(targettile != null) {
             //targettile.tint(Color.white);
         }
-        movement = new Vector2(-getCenterX() + spieler.getCenterX(), getCenterY() - spieler.getCenterY());
+        movement = new Vector2(-getCenterX() + Player.getCenterX(), getCenterY() - Player.getCenterY());
         if(movement.len() >= mindistance && movement.len() <= maxdistance) {
             queue.clear();
             MyTile currenttile = curlevel.getnotwallTile(Math.round(getCenterX() / 128), Math.round(getCenterY() / 128));
-            targettile = curlevel.getnotwallTile(Math.round(spieler.getCenterX() / 128), Math.round(spieler.getCenterY() / 128));
+            targettile = curlevel.getnotwallTile(Math.round(Player.getCenterX() / 128), Math.round(Player.getCenterY() / 128));
             currenttile.visited = true;
             currenttile.previoustile = null;
             visitedfields.add(currenttile);
@@ -209,7 +210,7 @@ class Gegner extends Entity
                 {
                     /*if(logic.devmenu.onscreen) {
                         //currenttile.tint(Color.blueviolet);
-                    }*/
+                    }*
                     goalfields.add(0, currenttile);
                     currenttile = currenttile.previoustile;
 
@@ -271,7 +272,9 @@ class Gegner extends Entity
     }
 
 }
-/*abstract class Gegner extends Entity
+*/
+
+abstract class Gegner extends Entity
 {
     double spawnx;
     double spawny;
@@ -310,7 +313,7 @@ class Gegner extends Entity
         hitbox = new Rectangle(getCenterX() - hitboxOffsetX, getCenterY() - hitboxOffsetY, 50, 35);
         //hitbox.setVisible(false);
         hitbox.setAlpha(hitboxalpha);
-        lineofsight = new Rectangle(hitbox.getCenterX(), hitbox.getCenterY() - 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()) / 2, 1, 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()));
+        lineofsight = new Rectangle(hitbox.getX()+hitbox.getWidth()/2, hitbox.getY()+hitbox.getWidth()/2 - 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()) / 2, 1, 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()));
         lineofsight.setFillColor(Color.blue, hitboxalpha);
         //lineofsight.defineCenterRelative(hitbox.getCenterX(), hitbox.getCenterY());
     }
@@ -323,11 +326,11 @@ class Gegner extends Entity
     boolean playerinview()
     { Vector2 vec = new Vector2(player.getCenterX() - getCenterX(), -player.getCenterY() + getCenterY());
         lineofsight.destroy();
-        lineofsight = new Rectangle(hitbox.getCenterX(), hitbox.getCenterY() /*-hitbox.getHeight()-lineofsight.getHeight()* - 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()) / 2, vec.getLength()-player.getWidth()/2, 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()));
-        lineofsight.defineCenter(hitbox.getCenterX(), hitbox.getCenterY());
+        lineofsight = new Rectangle(hitbox.getX()+hitbox.getWidth()/2, hitbox.getY()+hitbox.getWidth()/2() -hitbox.getHeight()-lineofsight.getHeight()* - 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()) / 2, vec.len()-player.getWidth()/2, 1.2 * Math.max(hitbox.getWidth(), hitbox.getHeight()));
+        lineofsight.defineCenter(hitbox.getX()+hitbox.getWidth()/2, hitbox.getY()+hitbox.getWidth()/2);
 
         lineofsight.rotate(vec.getAngleDeg());
-        if(logic.devmenu.onscreen) {
+        if(logic.DevMenu.onscreen) {
             lineofsight.setAlpha(0.5);
         }
         else {
@@ -364,7 +367,7 @@ class Gegner extends Entity
             return;
         }
         movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
-        if(movement.getLength() <= maxspeed / 2) {
+        if(movement.len() <= maxspeed / 2) {
             goalfields.get(0).tint(Color.white);
             counter--;
 
@@ -379,9 +382,9 @@ class Gegner extends Entity
                 movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
             }
         }
-      /*if(logic.devmenu.onscreen) {
+      if(logic.DevMenu.onscreen) {
          goalfields.get(0).tint(Color.blue);
-      }*
+      }
         ismoving = true;
         updatemovement(movement);
     }
@@ -421,7 +424,7 @@ class Gegner extends Entity
             currenttile = target;
             while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
             {
-                if(logic.devmenu.onscreen) {
+                if(logic.DevMenu.onscreen) {
                     currenttile.tint(Color.blueviolet);
                 }
                 goalfields.add(0, currenttile);
@@ -442,7 +445,7 @@ class Gegner extends Entity
         }
         visitedfields.clear();
         movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
-        if(movement.getLength() >= mindistance && movement.getLength() <= maxdistance) {
+        if(movement.len() >= mindistance && movement.len() <= maxdistance) {
             setPath(curlevel.getnotwallTile(Math.round(getCenterX() / 129.2), Math.round(getCenterY() / 129.2)), curlevel.getnotwallTile(Math.round(player.getCenterX() / 129.2), Math.round(player.getCenterY() / 129.2)), movement);
 
       }
@@ -488,4 +491,4 @@ class Gegner extends Entity
 
     }
 
-}*/
+}

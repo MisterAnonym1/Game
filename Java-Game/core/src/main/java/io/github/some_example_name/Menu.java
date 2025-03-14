@@ -2,9 +2,14 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import org.w3c.dom.Text;
+
+import static com.sun.org.apache.xerces.internal.util.DOMUtil.setVisible;
 
 public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
     boolean onscreen = false; //ob ein Screen gerade aktiv ist oder nicht
@@ -20,10 +25,10 @@ public class Deathscreen extends Menu {
     int delay;
     Deathscreen(Main game) { //erschafft den Screen;
         onscreen = false;
-        stopActing();
+        @Action.delay(1000000000)
         screen = new Rectangle(0, 0, 800, 800);
         screen.setFillColor(new Color(197, 187, 187), 1);
-        int ran = Random.randint(0, Script.deathscreenscript.length - 1);
+        int ran = MathUtils.random.wait(0, Script.deathscreenscript.length - 1);
         textbox = new Revtext(400, 400, 70, Script.deathscreenscript[ran]);
         textbox.setFillColor(new Color(144, 21, 20));
         screen.setStatic(true);
@@ -41,7 +46,7 @@ public class Deathscreen extends Menu {
         onscreen = false;
         if(visible) {
             int ran = MathUtils.random().randint(0, Script.deathscreenscript.length - 1);
-            textbox.newText(Script.deathscreenscript[ran]);
+            textbox.wait(Script.deathscreenscript[ran]);
             onscreen = true;
             restartActing();
             delay = 14;
@@ -100,7 +105,7 @@ class Startmenu extends Menu
         hintergrund.scale(0.75);
         textbox = new Revtext(400, 330, 70, "Press \"Enter\" to start");
         textbox.setFillColor(new Color(80, 190, 61));
-        int ran = Random.randint(0, Script.startmenuscript.length - 1);
+        int ran = MathUtils.random.randint(0, Script.startmenuscript.length - 1);
         randomtext = new Revtext(0, 420, 45, Script.startmenuscript[ran]);
         randomtext.setBorderColor(Color.black, 1);
         randomtext.setBorderWidth(6);
@@ -152,8 +157,8 @@ class DevMenu extends Menu
         {
             texte[i] = new Text(getWorld().getLeft() + 20, getWorld().getTop() + 80 + i * 100, 45, "");
             texte[i].setBorderWidth(8);
-            texte[i].setFillColor(Color.blue, 1);
-            texte[i].setBorderColor(Color.white);
+            texte[i].setFillColor(Color.BLUE, 1);
+            texte[i].setBorderColor(Color.WHITE);
             texte[i].setStatic(true);
 
         }
@@ -163,7 +168,7 @@ class DevMenu extends Menu
     void setOnscreen()
     {
         onscreen = true;
-        logic.player.ar.setVisible1(true);
+        logic.Player.ar.setVisible1(true);
         for (int i = 0; i < texte.length - 1; i++)
         {
             texte[i].setVisible(true);
@@ -173,7 +178,7 @@ class DevMenu extends Menu
     void setOffscreen()
     {
         onscreen = false;
-        logic.player.ar.setVisible1(false);
+        logic.Player.ar.setVisible1(false);
         for (int i = 0; i < texte.length - 1; i++)
         {
             texte[i].setVisible(false);
@@ -201,7 +206,7 @@ class Updatetxt implements Runnable {
     public void run() {
         if(menu.onscreen) {
             texte[0].setText("loadedwalls amount: " + menu.logic.loadedwalls.size());
-            texte[1].setText("player speed: " + menu.logic.player.curspeed);
+            texte[1].setText("player speed: " + menu.logic.Player.curspeed);
             texte[2].setText("fps: " + menu.logic.fps);
             texte[3].setText("Testentitys: " + menu.logic.currentlevel.testentitys.size());
         }
