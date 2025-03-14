@@ -5,12 +5,13 @@ Tile _/
 Entity_/
 Animations_/
 Testentitys_/
+Schlange_/
+Mage_/
 Particle_/
 Projectile_/
 
 Gegner
 
-Mage
 Revtext
 Script
 NPCs
@@ -20,7 +21,6 @@ Waffe
 Gamelogic
 Levelliste
 Level
-Schlange
 
 
 HitPolygone anschauen

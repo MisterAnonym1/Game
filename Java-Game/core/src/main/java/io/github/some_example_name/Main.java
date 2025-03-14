@@ -108,7 +108,7 @@ public class Main implements ApplicationListener {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
              Vector2 vec= new Vector2(1,1);
             vec.setAngleDeg(Player.directionline);
-            entityStage.addActor(new FireBall(Player.getX(),Player.getY(),new Vector2(vec.x,vec.y)));
+            entityStage.addActor(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
         }
         /*if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
             Player.translateX(speed * delta);

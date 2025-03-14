@@ -11,7 +11,7 @@ import org.w3c.dom.Text;
 
 import static com.sun.org.apache.xerces.internal.util.DOMUtil.setVisible;
 
-public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
+/*public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
     boolean onscreen = false; //ob ein Screen gerade aktiv ist oder nicht
     Revtext textbox; //erschafft eine Textbox, <---dein ernst? ich kann selber sehen
 
@@ -19,7 +19,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 }
 
 public class Deathscreen extends Menu {
-    Button knopf;
+   /* Button knopf;
     Rectangle screen;
     Star star;
     int delay;
@@ -191,7 +191,7 @@ class DevMenu extends Menu
       if(onscreen) {
          texte[0].setText("loadedwalls amount: " + logic.loadedwalls.size());
       }
-   }*/
+   }*
 }
 
 
@@ -280,4 +280,4 @@ class GameChangeListener implements ChangeListener {
         game.getWorld().setCursor("default");
     }
 
-}
+}*/

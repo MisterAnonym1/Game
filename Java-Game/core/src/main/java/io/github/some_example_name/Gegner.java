@@ -14,6 +14,7 @@ import java.util.ArrayList;
     float targetx;
     float targety;
     int counter = 0;
+    float attackdelay;
     Player spieler;
     Main logic;
     ArrayList<MyTile> queue = new ArrayList<>();
@@ -29,7 +30,7 @@ import java.util.ArrayList;
     Gegner(Main logic, float x, float y,String filepath) {
         super(x, y, filepath, logic.Player); //viewport war hier mal das Problem
 
-        acceleration = 6;
+        acceleration = 5;
         maxspeed = 11;
         spawnx = x;
         spawny = y;

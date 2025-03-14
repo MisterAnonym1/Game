@@ -9,18 +9,23 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.TimeScaleAction;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.util.ArrayList;
 
 class Player extends Entity
 {
     boolean isxmoving;
     boolean isymoving;
     boolean invincible = false;
+    MeeleWeapon weapon;
     int swingduration = 0;
     String anistatus;
     HealthBar healthbar;
-
+    ArrayList<Entity> gegnerhitliste = new ArrayList<>();
 
     boolean isattacking;
     Player(float x, float y, float speed, int leben, Viewport view) {
@@ -35,9 +40,11 @@ class Player extends Entity
         curhealth = leben;
         maxhealth = leben;
         healthbar = new HealthBar(100, 400, maxhealth, 1, view);
+        weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
         setSize(100, 200);
         scale(1f);
+        texture.flip(true,false);
 
 
     }
@@ -58,7 +65,15 @@ class Player extends Entity
         //TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        batch.end();
+        shape.begin(ShapeRenderer.ShapeType.Line);
+        shape.setColor(1,1,1,0.6f);
+        weapon.setDebug(true);
+        weapon.drawDebug(shape);
+        shape.end();
+        batch.begin();
 
+        weapon.draw(batch,parentAlpha);
         batch.end();
         healthbar.draw(shape);
         batch.begin();
@@ -125,13 +140,21 @@ class Player extends Entity
             //waffe.rotateTo((ismirrored ? -20 : 20));
 
             playAnimation(firstpic, lastpic, RepeatType.loop, fps);
-            anistatus = firstpic + "" + lastpic + "" + mirrored + fps;
+            anistatus = firstpic + " " + lastpic + "" + mirrored + fps;
 
         }
         else {
             resumeAnimation();
         }
     }*/
+    void flip(boolean shouldBeMirrored)
+    {
+        if(( ismirrored!=shouldBeMirrored))
+        {  texture.flip(true,false); ismirrored=true;
+            weapon.mirror();
+            ismirrored=shouldBeMirrored;
+        }
+    }
 
     @Override
 
@@ -139,6 +162,21 @@ class Player extends Entity
     {
 
         super.act(deltatime);
+        weapon.act(deltatime);
+            //Math.sin(((float)swingduration / 5) * 3.14159) * 30 * (ismirrored ? -1 : 1)
+
+            //print(" " + Math.sin(((float)swingduration / 50) * 3.14159) * 360 + " ");
+
+        if(!weapon.hasActions())
+        { isattacking = false;}
+
+            if(!isattacking&&Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                weapon.attack();
+                gegnerhitliste.clear();
+                isattacking = true;
+
+            }
+
 
         isxmoving = false;
         isymoving = false;
@@ -183,15 +221,20 @@ class Player extends Entity
         if(ismoving) {
 
             if(vecup.angleDeg() > 180) {
+                flip(true);
                 //playAnimationrepeat(15, 17, (int) (3 + Math.round(maxspeed)), true);
             }
             else if(vecup.angleDeg() > 10 && vecup.angleDeg() < 180) {
+                flip(false);
+
                 //playAnimationrepeat(12, 14, (int) (3 + Math.round(maxspeed)), false);
             }
             else if(Math.round(vecup.angleDeg()) == 0) {
+                flip(false);
                 //playAnimationrepeat(18, 20, (int) (3 + Math.round(maxspeed)), false);
             }
             else if(Math.round(vecup.angleDeg()) == 180) {
+                flip(true);
                 //playAnimationrepeat(18, 20, (int) (3 + Math.round(maxspeed)), true);
             }
         }
@@ -203,7 +246,10 @@ class Player extends Entity
         //vecup.setLength((float) maxspeed);
 
         updatemovement(vecup,deltatime);
-
-
+        if(!isattacking){  weapon.rotateTo((ismirrored ? 30 : -30)); }
+        else ismoving = false;
+        //weapon.setOrigin((ismirrored ? 100 : 0),0);
+        //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
+        weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
     }
 }
