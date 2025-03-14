@@ -45,7 +45,6 @@ public class TextureActor extends Actor
         //super.draw(batch, parentAlpha);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
-        System.out.println("oe eheuewu \n");
     }
     void initializeHitbox()
     {
