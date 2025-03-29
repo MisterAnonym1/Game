@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import org.w3c.dom.Text;
 
-import static com.sun.org.apache.xerces.internal.util.DOMUtil.setVisible;
 
 /*public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
     boolean onscreen = false; //ob ein Screen gerade aktiv ist oder nicht

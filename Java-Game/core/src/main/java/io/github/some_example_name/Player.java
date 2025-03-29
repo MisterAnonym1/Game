@@ -102,18 +102,16 @@ class Player extends Entity
         healthbar.healTo(health);
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        weapon.destroy();
+    }
 
     public void move(float dx, float dy)
     {
         super.moveBy(dx, dy);
     }
-
-    void destroy()
-    {
-        super.destroy();
-
-    }
-
 
 
     /*public void playAnimationrepeat(int firstpic, int lastpic, int fps, boolean mirrored)
@@ -250,6 +248,7 @@ class Player extends Entity
         else ismoving = false;
         //weapon.setOrigin((ismirrored ? 100 : 0),0);
         //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
+        stayinWorldbounds();
         weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
     }
 }

@@ -8,7 +8,7 @@ class Mage extends Gegner
 
 
     Mage(Main logic, float x, float y, String filepath) {
-        super(logic, x, y, filepath);
+        super( x, y,logic, filepath);
         acceleration = 12;
         maxspeed = 12;
         maxhealth = 100;
@@ -42,6 +42,8 @@ class Mage extends Gegner
         return false;
     }
 
+
+
     public void attack() {
 
 
@@ -52,13 +54,13 @@ class Mage extends Gegner
             //attackvec = player.movement;
             //attackvec.setLength(0);
             attackvec=new Vector2(-getCenterX() + player.getCenterX()+player.movement.x*15, -getCenterY() + player.getCenterY()+player.movement.y*15);
-
+            attackvec.setLength(20);
             System.out.println(1);
         }
 
 
 
-        Projectile expose = new Projectile(getCenterX(), getCenterY(), "bucket.png", attackvec, 20);
+        Projectile expose = new FireBall(getCenterX(), getCenterY(),  attackvec);
         expose.scale(10);
         expose.setdamage(20);
         logic.currentlevel.projectiles.add(expose);

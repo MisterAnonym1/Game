@@ -1,7 +1,9 @@
 package io.github.some_example_name;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -14,19 +16,19 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 
-class Entity extends Actor
+class Entity extends TextureActor
 {
     int maxhealth, curhealth;
     float maxspeed, acceleration, directionline=0;
     boolean collisionOn, ismoving, isattacking;
-    Rectangle hitbox;//hitbox kann in den Unterklassen unterschiedliche Formen haben
+    //Rectangle hitbox;
     Vector2 movement;
     Vector2 additionalForce;
-    TextureRegion texture;
-    float hitboxOffsetX=0, weight, hitboxOffsetY=0;
+    //TextureRegion texture;
+    //float hitboxOffsetX=0, hitboxOffsetY=0;
     static float hitboxalpha = 0.5f;
     boolean ismirrored;
-    float animationstateTime=0f;
+    float animationstateTime=0f, weight;
     EntityStatus status;
     Rectangle worldbounds;
     Player player;
@@ -34,56 +36,71 @@ class Entity extends Actor
 
     Entity(float x, float y, TextureRegion tex, Player player)
     {
-        super();
-        texture=tex;
+        super(tex);
+        //texture=tex;
         this.player=player;
-        setWidth(texture.getRegionWidth());
-        setHeight(texture.getRegionHeight());
+        //setWidth(texture.getRegionWidth());
+        //setHeight(texture.getRegionHeight());
         collisionOn = true;
         additionalForce = new Vector2(0, 0);
         movement = new Vector2(0, 0);
         curhealth = 100;
         weight = 1;
         status = EntityStatus.inactiv;
-        initializeHitbox();
+
         setPosition(x,y);
     }
     Entity(float x, float y, String filepath,Player player)
     {
-        super();
-        texture=new TextureRegion(new Texture(filepath));
+        super(new TextureRegion(new Texture(filepath)));
+        //
         this.player=player;
-        setWidth(texture.getTexture().getWidth());
-        setHeight(texture.getTexture().getHeight());
+        //setWidth(texture.getTexture().getWidth());
+        //setHeight(texture.getTexture().getHeight());
         collisionOn = true;
         additionalForce = new Vector2(0, 0);
         movement = new Vector2(0, 0);
         curhealth = 100;
         weight = 1;
         status = EntityStatus.inactiv;
-        initializeHitbox();
+
         setPosition(x,y);
 
     }
 
-    public void draw (Batch batch, float parentAlpha)
+    /*public void draw (Batch batch, float parentAlpha)
     {
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         //batch.setColor(getColor().r,getColor().g,getColor().b, hitboxalpha);
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+    }*/
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        batch.end();
+        drawShadow(new ShapeRenderer());
+        batch.begin();
+        super.draw(batch, parentAlpha);
+
     }
+
     public void drawHitbox(ShapeRenderer shape)
     {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shape.setColor(0, 0, 0.5f, hitboxalpha  );
         shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
 
-        shape.setColor(0.1f, 0.1f, 0.1f, 0.4f  );
-        drawShadow(shape);
     }
     public void drawShadow(ShapeRenderer shape)
     {
-        shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
 
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(0.1f, 0.1f, 0.1f, 0.4f  );
+        shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
+        drawHitbox(shape);
+        shape.end();
+        shape.dispose();
     }
     void centerAtActor(Entity other)
     {
@@ -116,23 +133,23 @@ class Entity extends Actor
     {
        sethealth(health,false);
     }
-    void scale(float factor)
+    /*void scale(float factor)
     {
 
         setSize(getWidth()*factor,getHeight()*factor);
 
 
-    }
+    }*/
 
-    @Override
-    public void setSize(float width, float height) {
+
+    /*public void setSize(float width, float height) {
         float factorw=width/getWidth();
         float factorh =height/getHeight();
         super.setSize(width, height);
         hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
         hitboxOffsetX*=factorw;
         hitboxOffsetY*= factorh;
-    }
+    }*/
 
     boolean damageby(int damage)
     {
@@ -149,11 +166,11 @@ class Entity extends Actor
         return false;
 
     }
-    void initializeHitbox()
+    /*void initializeHitbox()
     {
         hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth(), getHeight());
 
-    }
+    }*/
 
     void setWorldbounds(Rectangle rec)
     {
@@ -345,26 +362,26 @@ class Entity extends Actor
         }
         return false;
     }
-    public boolean inradiusof(Sprite other, float radius)
+    public boolean inradiusof(float x, float y,float radius)
     {
 
-        if(getdistance(other) <= radius)
+        if(getdistance(x,y) <= radius)
         {
             return true;
         }
         return false;
     }
 
-    public float getCenterX()
+    /*public float getCenterX()
     {
         return getX()+getWidth()/2;
     }
     public float getCenterY()
     {
         return getY()+getHeight()/2;
-    }
+    }*/
 
-    public float getdistance(Entity other)
+    /*public float getdistance(Entity other)
     {
         float distancex = other.getCenterX() - getCenterX();
         float distancey = other.getCenterY() - getCenterY();
@@ -384,7 +401,7 @@ class Entity extends Actor
         float distancey = y - getCenterY();
         return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
         //Überprüft ob etwas in einem gewissen Radius von diesen Koordinaten ist
-    }
+    }*/
 
     boolean outofsight()
     {
@@ -405,19 +422,21 @@ class Entity extends Actor
         }
         return false;
     }
-    void destroy()
+
+
+    /*void destroy()
     {
 
         texture.getTexture().dispose();
         if ( getStage()!=null){
             clear();
 
-            //addAction(Actions.removeActor())
+
         }
         remove();
 
 
-    }
+    }*/
 
     void activate()
     {
@@ -431,7 +450,7 @@ class Entity extends Actor
     {
         status = EntityStatus.inactiv;
     }
-
+    boolean isdead(){return curhealth<=0? true: false; }
 }
 
 

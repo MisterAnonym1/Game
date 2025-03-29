@@ -33,7 +33,7 @@ public class Testentity extends Entity {
         spawny = (int)y;
         logic = log;
         scale(1.4f);
-        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.1f);
+        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.5f);
         direction = new Vector2(0, 0);
         targetpos = new Position(spawnx , spawny );
         gotopoint(targetpos.x, targetpos.y);

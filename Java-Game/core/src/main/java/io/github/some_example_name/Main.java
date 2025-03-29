@@ -51,7 +51,8 @@ public class Main implements ApplicationListener {
     float dropTimer;
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
-
+    Polygon polygon1;
+    Polygon polygon2;
     @Override
     public void create() {
         backgroundTexture = new Texture("background.png");
@@ -81,8 +82,22 @@ public class Main implements ApplicationListener {
         music.setLooping(true);
         music.setVolume(.2f);
         music.play();
+        entityStage.addActor(new Schlange(this,0,0));
+        shape.setAutoShapeType(true);
+        float[] vertices1 = {0, 0, 50, 0, 50, 50,0,50}; // Ein Quadrat
+        float[] vertices2 = {25, 25, 75, 25, 75, 75, 60, 75, 50 ,100}; // Ein weiteres Quadrat
 
+         polygon1 = new Polygon(vertices1);
+         polygon2 = new Polygon(vertices2);
 
+        // Prüfe auf Überschneidung
+        boolean overlaps = Intersector.overlapConvexPolygons(polygon1, polygon2);
+
+        if (overlaps) {
+            System.out.println("Die Polygone überschneiden sich.");
+        } else {
+            System.out.println("Die Polygone überschneiden sich nicht.");
+        }
 
     }
 
@@ -108,31 +123,11 @@ public class Main implements ApplicationListener {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
              Vector2 vec= new Vector2(1,1);
             vec.setAngleDeg(Player.directionline);
-            entityStage.addActor(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
+            FireBall ball=new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y));
+            ball.centerAt(Player);
+            entityStage.addActor(ball);
         }
-        /*if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            Player.translateX(speed * delta);
-            ocam.translate(speed*delta,0);
-        } else if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            Player.translateX(-speed * delta);
-            ocam.translate(-speed*delta,0);
-        }*/
 
-        /*if (Gdx.input.isTouched()) {
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY());
-            viewport.unproject(touchPos);
-            //Player.setCenterX(touchPos.x);
-            Vector2 vec= new Vector2(touchPos.x-Player.getX()-Player.getWidth()/2,0);
-            vec.setLength(Math.min(speed*delta,vec.len()));
-
-            Player.moveBy(vec.x,vec.y);
-            System.out.println(touchPos.x+"x "+ touchPos.y+"y ");
-
-            ocam.translate(vec.x,0);
-            ocam.update();
-
-            //viewport.getCamera().rotate(new Vector3(0,0,1), (float) Math.random()*4-2);
-        }*/
     }
 
     private void logic() {
@@ -142,15 +137,15 @@ public class Main implements ApplicationListener {
         float bucketHeight = Player.getHeight();
 
         float delta = Gdx.graphics.getDeltaTime();
-        System.out.println(delta+" frames");
+        //System.out.println(delta+" frames");
         delta= Math.min(delta,1/30.0f);
-        delta=(float)(delta/1.0);
+        delta=delta/1.0f;
 
         Player.act(delta);
 
         //werther.addAction(Actions.rotateBy(0.1f));
         entityStage.act(delta);
-        Player.stayinWorldbounds();
+
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
 
         bucketRectangle.set(Player.getX(), Player.getY(), bucketWidth, bucketHeight);
@@ -179,13 +174,13 @@ public class Main implements ApplicationListener {
 
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
-        System.out.println(Color.BLACK.a);
+
+
         viewport.apply();
         shape.setProjectionMatrix(viewport.getCamera().combined);
-
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+
         spriteBatch.begin();
-        //shape.setProjectionMatrix(viewport.getCamera().combined);
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
         //renderer.setView(ocam);
@@ -207,24 +202,25 @@ public class Main implements ApplicationListener {
         spriteBatch.end();
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glLineWidth(5);
         shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(1,1,1,0.8f);
 
-        //shape.rect(Player.worldbounds.getX(),Player.worldbounds.getY(),Player.worldbounds.getWidth(),Player.worldbounds.getHeight());
-        Player.drawHitbox(shape);
-        werther.drawHitbox(shape);
+        //Player.drawHitbox(shape);
+        //werther.drawHitbox(shape);
+        shape.end();
+        shape.begin(ShapeRenderer.ShapeType.Line);
+        shape.polygon(polygon2.getVertices());
+        shape.polygon(polygon1.getVertices());
         shape.end();
 
-        entityStage.draw();
+
 
         spriteBatch.begin();
-        //werther.draw(spriteBatch,0.4f);
+        werther.draw(spriteBatch,0.4f);
         Player.draw(spriteBatch,shape,1f);
-
-
-
         spriteBatch.end();
-        //ar.draw(shape);
-
+        entityStage.draw();
     }
 
     private void createDroplet() {
@@ -242,7 +238,7 @@ public class Main implements ApplicationListener {
 
     @Override
     public void pause() {
-
+        System.out.println("Game paused");
     }
 
     @Override

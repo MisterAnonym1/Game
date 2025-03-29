@@ -12,7 +12,6 @@ class Level {
 
 
     String[] rows;
-    // Bagimongame game;
     ArrayList<MyTile> notWallsTiles = new ArrayList<MyTile>();
     ArrayList<MyTile> walls = new ArrayList<>();
     ArrayList<MyTile> teleporters = new ArrayList<MyTile>();
@@ -249,13 +248,7 @@ class Level {
     {
         return rows.length;
     }
-    /**
 
-     *
-     * column/row: Aktuelle Kachel-Position der Spielerfigur
-     * dx: Um so viele Kacheln soll die Spielerfigur nach rechts bewegt werden.
-     * dy: Um so viele Kacheln soll die Spielerfigur nach unten bewegt werden.
-*/
     void newtilewall(int column, int line, TextureRegion tex)
     {
         MyTile tili = new MyTile(column, line, tex, true);
@@ -270,26 +263,6 @@ class Level {
         Entity.hitboxalpha = 0.5f;
         Projectile.hitboxalpha = 0.5f;
         Testentity.hitboxalpha = 0.5f;
-
-        /*for (MyTile wall : walls) {
-            wall.hitbox.setAlpha(1);
-        }
-        for (MyTile tele : teleporters) {
-            tele.hitbox.setAlpha(0.5);
-        }
-        for (Projectile prc : projectiles)
-        {
-            prc.hitbox.setAlpha(0.5);
-        }
-        for (NPC npc : npcs) {
-            npc.hitbox.setAlpha(0.5);
-        }
-        for (Gegner geg : gegnerliste) {
-            geg.hitbox.setAlpha(0.5);
-        }
-        for (Testentity enti : testentitys) {
-            enti.hitbox.setAlpha(0.5);
-        }*/
     }
 
 
@@ -299,27 +272,6 @@ class Level {
         Entity.hitboxalpha = 0;
         Projectile.hitboxalpha = 0;
         Testentity.hitboxalpha = 0;
-
-        /*for (MyTile wall : walls) {
-            wall.hitbox.setAlpha(0);
-        }
-        for (MyTile tele : teleporters) {
-            tele.hitbox.setAlpha(0);
-        }
-        for (NPC npc : npcs) {
-            npc.hitbox.setAlpha(0);
-        }
-        for (Projectile prc : projectiles)
-        {
-            prc.hitbox.setAlpha(0);
-        }
-        for (Gegner geg : gegnerliste) {
-            geg.hitbox.setAlpha(0);
-
-        }
-        for (TestEntity enti : testentitys) {
-            enti.hitbox.setAlpha(0);
-        }*/
     }
 
 }
