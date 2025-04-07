@@ -3,6 +3,7 @@ package io.github.some_example_name;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.ArrayList;
@@ -13,9 +14,9 @@ class Level {
 
 
     String[] rows;
-    Stage notWallsTiles = new Stage();
-    Stage walls = new Stage();
-    Stage teleporters = new Stage();
+    ArrayList<MyTile> notWallsTiles = new ArrayList<>();
+    ArrayList<MyTile> walls = new ArrayList<>();
+    ArrayList<MyTile> teleporters = new ArrayList<>();
     Stage testentitys = new Stage();
     Stage gegnerliste = new Stage();
     //ArrayList<NPC> npcs = new ArrayList<>();
@@ -44,7 +45,8 @@ class Level {
      * Zerstört das Level, d.h. alle angezeigten Tiles und Kisten
 */
     public void destroy() {
-        for (MyTile wall : walls) {
+        for (Actor actor : walls.getActors()) {
+            MyTile wall = (MyTile) actor;
             wall.destroy();
         }
         walls.clear();

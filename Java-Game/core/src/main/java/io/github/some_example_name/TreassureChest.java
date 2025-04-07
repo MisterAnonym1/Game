@@ -1,6 +1,6 @@
 package io.github.some_example_name;
 
-public class TreassureChest extends Trader{
+public class TreassureChest extends NPC{
     float spawnx;
     float spawny;
     Level curlevel;
@@ -14,7 +14,6 @@ public class TreassureChest extends Trader{
         this.logic = logic;
 
     }
-
 
 
 }
