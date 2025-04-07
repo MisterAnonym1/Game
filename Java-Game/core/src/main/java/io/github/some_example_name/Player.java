@@ -2,16 +2,10 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.TimeScaleAction;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
@@ -57,15 +51,18 @@ class Player extends Entity
 
     }
 
-
-    public void draw(Batch batch,ShapeRenderer shape,float parentAlpha) {
+    @Override
+    public void draw(Batch batch,float parentAlpha) {
         //super.draw(batch, parentAlpha);
+        ShapeRenderer shape= new ShapeRenderer();
+        shape.begin(ShapeRenderer.ShapeType.Filled);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         //TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
         batch.end();
+        shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
         shape.setColor(1,1,1,0.6f);
         weapon.setDebug(true);

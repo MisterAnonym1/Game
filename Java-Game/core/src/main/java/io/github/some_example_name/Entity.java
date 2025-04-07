@@ -89,7 +89,7 @@ class Entity extends TextureActor
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shape.setColor(0, 0, 0.5f, hitboxalpha  );
-        shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
+        //shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
 
     }
     public void drawShadow(ShapeRenderer shape)

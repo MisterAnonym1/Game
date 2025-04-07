@@ -29,7 +29,7 @@ class Schlange extends Gegner
 
 
     public boolean update(float delta) {
-
+        playerinview();
         if(curhealth <= 0) {
             counter--;
             if(counter <= 0) {
@@ -69,7 +69,7 @@ class Schlange extends Gegner
             return;
         }
         //counter--;
-        if(inradiusof(player, 80)) {
+        if(inradiusof(player, 800)) {
             attack();
 
         }

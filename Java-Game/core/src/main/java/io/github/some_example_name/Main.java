@@ -92,7 +92,7 @@ public class Main implements ApplicationListener {
 
         // Prüfe auf Überschneidung
         boolean overlaps = Intersector.overlapConvexPolygons(polygon1, polygon2);
-
+        viewport.getCamera().translate(100,10000,-1000);
         if (overlaps) {
             System.out.println("Die Polygone überschneiden sich.");
         } else {
@@ -218,7 +218,7 @@ public class Main implements ApplicationListener {
 
         spriteBatch.begin();
         werther.draw(spriteBatch,0.4f);
-        Player.draw(spriteBatch,shape,1f);
+        Player.draw(spriteBatch,1f);
         spriteBatch.end();
         entityStage.draw();
     }

@@ -52,12 +52,20 @@ abstract class Gegner extends Entity
         lineofsight.setOrigin(hitbox.getX()+hitbox.getWidth()/2.0f, hitbox.getY()+ hitbox.getHeight()/2.0f);
     }
 
+    @Override
+    public void drawHitbox(ShapeRenderer shape) {
+        super.drawHitbox(shape);
+        shape.end();
+        shape.begin(ShapeRenderer.ShapeType.Line);
+        shape.scale(2,2,1);
+        shape.polygon(lineofsight.getVertices());
+    }
 
     boolean playerinview()
-    {   Vector2 vec = new Vector2(player.getCenterX() - getCenterX(), -player.getCenterY() + getCenterY());
-        float[] vertices = {hitbox.getX(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),vec.len()+hitbox.getWidth()/2.0f,hitbox.getY(),vec.len()+hitbox.getWidth()/2.0f,hitbox.getY()+ getHeight()};
+    {   Vector2 vec = new Vector2(player.getCenterX() - getCenterX(), player.getCenterY() - getCenterY());
+        float[] vertices = {hitbox.getX(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY()+ getHeight()};
         lineofsight.setVertices(vertices);
-        lineofsight.setRotation(vec.angleDeg());
+        //+lineofsight.setRotation(vec.angleDeg());
         //float[] vertices = {(hitbox.getX()- lineofsight.getOriginX())*cos - sin * hitbox.getY(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),vec.len(),hitbox.getY(),vec.len(),hitbox.getY()+ getHeight()};
         //+lineofsight.setPosition(hitbox.getX()+hitbox.getWidth()/2, hitbox.getY()+hitbox.getWidth()/2);
 
