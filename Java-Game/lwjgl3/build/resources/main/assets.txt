@@ -18,6 +18,7 @@ red_arrow_PNG60.png
 sand.png
 sand2.png
 Seatile_.png
+Se_Player_ja.jpg
 slime_move.png
 steel-weapons.png
 Test Karte 2.tmx
