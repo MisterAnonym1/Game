@@ -217,8 +217,14 @@ public class Main implements ApplicationListener {
 
 
         spriteBatch.begin();
+        BitmapFont font;
+        CharSequence str = "Hello World!";
+        font = new BitmapFont();
+        font.getData().setScale(2.0f);
+        font.draw(spriteBatch, str, 100, 300);
+
         werther.draw(spriteBatch,0.4f);
-        Player.draw(spriteBatch,1f);
+        Player.draw(spriteBatch,shape,1.0f);
         spriteBatch.end();
         entityStage.draw();
     }

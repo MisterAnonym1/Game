@@ -51,10 +51,10 @@ class Player extends Entity
 
     }
 
-    @Override
-    public void draw(Batch batch,float parentAlpha) {
+
+    public void draw(Batch batch,ShapeRenderer shape,float parentAlpha) {
         //super.draw(batch, parentAlpha);
-        ShapeRenderer shape= new ShapeRenderer();
+
         shape.begin(ShapeRenderer.ShapeType.Filled);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
