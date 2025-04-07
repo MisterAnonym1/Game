@@ -39,7 +39,7 @@ class Player extends Entity
         healthbar = new HealthBar(100, 400, maxhealth, 1, view);
         weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
-        setSize(290, 200);
+        setSize(500, 70);
         scale(1f);
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Se_Player_ja.jpg",3,2,1,5,0.2f);
