@@ -25,3 +25,50 @@ Level
 
 HitPolygone anschauen
 
+
+
+Um Text in LibGDX zu vergrößern, gibt es mehrere Ansätze:
+
+BitmapFont-Skalierung
+Für einfache Skalierung kann die setScale-Methode von BitmapFont verwendet werden:
+
+java
+BitmapFont font = new BitmapFont();
+font.getData().setScale(2.0f); // Verdoppelt die Schriftgröße
+batch.begin();
+font.draw(batch, "Vergrößerter Text", x, y);
+batch.end();
+
+Nachteil: Skalierung kann zu unscharfer Darstellung führen
+
+.
+
+Scene2D-Label mit Skalierung
+Für UI-Elemente bietet sich Label mit integrierter Skalierung an:
+
+java
+Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
+Label label = new Label("Skalierbarer Text", style);
+label.setFontScale(1.5f); // 1.5-fache Vergrößerung
+stage.addActor(label);
+
+Vorteil: Automatische Layoutanpassung möglich
+
+.
+
+FreeTypeFontGenerator (empfohlen)
+Für optimale Qualität bei variablen Größen:
+
+java
+FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("schriftart.ttf"));
+FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+parameter.size = 48; // Exakte Größe in Pixeln
+BitmapFont customFont = generator.generateFont(parameter);
+
+Diese Methode erzeugt scharfe Schriftarten in beliebigen Größen ohne Qualitätsverlust
+
+.
+
+Hinweis zur HiDPI-Unterstützung
+Bei hochauflösenden Displays kann die VM-Option -Dsun.java2d.uiScale=2 die Skalierung verbessern
+. Für LibGDX-spezifische Lösungen sollten Viewport-Einstellungen (z.B. ExtendViewport) geprüft werden.
