@@ -63,7 +63,7 @@ class Mage extends Gegner
         Projectile expose = new FireBall(getCenterX(), getCenterY(),  attackvec);
         expose.scale(10);
         expose.setdamage(20);
-        logic.currentlevel.projectiles.add(expose);
+        logic.currentlevel.projectiles.addActor(expose);
 
     }
 

@@ -3,6 +3,8 @@ package io.github.some_example_name;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 
 import java.util.ArrayList;
 
@@ -12,13 +14,13 @@ class Level {
 
 
     String[] rows;
-    ArrayList<MyTile> notWallsTiles = new ArrayList<MyTile>();
+    ArrayList<MyTile> notWallsTiles = new ArrayList<>();
     ArrayList<MyTile> walls = new ArrayList<>();
-    ArrayList<MyTile> teleporters = new ArrayList<MyTile>();
-    ArrayList<Testentity> testentitys = new ArrayList<>();
-    ArrayList<Gegner> gegnerliste = new ArrayList<>();
+    ArrayList<MyTile> teleporters = new ArrayList<>();
+    Stage testentitys = new Stage();
+    Stage gegnerliste = new Stage();
     //ArrayList<NPC> npcs = new ArrayList<>();
-    ArrayList<Projectile> projectiles = new ArrayList<>();
+    Stage projectiles = new Stage();
     Main log;
     //ArrayList<Item> itemlist = new ArrayList<Item>();
     int[]rownotwalls;
@@ -43,7 +45,8 @@ class Level {
      * Zerstört das Level, d.h. alle angezeigten Tiles und Kisten
 */
     public void destroy() {
-        for (MyTile wall : walls) {
+        for (Actor actor : walls.getActors()) {
+            MyTile wall = (MyTile) actor;
             wall.destroy();
         }
         walls.clear();
@@ -80,6 +83,23 @@ class Level {
 
     }
 
+
+    public void actAndDraw() {
+        notWallsTiles.act();
+        walls.act();
+        teleporters.act();
+        testentitys.act();
+        gegnerliste.act();
+        //ArrayList<NPC> npcs = new ArrayList<>();
+        projectiles.draw();
+        notWallsTiles.draw();
+        walls.draw();
+        teleporters.draw();
+        testentitys.draw();
+        gegnerliste.draw();
+        //ArrayList<NPC> npcs = new ArrayList<>();
+        projectiles.draw();
+    }
 
 
     public void render() {

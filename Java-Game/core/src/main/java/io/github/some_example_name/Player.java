@@ -2,7 +2,9 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -20,12 +22,13 @@ class Player extends Entity
     String anistatus;
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
+    Animation<TextureRegion> walkAnimation;
 
     boolean isattacking;
     Player(float x, float y, float speed, int leben, Viewport view) {
 
 
-        super(x, y,"Al Assad.png",null);
+        super(x, y,"Se_Player_ja.jpg",null);
         toBack();
         player=this;
         weight = 0.5f;
@@ -36,9 +39,10 @@ class Player extends Entity
         healthbar = new HealthBar(100, 400, maxhealth, 1, view);
         weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
-        setSize(100, 200);
+        setSize(500, 70);
         scale(1f);
         texture.flip(true,false);
+        walkAnimation= Animator.getAnimation("Se_Player_ja.jpg",3,2,1,5,0.2f);
 
 
     }
@@ -58,9 +62,9 @@ class Player extends Entity
         shape.begin(ShapeRenderer.ShapeType.Filled);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
-        //TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
+        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
-        batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
         batch.end();
         shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
