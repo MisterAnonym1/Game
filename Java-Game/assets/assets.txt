@@ -5,6 +5,7 @@ battle-of-the-dragons-8037.mp3
 bucket.png
 drop.png
 El_Karltoffel.png
+El_Karltoffel_Gescailt.png
 Fireball.png
 libgdx.png
 Lines.txt
@@ -18,6 +19,7 @@ red_arrow_PNG60.png
 sand.png
 sand2.png
 Seatile_.png
+Se_Player_ja.jpg
 slime_move.png
 steel-weapons.png
 Test Karte 2.tmx

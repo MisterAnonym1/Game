@@ -8,12 +8,12 @@ class Schlange extends Gegner
 
 
     Schlange(Main logic, float x, float y) {
-        super(x, y,logic, "El_Karltoffel.png");
+        super(x, y,logic, "El_Karltoffel_Gescailt.png");
         acceleration = 20;
         maxspeed = 12;
         maxhealth = 100;
         curhealth = 100;
-        scale(0.3f);
+        scale(2.0f);
 
         hitboxOffsetX = 30;
         hitboxOffsetY = 5;

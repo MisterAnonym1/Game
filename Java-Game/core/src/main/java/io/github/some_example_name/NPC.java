@@ -92,3 +92,25 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
         text.setVisible(false);
     }
 }*/
+
+public class Trader extends NPC {
+    Revtext text;
+    Sprite hintergrund;
+    double lastx;
+    double lasty;
+    int currentline;
+    int lineindex;
+    int maxline;
+    int line;
+    Trader(float x, float y, String filepath, String fileBackround, int lineindex,Main log){
+        super(x, y, filepath,log.Player);
+        addAction(Actions.delay(1));
+        hintergrund = new Sprite(new Texture(fileBackround));
+        hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
+    }
+
+    void Trade(){
+
+    }
+
+}

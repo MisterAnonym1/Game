@@ -61,7 +61,8 @@ public class Main implements ApplicationListener {
         music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
         spriteBatch = new SpriteBatch();
 
-        viewport = new FitViewport(800, 500);
+        ocam=new OrthographicCamera(800,500);
+        viewport = new FitViewport(800, 500, ocam);
         entityStage= new Stage(viewport,spriteBatch);
         //entityStage= new Stage();
         Player = new Player(3,4,300,100, viewport);
@@ -70,8 +71,8 @@ public class Main implements ApplicationListener {
         touchPos = new Vector2();
         werther= new Testentity(200,200,this);
         entityStage.addActor(werther);
-        ocam=new OrthographicCamera(50,50);
         //ocam.translate(-10,0);
+        ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
         dropSprites = new Array<>();
         bucketRectangle = new Rectangle();
         dropRectangle = new Rectangle();
@@ -172,14 +173,50 @@ public class Main implements ApplicationListener {
         }
     }
 
+    private void handleInput() {
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            ocam.zoom += 0.02f;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            ocam.zoom -= 0.02f;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            ocam.translate(-3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            ocam.translate(3, 0, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            ocam.translate(0, -3, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            ocam.translate(0, 3, 0);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            ocam.rotate(-0.5f, 0, 0, 1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            ocam.rotate(0.5f, 0, 0, 1);
+        }
+
+        //ocam.zoom = MathUtils.clamp(ocam.zoom, 0.1f, 100/ocam.viewportWidth);
+
+        float effectiveViewportWidth = ocam.viewportWidth * ocam.zoom;
+        float effectiveViewportHeight = ocam.viewportHeight * ocam.zoom;
+
+        //ocam.position.x = MathUtils.clamp(ocam.position.x, effectiveViewportWidth / 2f, 100 - effectiveViewportWidth / 2f);
+        //ocam.position.y = MathUtils.clamp(ocam.position.y, effectiveViewportHeight / 2f, 100 - effectiveViewportHeight / 2f);
+    }
+
     private void draw() {
         ScreenUtils.clear(Color.BLACK);
 
 
         viewport.apply();
+        handleInput();
+        //ocam.update();
         shape.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
-
         spriteBatch.begin();
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
