@@ -33,7 +33,8 @@ public class Main implements ApplicationListener {
     Texture backgroundTexture;
     ShapeRenderer shape;
     Texture dropTexture;
-
+    Revtext revtext;
+    Matrix matrix;
     Music music;
     TiledMap map;
     private OrthogonalTiledMapRenderer renderer;
@@ -51,8 +52,7 @@ public class Main implements ApplicationListener {
     float dropTimer;
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
-    Polygon polygon1;
-    Polygon polygon2;
+    NPC currentNPC;
     @Override
     public void create() {
         backgroundTexture = new Texture("background.png");
@@ -65,46 +65,33 @@ public class Main implements ApplicationListener {
         viewport = new FitViewport(800, 500, ocam);
         entityStage= new Stage(viewport,spriteBatch);
         //entityStage= new Stage();
-        Player = new Player(3,4,300,100, viewport);
-        //Player.setSize(1, 2);
-        Player.setWorldbounds(0,800,0,500);
+        Player = new Player(400,250,1300,100, viewport);
+        Player.setWorldbounds(-0,800,0,500);
         touchPos = new Vector2();
         werther= new Testentity(200,200,this);
         entityStage.addActor(werther);
-        //ocam.translate(-10,0);
         ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
-        dropSprites = new Array<>();
         bucketRectangle = new Rectangle();
-        dropRectangle = new Rectangle();
         map = new TmxMapLoader().load("Test Karte 2.tmx");
         renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         labelStyle = new Label.LabelStyle();
         labelStyle.font= new BitmapFont();
         music.setLooping(true);
-        music.setVolume(.2f);
+        music.setVolume(.2f); // .2f == 0.2f
         music.play();
+        revtext = new Revtext(400,250,0.1f,"Hallo das ist ein Revtext");
+        matrix= new Matrix(viewport);
+        currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
         entityStage.addActor(new Schlange(this,0,0));
         shape.setAutoShapeType(true);
-        float[] vertices1 = {0, 0, 50, 0, 50, 50,0,50}; // Ein Quadrat
-        float[] vertices2 = {25, 25, 75, 25, 75, 75, 60, 75, 50 ,100}; // Ein weiteres Quadrat
-
-         polygon1 = new Polygon(vertices1);
-         polygon2 = new Polygon(vertices2);
-
         // Prüfe auf Überschneidung
-        boolean overlaps = Intersector.overlapConvexPolygons(polygon1, polygon2);
-        viewport.getCamera().translate(100,10000,-1000);
-        if (overlaps) {
-            System.out.println("Die Polygone überschneiden sich.");
-        } else {
-            System.out.println("Die Polygone überschneiden sich nicht.");
-        }
-
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
+        ocam.update();
+        System.out.println(width+"w "+ height +"h\n");
     }
 
     @Override
@@ -128,6 +115,38 @@ public class Main implements ApplicationListener {
             ball.centerAt(Player);
             entityStage.addActor(ball);
         }
+        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+            ocam.zoom += 0.02f;
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
+            ocam.zoom -= 0.02f;
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+            if(currentNPC.inConversation)
+            {
+                currentNPC.onLeave();
+            }
+            else{
+                currentNPC.onPress();
+            }
+
+
+        }
+
+        float effectiveViewportWidth = ocam.viewportWidth ;
+        float effectiveViewportHeight = ocam.viewportHeight;
+        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            ocam.rotate(-0.5f, 0, 0, 1);
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
+            ocam.rotate(0.5f, 0, 0, 1);
+            viewport.update((int)effectiveViewportWidth, (int)effectiveViewportHeight);
+        }
+
+
+        //float effectiveViewportWidth = ocam.viewportWidth * ocam.zoom;
+        //float effectiveViewportHeight = ocam.viewportHeight * ocam.zoom;
+
 
     }
 
@@ -143,100 +162,43 @@ public class Main implements ApplicationListener {
         delta=delta/1.0f;
 
         Player.act(delta);
-
+        currentNPC.act(delta);
         //werther.addAction(Actions.rotateBy(0.1f));
         entityStage.act(delta);
-
+        revtext.act(delta);
+        ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
-
-        bucketRectangle.set(Player.getX(), Player.getY(), bucketWidth, bucketHeight);
-
-        for (int i = dropSprites.size - 1; i >= 0; i--) {
-            Sprite dropSprite = dropSprites.get(i);
-            float dropWidth = dropSprite.getWidth();
-            float dropHeight = dropSprite.getHeight();
-
-            dropSprite.translateY(-200f * delta);
-            dropRectangle.set(dropSprite.getX(), dropSprite.getY(), dropWidth, dropHeight);
-
-            if (dropSprite.getY() < -dropHeight) dropSprites.removeIndex(i);
-            else if (bucketRectangle.overlaps(dropRectangle)) {
-                dropSprites.removeIndex(i);
-
-            }
         }
 
-        dropTimer += delta;
-        if (dropTimer > 10f) {
-            dropTimer = 0;
-            //createDroplet();
-        }
-    }
 
-    private void handleInput() {
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            ocam.zoom += 0.02f;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            ocam.zoom -= 0.02f;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            ocam.translate(-3, 0, 0);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            ocam.translate(3, 0, 0);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            ocam.translate(0, -3, 0);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            ocam.translate(0, 3, 0);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            ocam.rotate(-0.5f, 0, 0, 1);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            ocam.rotate(0.5f, 0, 0, 1);
-        }
 
-        //ocam.zoom = MathUtils.clamp(ocam.zoom, 0.1f, 100/ocam.viewportWidth);
 
-        float effectiveViewportWidth = ocam.viewportWidth * ocam.zoom;
-        float effectiveViewportHeight = ocam.viewportHeight * ocam.zoom;
 
-        //ocam.position.x = MathUtils.clamp(ocam.position.x, effectiveViewportWidth / 2f, 100 - effectiveViewportWidth / 2f);
-        //ocam.position.y = MathUtils.clamp(ocam.position.y, effectiveViewportHeight / 2f, 100 - effectiveViewportHeight / 2f);
-    }
 
     private void draw() {
+        float delta = Gdx.graphics.getDeltaTime();
+        //System.out.println(delta+" frames");
+        delta= Math.min(delta,1/30.0f);
+        delta=delta/1.0f;
+
         ScreenUtils.clear(Color.BLACK);
 
-
+        ocam.update();
         viewport.apply();
-        handleInput();
-        //ocam.update();
+        //viewport.update((int)ocam.viewportWidth,(int)ocam.viewportHeight);
+
         shape.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
-        float worldWidth = viewport.getWorldWidth();
-        float worldHeight = viewport.getWorldHeight();
+        float worldWidth = Gdx.graphics.getWidth();
+        float worldHeight = Gdx.graphics.getHeight();
         //renderer.setView(ocam);
         //renderer.render();
         spriteBatch.setColor(1,1,1,1);
-        spriteBatch.draw(backgroundTexture, 0, 0, worldWidth, worldHeight);
-
-
-        for (Sprite dropSprite : dropSprites) {
-            spriteBatch.end();
-            float dropWidth = dropSprite.getWidth();
-            float dropHeight = dropSprite.getHeight();
-
-            spriteBatch.begin();
-            dropSprite.draw(spriteBatch);
-
-
-        }
+        spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
+        matrix.actAndDraw(spriteBatch,delta);
         spriteBatch.end();
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(5);
@@ -247,37 +209,25 @@ public class Main implements ApplicationListener {
         //werther.drawHitbox(shape);
         shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
-        shape.polygon(polygon2.getVertices());
-        shape.polygon(polygon1.getVertices());
+
+
         shape.end();
 
 
-
+        entityStage.draw();
         spriteBatch.begin();
-        BitmapFont font;
-        CharSequence str = "Hello World!";
-        font = new BitmapFont();
-        font.getData().setScale(2.0f);
-        font.draw(spriteBatch, str, 100, 300);
+
 
         werther.draw(spriteBatch,0.4f);
         Player.draw(spriteBatch,shape,1.0f);
-        spriteBatch.end();
-        entityStage.draw();
+        revtext.draw(spriteBatch);
+        currentNPC.draw(spriteBatch,1);
+        currentNPC.drawInConversation(spriteBatch,1f);
+         spriteBatch.end();
+
     }
 
-    private void createDroplet() {
-        float dropWidth = 100f;
-        float dropHeight = 100;
-        float worldWidth = viewport.getWorldWidth();
-        float worldHeight = viewport.getWorldHeight();
 
-        Sprite dropSprite = new Sprite(dropTexture);
-        dropSprite.setSize(dropWidth, dropHeight);
-        dropSprite.setX(MathUtils.random(0f, worldWidth - dropWidth));
-        dropSprite.setY(worldHeight);
-        dropSprites.add(dropSprite);
-    }
 
     @Override
     public void pause() {

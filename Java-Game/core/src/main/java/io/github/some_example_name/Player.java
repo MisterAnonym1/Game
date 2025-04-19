@@ -19,7 +19,7 @@ class Player extends Entity
     boolean invincible = false;
     MeeleWeapon weapon;
     int swingduration = 0;
-    String anistatus;
+    String anistatus="";
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
     Animation<TextureRegion> walkAnimation;
@@ -39,7 +39,7 @@ class Player extends Entity
         healthbar = new HealthBar(100, 400, maxhealth, 1, view);
         weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
-        setSize(500, 70);
+        setSize(200, 180);
         scale(1f);
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Se_Player_ja.jpg",3,2,1,5,0.2f);

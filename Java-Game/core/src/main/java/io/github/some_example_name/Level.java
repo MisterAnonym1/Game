@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -14,15 +15,16 @@ class Level {
 
 
     String[] rows;
-    ArrayList<MyTile> notWallsTiles = new ArrayList<>();
+    ArrayList<MyTile> notWallsTiles= new ArrayList<>();;
     ArrayList<MyTile> walls = new ArrayList<>();
     ArrayList<MyTile> teleporters = new ArrayList<>();
-    Stage testentitys = new Stage();
-    Stage gegnerliste = new Stage();
+    Stage testentitys;
+    Stage gegnerliste;
+    Stage projectiles;
     //ArrayList<NPC> npcs = new ArrayList<>();
-    Stage projectiles = new Stage();
-    Main log;
     //ArrayList<Item> itemlist = new ArrayList<Item>();
+    Main log;
+
     int[]rownotwalls;
     int doorsnummer;
 
@@ -33,9 +35,11 @@ class Level {
     Level(String[] rows,Main log) {
         this.rows = rows;
         this.log=log;
+        testentitys = new Stage(log.viewport,log.spriteBatch);
+        gegnerliste= new Stage(log.viewport,log.spriteBatch);
+        projectiles= new Stage(log.viewport,log.spriteBatch);
+
         rownotwalls = new int[rows.length];
-
-
         doorsnummer = 0;
         xcoplayer = 500;
         ycoplayer = 400;
@@ -45,8 +49,7 @@ class Level {
      * Zerstört das Level, d.h. alle angezeigten Tiles und Kisten
 */
     public void destroy() {
-        for (Actor actor : walls.getActors()) {
-            MyTile wall = (MyTile) actor;
+        for (MyTile wall : walls) {
             wall.destroy();
         }
         walls.clear();
@@ -61,13 +64,15 @@ class Level {
         }
         teleporters.clear();
 
-        for (Testentity testen : testentitys) {
-            testen.destroy();
+        for (Actor testen : testentitys.getActors()) {
+            Testentity testentity= (Testentity) testen; //casten da alle Gegner in Stage zurück in Actors umgewandelt werden
+            testentity.destroy();
         }
         testentitys.clear();
 
-        for (Gegner gegner : gegnerliste) {
-            gegner.destroy();
+        for (Actor gegner : gegnerliste.getActors()) {
+            Gegner geg = (Gegner) gegner;
+                geg.destroy();
         }
         gegnerliste.clear();
 
@@ -75,8 +80,9 @@ class Level {
           //  npc.destroy();
         //}
         //npcs.clear();
-        for (Projectile prc : projectiles) {
-            prc.destroy();
+        for (Actor prc : projectiles.getActors()) {
+            Projectile pro= (Projectile) prc;
+                pro.destroy();
         }
         projectiles.clear();
         //itemlist.clear();
@@ -84,21 +90,28 @@ class Level {
     }
 
 
-    public void actAndDraw() {
-        notWallsTiles.act();
-        walls.act();
-        teleporters.act();
-        testentitys.act();
-        gegnerliste.act();
-        //ArrayList<NPC> npcs = new ArrayList<>();
-        projectiles.draw();
-        notWallsTiles.draw();
-        walls.draw();
-        teleporters.draw();
+    public void act(float delta) {
+        testentitys.act(delta);
+        gegnerliste.act(delta);
+        projectiles.act(delta);
+        //npcs
+    }
+    public void draw(Batch batch)
+    {
+        for (MyTile tile : notWallsTiles) {
+           tile.draw(batch);
+        }
+        for (MyTile tile : walls) {
+            tile.draw(batch);
+        }
+        for (MyTile tile : teleporters) {
+            tile.draw(batch);
+        }
+
         testentitys.draw();
         gegnerliste.draw();
-        //ArrayList<NPC> npcs = new ArrayList<>();
         projectiles.draw();
+        //npcs.draw
     }
 
 
@@ -163,7 +176,7 @@ class Level {
                         rownotwalls[line]++;
                         break;
                     case 't' :
-                        testentitys.add(new Testentity(column * 128, line * 128, log));
+                        testentitys.addActor(new Testentity(column * 128, line * 128, log));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
                         rownotwalls[line]++;
                         break;

@@ -1,53 +1,75 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
-/*public class NPC extends Entity
+public class NPC extends Entity
 {
     Revtext text;
-    Sprite hintergrund;
-    double lastx;
-    double lasty;
+    Texture backround;
+    String backroundfilepath;
     int currentline;
-    int lineindex;
+    int scriptIndex;
     int maxline;
     int line;
-    NPC(float x, float y, String filepath, String fileBackround, int lineindex,Main log)
+    boolean statementfinished;
+    boolean inConversation=false;
+    Viewport viewport;
+    NPC(float x, float y, String filepath, String fileBackround, int scriptindex,Main log)
     {
         super(x, y, filepath,log.Player);
-        addAction(Actions.delay(1));
-        hintergrund = new Sprite(new Texture(fileBackround));
-        hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
-
-        text = new Revtext(400, 520, 40, "\n");
-        text.isfinished = true;
-        lineindex = lineindex;
+        //addAction(Actions.delay(1));
+        backroundfilepath=fileBackround;
+        viewport=log.viewport;
+        text = new Revtext(400, 200, 0.1f, "\n");
+        this.scriptIndex = scriptindex;
         line = 0;
-        lastx = x;
-        lasty = y;
-        maxline = 5;
-        text.setVisible(false);
+        maxline = Script.npcscript[scriptIndex][0].length;;
         hitboxOffsetX = 25;
         hitboxOffsetY = 35;
-        hitbox = new Rectangle(getCenterX() - hitboxOffsetX, getCenterY() - hitboxOffsetY, 50, 85);
 
-        hitbox.setAlpha(hitboxalpha);
-        hintergrund.scale(3);
-        collisionOn = true;
+
         //hitbox.setAlpha(1); //Aus kommentieren um die Hitbox sichtbar zu mahcen. Achtung macht dei Hitbox durchlässig wenn auskommentiert.
     }
-    void act()
+
+    @Override
+    public void draw(Batch batch, float parentalpha)
     {
-        if(text.isfinished)
+        super.draw(batch, parentalpha);
+    }
+    public void drawInConversation(SpriteBatch batch, float parentalpha)
+    {
+        if(inConversation){
+            batch.draw(backround, viewport.getScreenX(), viewport.getScreenY(), viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(texture,viewport.getScreenX()+viewport.getScreenWidth()/2.0f, viewport.getScreenY()+viewport.getScreenHeight()/2.0f,getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
+            text.draw(batch);}
+    }
+
+    public void act(float delta)
+    {
+        if(inConversation&&!statementfinished)
         {
-            line++;
-            if(line <= maxline)
+            if(text.linefinished)
             {
-                nextline();
+                line++;
+
+                 nextline();
+                if(line >= maxline)
+                {
+
+                }
+                else{statementfinished=true;}
+
             }
+            text.act(delta);
         }
+
     }
     void skip()
     {
@@ -55,7 +77,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
         if(text.nummer >= text.maintext.length())
         {
             line++;
-            text.isfinished=true;
+            text.linefinished=true;
             if(line <= maxline)
             {
                 nextline();
@@ -66,33 +88,32 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
         }
     }
     void onPress() {
-        hintergrund.bringToFront();
-        bringToFront();
-        text.bringToFront();
-        scale(2);
-        moveTo(getWorld().getLeft() + getWorld().getWidth() / 2, getWorld().getTop() + getWorld().getHeight() / 2);
-        hintergrund.setVisible(true);
-        restartActing();
-        text.setVisible(true);
+        inConversation=true;
+        if(backround==null)
+        {
+            backround= new Texture(backroundfilepath);
+        }
+        //toFront();
+        //moveTo(getWorld().getLeft() + getWorld().getWidth() / 2, getWorld().getTop() + getWorld().getHeight() / 2);
+        //hintergrund.setVisible(true);
+        //restartActing();
+        nextline();
+
     }
     void nextline()
     {
-
-        text.newText(Script.npcscript[lineindex][line]);
-
+        if(line < maxline)
+        {
+            text.newText(Script.npcscript[scriptIndex][0][line]);
+        }
     }
+
     void onLeave() {
-        stopActing();
-        scale(1.0 / 2);
-        moveTo(lastx, lasty);
-        line = 0;
-        text.isfinished = true;
-        text.setText("");
-        hintergrund.setVisible(false);
-        text.setVisible(false);
+        inConversation=false;
+        text.reset();
     }
-}*/
-
+}
+/*
 public class Trader extends NPC {
     Revtext text;
     Sprite hintergrund;
@@ -113,4 +134,4 @@ public class Trader extends NPC {
 
     }
 
-}
+}*/

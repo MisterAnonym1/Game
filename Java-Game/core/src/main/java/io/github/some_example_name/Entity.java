@@ -77,9 +77,9 @@ class Entity extends TextureActor
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        batch.end();
-        drawShadow(new ShapeRenderer());
-        batch.begin();
+        //batch.end();
+        //drawShadow(new ShapeRenderer());
+        //batch.begin();
         super.draw(batch, parentAlpha);
 
     }

@@ -2,12 +2,10 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.math.Rectangle;
-import org.w3c.dom.Text;
 
 import static java.lang.Float.NaN;
 
@@ -17,6 +15,7 @@ public class TextureActor extends Actor
     TextureRegion texture;
     Rectangle hitbox;
     float hitboxOffsetX=0, hitboxOffsetY=0;
+    float alpha;
     TextureActor(String filepath)
     {
         super();
@@ -54,7 +53,6 @@ public class TextureActor extends Actor
     {
         //hitbox=new Rectangle(getX(),getY(),texture.getRegionWidth(),texture.getRegionHeight());
         hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth(), getHeight());
-
     }
     public float getCenterX()
     {

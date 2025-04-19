@@ -63,7 +63,7 @@ abstract class Gegner extends Entity
 
     boolean playerinview()
     {   Vector2 vec = new Vector2(player.getCenterX() - getCenterX(), player.getCenterY() - getCenterY());
-        float[] vertices = {hitbox.getX(), hitbox.getY()+ hitbox.getHeight()/3.0f, hitbox.getX(), hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY()+ hitbox.getHeight()/3.0f};
+        float[] vertices = {hitbox.getX(), hitbox.getY()+ hitbox.getHeight(), hitbox.getX(), hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY()+ hitbox.getHeight()};
         lineofsight.setVertices(vertices);
         lineofsight.setRotation(vec.angleDeg());
         //float[] vertices = {(hitbox.getX()- lineofsight.getOriginX())*cos - sin * hitbox.getY(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),vec.len(),hitbox.getY(),vec.len(),hitbox.getY()+ getHeight()};
