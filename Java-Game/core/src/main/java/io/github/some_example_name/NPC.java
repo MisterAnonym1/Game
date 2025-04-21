@@ -27,7 +27,7 @@ public class NPC extends Entity
         //addAction(Actions.delay(1));
         backroundfilepath=fileBackround;
         viewport=log.viewport;
-        text = new Revtext(400, 200, 0.1f, "\n");
+        text = new Revtext(400, 200, 3,0.1f, "\n");
         this.scriptIndex = scriptindex;
         line = 0;
         maxline = Script.npcscript[scriptIndex][0].length;;

@@ -50,6 +50,7 @@ public class Main implements ApplicationListener {
     Testentity werther;
     Array<Sprite> dropSprites;
     float dropTimer;
+    float deltaFactor=1;
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
     NPC currentNPC;
@@ -77,9 +78,9 @@ public class Main implements ApplicationListener {
         labelStyle = new Label.LabelStyle();
         labelStyle.font= new BitmapFont();
         music.setLooping(true);
-        music.setVolume(.2f); // .2f == 0.2f
+        music.setVolume(.2f); // .2f ist das selbe wie 0.2f
         music.play();
-        revtext = new Revtext(400,250,0.1f,"Hallo das ist ein Revtext");
+        revtext = new Revtext(400,250,1,0.1f,"Hallo das ist ein Revtext");
         matrix= new Matrix(viewport);
         currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
         entityStage.addActor(new Schlange(this,0,0));
@@ -104,9 +105,15 @@ public class Main implements ApplicationListener {
     private void input() {
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
         {
-            //System.out.println("space wird gedrückt");
+            if (Gdx.input.isKeyPressed(Input.Keys.UP) ) {
+                deltaFactor*=1+delta;
+            }
+            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) ) {
+                deltaFactor/=1+delta;
+
+            }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
              Vector2 vec= new Vector2(1,1);
@@ -140,7 +147,7 @@ public class Main implements ApplicationListener {
         }
         if (Gdx.input.isKeyPressed(Input.Keys.E)) {
             ocam.rotate(0.5f, 0, 0, 1);
-            viewport.update((int)effectiveViewportWidth, (int)effectiveViewportHeight);
+            //viewport.update((int)effectiveViewportWidth, (int)effectiveViewportHeight);
         }
 
 
@@ -159,7 +166,7 @@ public class Main implements ApplicationListener {
         float delta = Gdx.graphics.getDeltaTime();
         //System.out.println(delta+" frames");
         delta= Math.min(delta,1/30.0f);
-        delta=delta/1.0f;
+        delta=delta/deltaFactor;
 
         Player.act(delta);
         currentNPC.act(delta);
@@ -177,9 +184,8 @@ public class Main implements ApplicationListener {
 
     private void draw() {
         float delta = Gdx.graphics.getDeltaTime();
-        //System.out.println(delta+" frames");
         delta= Math.min(delta,1/30.0f);
-        delta=delta/1.0f;
+        delta=delta/deltaFactor;
 
         ScreenUtils.clear(Color.BLACK);
 

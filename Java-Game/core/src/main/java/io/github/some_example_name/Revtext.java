@@ -32,11 +32,11 @@ class Revtext extends Sprite {
     boolean waitingforLine;
     BitmapFont font;
     private GlyphLayout layout;
-    Revtext(float centerx, float centery, /*float fontsize,*/ float chardelay, String mainText)
+    Revtext(float centerx, float centery, float fontsize, float chardelay, String mainText)
     {
         //super(centerx, centery, fontsize, "");
         font = new BitmapFont();
-        font.getData().setScale(4);
+        font.getData().setScale(fontsize);
         layout = new GlyphLayout();
 
         charDelay=chardelay;

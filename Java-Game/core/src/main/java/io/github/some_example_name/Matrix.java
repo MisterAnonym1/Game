@@ -14,37 +14,46 @@ import java.util.ArrayList;
 public class Matrix {
     GlyphLayout layout;
     BitmapFont font;
-    String string="B#}][{ÆYA0Ø¢|+/ 0*+¡¢£¤¥¦¿";
+    String string="B#}][{ÆYA0Ø¢|+/ 0*+¡¢£¤¥¦¿ABCDEFB#}][{ÆYA0Ø¢|+/ 0*+¡¢£¤¥¦¿ABCDEF";
     ArrayList <VerticalRevtext> texts= new ArrayList<>();
+    Revtext revtext;
     Matrix(Viewport port)
     {
-        texts.add(new VerticalRevtext(0,500,1,string,0.1f));
+        texts.add(new VerticalRevtext(0,500,1,string,1f));
         layout = texts.get(0).layout;
         for(int i=1; i<port.getScreenWidth()/(layout.width*1.1);i++)
         {
             mixString();
-            texts.add(new VerticalRevtext(i*layout.width*1.1f,500,1,string,0.1f));
-            texts.get(texts.size()-1).nummer=MathUtils.random(0,string.length());
+            texts.add(new VerticalRevtext(i*layout.width*1.1f,500,0.6f,string,1f));
+            texts.get(texts.size()-1).setNummer(MathUtils.random(0,string.length()));
+            //texts.get(texts.size()-1).setNummer(i);
+
+
         }
+        revtext=new Revtext(0,350,1.4f,0,"hallo");
     }
     void mixString()
     {
         //int end=MathUtils.random(0,string.length()-2);
         int end = (int) Math.round(Math.random()*(string.length()-2));
-        System.out.println(end+"end \n");
-        System.out.println(string.length()+"length \n");
         String s1=string.substring(Math.min(end+1,string.length()-1),string.length());
         String s2=string.substring(0,end+1);
         string=  s1+ s2;
-        System.out.println(string);
+
 
     }
     public void actAndDraw( SpriteBatch batch, float delta) {
+        String str="";
         for (VerticalRevtext rev:texts)
         {
             rev.act(delta);
             rev.draw(batch);
+            str+=rev.nummer+" ";
         }
+        revtext.setMaintext(str);
+        revtext.skip();
+        revtext.act(delta);
+        revtext.draw(batch);
 
     }
 }
@@ -79,12 +88,14 @@ class VerticalRevtext extends Sprite
     }
     void draw(SpriteBatch sbatch)
     {
-
+        float factor= counter%charDelay;
+        factor= factor/charDelay;
 
         for(int i=0;i<5; i++)
         {
             //i=nummer%maintext.length();
             int x=(nummer+i)%maintext.length();
+            font.setColor((i+1)/5f,(i+1)/3f,(i+1)/5f, 1/*((factor+1f)*i/5)*/);
             font.draw(sbatch, ""+maintext.charAt(x), getX(), getY()-x*1.5f*(font.getCapHeight()));
         }
     }
@@ -103,13 +114,18 @@ class VerticalRevtext extends Sprite
             nummer++;
             if(nummer>=maintext.length())
             {
-                nummer=nummer%maintext.length();
-                counter=0;
+                setNummer(nummer);
             }
 
         }
 
     }
+
+    public void setNummer(int nummer) {
+        this.nummer = nummer%maintext.length();
+        counter=(this.nummer-1)*charDelay;
+    }
+
     void center(String text)
     {
         layout.setText(font, "X");
