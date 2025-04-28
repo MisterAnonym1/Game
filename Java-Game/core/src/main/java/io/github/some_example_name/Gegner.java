@@ -27,7 +27,7 @@ abstract class Gegner extends Entity
     boolean isatdestination = false;
     boolean collides = false;
     int delay;
-    abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
+    //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     abstract boolean update(float delta);// soll acten zurückgeben ob gegner aus liste entfernt werden soll
     abstract void engagePlayer(float delta);
     abstract void sterben();
@@ -205,6 +205,8 @@ abstract class Gegner extends Entity
         update(delta);
     }
 
+
+
     ArrayList<MyTile> getneighbours(MyTile feld)
     {
         ArrayList<MyTile> neighbors = new ArrayList<>();
@@ -236,6 +238,6 @@ abstract class Gegner extends Entity
         return neighbors;
 
     }
-
+    //Allerlei mögliche Atacken //
 }
 

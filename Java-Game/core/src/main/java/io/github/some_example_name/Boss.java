@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Polygon;
 abstract class Boss extends Gegner {
 
     Boss (float x, float y, Main logic, String filepath) {
-        super(x, y, filepath, logic.Player);
+        super(x, y, logic, filepath);
         acceleration = 10;
         maxspeed = 10;
         spawnx = x;
