@@ -83,7 +83,7 @@ public class Main implements ApplicationListener {
         music.play();
         revtext = new Revtext(400,250,1,0.1f,"Hallo das ist ein Revtext");
         matrix= new Matrix(viewport);
-        currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
+        currentNPC= new TreassureChest (500,200,"bucket.png","own Watertile 2.png",0,this);
         entityStage.addActor(new Schlange(this,0,0));
         shape.setAutoShapeType(true);
 

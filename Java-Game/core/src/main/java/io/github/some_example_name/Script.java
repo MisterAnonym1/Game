@@ -20,9 +20,10 @@ public class Script {
             },
             {//theoretischer 2. NPC
                 {//erstes Statement
-                    "ich bin der 2. npc",
+                    "ich bin der 2. npc (Händler)",
                     "Gustav Klauk ist mein Name",
                     "wie du glaubst mir nicht?",
+                        "Sehr wohl. Möchtest du etwas kaufen?",
                 },
                 {//zweites Statment
                     "(2. STatement) warum bin ich so naiv?",
