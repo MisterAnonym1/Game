@@ -59,14 +59,14 @@ class Player extends Entity
     public void draw(Batch batch,ShapeRenderer shape,float delta, float parentAlpha) {
         //super.draw(batch, parentAlpha);
 
-        shape.begin(ShapeRenderer.ShapeType.Filled);
+        //shape.begin(ShapeRenderer.ShapeType.Filled);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         animationstateTime += delta; // Accumulate elapsed animation time
         TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
         batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
         batch.end();
-        shape.end();
+        //shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
         shape.setColor(1,1,1,0.6f);
         weapon.setDebug(true);
@@ -160,7 +160,7 @@ class Player extends Entity
     public void act(float deltatime)
     {
 
-        super.act(deltatime);
+
         weapon.act(deltatime);
             //Math.sin(((float)swingduration / 5) * 3.14159) * 30 * (ismirrored ? -1 : 1)
 
@@ -249,5 +249,6 @@ class Player extends Entity
         //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
         //+stayinWorldbounds();
         weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
+        super.act(deltatime);
     }
 }

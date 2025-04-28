@@ -1,6 +1,8 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Polygon;
@@ -16,7 +18,7 @@ abstract class Gegner extends Entity
     float spawny;
     Level curlevel;
     int counter = 0;
-    int attackdelay = 0;
+    float attackdelay = 0;
     Player player;
     Main logic;
     ArrayList<MyTile> queue = new ArrayList<>();
@@ -33,9 +35,14 @@ abstract class Gegner extends Entity
     abstract void sterben();
 
     Gegner(float x, float y, Main logic, String filepath) {
-        super(x, y, filepath, logic.Player);
-        acceleration = 10;
-        maxspeed = 10;
+        this(x, y,  logic,new TextureRegion(new Texture(filepath)));
+
+    }
+    Gegner(float x, float y, Main logic, TextureRegion texture)
+    {
+        super(x, y, texture, logic.Player);
+        acceleration = 100;
+        maxspeed = 100;
         spawnx = x;
         spawny = y;
         curlevel = logic.currentlevel;
@@ -45,7 +52,6 @@ abstract class Gegner extends Entity
         this.player = logic.Player;
         hitboxOffsetX = 30;
         hitboxOffsetY = 5;
-
 
         float[] vertices = {hitbox.getX(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),1,hitbox.getY(),1,hitbox.getY()+ getHeight()};
         lineofsight = new Polygon(vertices );
@@ -175,8 +181,14 @@ abstract class Gegner extends Entity
     }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
+    public void draw(Batch batch, float delta) {
+        super.draw(batch, delta);
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        Level.gegnerliste.remove(this);
     }
 
     void locateplayer(float mindistance, float maxdistance)

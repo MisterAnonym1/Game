@@ -14,28 +14,33 @@ class PartikelSprite extends TextureActor
     {
 
         super(filepath);
-        setPosition(x,y);
+       centerAt(x,y);
 
         delay =  vanishInSecs;
     }
     PartikelSprite(float x,float y,String filepath ,float vanishInSecs,float xTexture,float yTexture,float width,float heigth)
     {
         super(filepath, xTexture, yTexture, width, heigth);
-        setPosition(x,y);
+       centerAt(x,y);
 
         delay =  vanishInSecs;
     }
     @Override
     public void act(float delta)
     {
-        super.act(delta);
         delay-=delta;
         if(delay <= 0)
         {
             destroy();
         }
+        super.act(delta);
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        Level.projectiles.remove(this);
+    }
 }
 // Sprite der herunterzählt und sich nach angegebener Zeit zerstört
 
@@ -57,12 +62,13 @@ class Projectile extends PartikelSprite
         //move(movement.x, movement.y);
         setdamage(20);
     }
-    Projectile(float x, float y, String filepath, Vector2 velocity, int dmg)
+    Projectile(float centerx, float centery, String filepath, Vector2 velocity, int dmg)
     {
-        super(x, y, filepath, 3);
+        super(centerx, centery, filepath, 3);
 
         movement = velocity;
         //move(movement.x, movement.y);
+
         setdamage(dmg);
     }
     void setdamage(int dmg)
@@ -72,6 +78,7 @@ class Projectile extends PartikelSprite
     @Override
     public void act(float delta)
     {
+
         delay-=delta;
         if(delay <= 0)
         {
@@ -79,7 +86,7 @@ class Projectile extends PartikelSprite
             return;
         }
         moveBy(movement.x*delta, movement.y*delta);
-        reducemovement();
+        reducemovement(delta);
         delay+=delta;
         super.act(delta);
 
@@ -89,7 +96,7 @@ class Projectile extends PartikelSprite
     {
         destroy();
     }
-    void reducemovement()
+    void reducemovement(float delta)
     {
 
     }
@@ -100,8 +107,14 @@ class FireBall extends Projectile
     FireBall(float x,float y, Vector2 vel)
     {
         super(x,y,"Fireball.png",vel,20);
-        vel.setLength(300);
+        movement.setLength(400);
         scale(0.8f);
+    }
+    @Override
+    void reducemovement(float delta)
+    {
+        movement.x+=(2*delta);
+        movement.y+=(2*delta);
     }
 
 }

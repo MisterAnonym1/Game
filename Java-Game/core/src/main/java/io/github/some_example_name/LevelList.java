@@ -1,6 +1,6 @@
 package io.github.some_example_name;
 
-public class Levels { //Hier werden alle Level gespeichert
+public class LevelList { //Hier werden alle Level gespeichert
     static String[][] levels =
             {
 

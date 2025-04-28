@@ -1,8 +1,10 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 
 
@@ -19,8 +21,6 @@ import com.badlogic.gdx.math.Rectangle;
 
         int column;    // Wievieltes Tile von links her (0 bedeutet: ganz links)
         int row;       // Wievieltes Tile von obern her (0 bedeutet: ganz oben)
-        double destinationX;
-        double destinationY;
         boolean isCurrentlyMoving = false;
         boolean isMirrored = false;
         Rectangle hitbox;
@@ -28,30 +28,37 @@ import com.badlogic.gdx.math.Rectangle;
         //TextureRegion texture;
 
         public MyTile(int column, int row, String filepath,boolean hasHitbox) {
-            super(new TextureRegion(new Texture(filepath)));
-            setPosition(columnToX(column), rowToY(row));
-            //scale(6.46f);
-            this.column = column;
-            this.row = row;
-            if(hasHitbox) {
-                hitbox = new Rectangle(columnToX(column) - getWidth() / 2, rowToY(row) - getHeight() / 2, getWidth(), getHeight());
-            }
+            this(column,row,new TextureRegion(new Texture(filepath)), hasHitbox);
+
         }
         public MyTile(int column, int row, TextureRegion texreg,boolean hasHitbox) {
             super(texreg);
-            setPosition(columnToX(column), rowToY(row));
-            //scale(6.46f);
             this.column = column;
             this.row = row;
+            setPosition(column, row);
+            //scale(6.46f);
+            setSize(columnToX(1),rowToY(-1));
+
+
             if(hasHitbox) {
-                hitbox = new Rectangle(columnToX(column) - getWidth() / 2, rowToY(row) - getHeight() / 2, getWidth(), getHeight());}
+                hitbox = new Rectangle(columnToX(column), rowToY(row), getWidth(), getHeight());}
         }
 
-        int columnToX(int column) {
-            return 10 * column;
+        public static int columnToX(int column) {
+            return 64 * column;
         }
-        public int rowToY(int row) {
-            return 10 * row;
+        public static int rowToY(int row) {
+            return -64 * row;
+        }
+
+        void drawHitbox(ShapeRenderer shape)
+        {
+            shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
+        }
+
+        @Override
+        public void draw(Batch batch, float delta) {
+            super.draw(batch, 1);
         }
 
         void setNorth(MyTile neighboor)
