@@ -19,18 +19,24 @@ public class Matrix {
     Revtext revtext;
     Matrix(Viewport port)
     {
-        texts.add(new VerticalRevtext(0,500,1,string,1f));
+        float charDelay=6f;
+        float fontsize=0.7f;
+
+        texts.add(new VerticalRevtext(0,500,fontsize,string,charDelay));
         layout = texts.get(0).layout;
+
         for(int i=1; i<port.getScreenWidth()/(layout.width*1.1);i++)
         {
             mixString();
-            texts.add(new VerticalRevtext(i*layout.width*1.1f,500,0.6f,string,1f));
+            texts.add(new VerticalRevtext(i*layout.width*1.1f,500,fontsize,string,charDelay));
             texts.get(texts.size()-1).setNummer(MathUtils.random(0,string.length()));
             //texts.get(texts.size()-1).setNummer(i);
+            texts.get(texts.size()-1).counter+=Math.random()*charDelay;
+
 
 
         }
-        revtext=new Revtext(0,350,1.4f,0,"hallo");
+        //revtext=new Revtext(0,350,1.4f,0,"hallo");
     }
     void mixString()
     {
@@ -43,18 +49,20 @@ public class Matrix {
 
     }
     public void actAndDraw( SpriteBatch batch, float delta) {
-        String str="";
+        //String str="";
         for (VerticalRevtext rev:texts)
         {
             rev.act(delta);
             rev.draw(batch);
-            str+=rev.nummer+" ";
+            //str+=rev.nummer+" ";
         }
+
+        /*
         revtext.setMaintext(str);
         revtext.skip();
         revtext.act(delta);
         revtext.draw(batch);
-
+        */
     }
 }
 
@@ -89,13 +97,15 @@ class VerticalRevtext extends Sprite
     void draw(SpriteBatch sbatch)
     {
         float factor= counter%charDelay;
-        factor= factor/charDelay;
+        factor= factor/charDelay; //diese Variable zeigt von 0 bis 1 wie lange bis der nächste Buchstabe auftaucht
 
-        for(int i=0;i<5; i++)
+        int charsShown=6;
+        for(int i=0;i<=charsShown; i++)
         {
-            //i=nummer%maintext.length();
+
             int x=(nummer+i)%maintext.length();
-            font.setColor((i+1)/5f,(i+1)/3f,(i+1)/5f, 1/*((factor+1f)*i/5)*/);
+            //font.setColor((i-factor*(charsShown))/3f,(i-factor)/1.f,(i-factor*(charsShown))/3f, 1/*((factor+1f)*i/5)*/);
+            font.setColor((i-factor-charsShown+1.5f)*1.2f,(i-factor)/4f,(i-factor-charsShown+1.5f)*1.2f, 1/*((factor+1f)*i/5)*/);
             font.draw(sbatch, ""+maintext.charAt(x), getX(), getY()-x*1.5f*(font.getCapHeight()));
         }
     }

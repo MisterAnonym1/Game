@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.particles.values.MeshSpawnShapeValue;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -26,7 +27,7 @@ class Entity extends TextureActor
     Vector2 additionalForce;
     //TextureRegion texture;
     //float hitboxOffsetX=0, hitboxOffsetY=0;
-    static float hitboxalpha = 0.5f;
+    static float hitboxalpha = 0.6f;
     boolean ismirrored;
     float animationstateTime=0f, weight;
     EntityStatus status;
@@ -52,9 +53,9 @@ class Entity extends TextureActor
     }
     Entity(float x, float y, String filepath,Player player)
     {
-        super(new TextureRegion(new Texture(filepath)));
-        //
-        this.player=player;
+        //super(new TextureRegion(new Texture(filepath)));
+         this(x,y,new TextureRegion(new Texture(filepath)), player);
+        /*this.player=player;
         //setWidth(texture.getTexture().getWidth());
         //setHeight(texture.getTexture().getHeight());
         collisionOn = true;
@@ -64,7 +65,7 @@ class Entity extends TextureActor
         weight = 1;
         status = EntityStatus.inactiv;
 
-        setPosition(x,y);
+        setPosition(x,y);*/
 
     }
 
@@ -77,30 +78,31 @@ class Entity extends TextureActor
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        //batch.end();
+        batch.end();
         //drawShadow(new ShapeRenderer());
-        //batch.begin();
+        batch.begin();
         super.draw(batch, parentAlpha);
 
     }
 
     public void drawHitbox(ShapeRenderer shape)
     {
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shape.setColor(0, 0, 0.5f, hitboxalpha  );
-        //shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
+
+        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shape.setColor(1f, 1f, 0f, hitboxalpha  );
+        shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
 
     }
     public void drawShadow(ShapeRenderer shape)
     {
-
-        shape.begin(ShapeRenderer.ShapeType.Filled);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        //shape.begin(ShapeRenderer.ShapeType.Filled);
         shape.setColor(0.1f, 0.1f, 0.1f, 0.4f  );
         shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
         drawHitbox(shape);
-        shape.end();
-        shape.dispose();
+        //shape.end();
+        //shape.dispose();
     }
     void centerAtActor(Entity other)
     {
@@ -215,8 +217,8 @@ class Entity extends TextureActor
         float maxX = worldbounds.getX() + worldbounds.getWidth()-hitbox.getWidth() ;
         float minY = worldbounds.getY();
         float maxY = worldbounds.getY() + worldbounds.getHeight()-hitbox.getHeight();
-        setX(Math.clamp(getX(),minX,maxX));
-        setY(Math.clamp(getY(),minY,maxY));
+        setX(MathUtils.clamp(getX(),minX,maxX));
+        setY(MathUtils.clamp(getY(),minY,maxY));
 
 
     }

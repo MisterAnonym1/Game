@@ -56,12 +56,12 @@ class Player extends Entity
     }
 
 
-    public void draw(Batch batch,ShapeRenderer shape,float parentAlpha) {
+    public void draw(Batch batch,ShapeRenderer shape,float delta, float parentAlpha) {
         //super.draw(batch, parentAlpha);
 
         shape.begin(ShapeRenderer.ShapeType.Filled);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
-        animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
+        animationstateTime += delta; // Accumulate elapsed animation time
         TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
         batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
@@ -242,14 +242,12 @@ class Player extends Entity
         }
 
         vecup.setLength((float) (maxspeed));
-        //vecup.setLength((float) maxspeed);
 
         updatemovement(vecup,deltatime);
         if(!isattacking){  weapon.rotateTo((ismirrored ? 30 : -30)); }
         else ismoving = false;
-        //weapon.setOrigin((ismirrored ? 100 : 0),0);
         //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
-        stayinWorldbounds();
+        //+stayinWorldbounds();
         weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
     }
 }

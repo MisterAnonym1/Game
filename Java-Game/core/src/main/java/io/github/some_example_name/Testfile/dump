@@ -1,0 +1,323 @@
+ Intersector.overlapConvexPolygons(polyA, polyB, mtv);
+
+ Um Text in LibGDX zu vergrößern, gibt es mehrere Ansätze:
+
+ BitmapFont-Skalierung
+ Für einfache Skalierung kann die setScale-Methode von BitmapFont verwendet werden:
+
+ java
+ BitmapFont font = new BitmapFont();
+ font.getData().setScale(2.0f); // Verdoppelt die Schriftgröße
+ batch.begin();
+ font.draw(batch, "Vergrößerter Text", x, y);
+ batch.end();
+
+ Nachteil: Skalierung kann zu unscharfer Darstellung führen
+
+ .
+
+ Scene2D-Label mit Skalierung
+ Für UI-Elemente bietet sich Label mit integrierter Skalierung an:
+
+ java
+ Label.LabelStyle style = new Label.LabelStyle(font, Color.WHITE);
+ Label label = new Label("Skalierbarer Text", style);
+ label.setFontScale(1.5f); // 1.5-fache Vergrößerung
+ stage.addActor(label);
+
+ Vorteil: Automatische Layoutanpassung möglich
+
+ .
+
+ FreeTypeFontGenerator (empfohlen)
+ Für optimale Qualität bei variablen Größen:
+
+ java
+ FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("schriftart.ttf"));
+ FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+ parameter.size = 48; // Exakte Größe in Pixeln
+ BitmapFont customFont = generator.generateFont(parameter);
+
+ Diese Methode erzeugt scharfe Schriftarten in beliebigen Größen ohne Qualitätsverlust
+
+ .
+
+ Hinweis zur HiDPI-Unterstützung
+ Bei hochauflösenden Displays kann die VM-Option -Dsun.java2d.uiScale=2 die Skalierung verbessern
+ . Für LibGDX-spezifische Lösungen sollten Viewport-Einstellungen (z.B. ExtendViewport) geprüft werden.
+
+
+
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.ArrayList;
+
+ class DialogueNode {
+     String text;
+     List<Response> responses;
+
+     public DialogueNode(String text) {
+         this.text = text;
+         this.responses = new ArrayList<>();
+     }
+
+     public void addResponse(String text, String nextNodeKey) {
+         responses.add(new Response(text, nextNodeKey));
+     }
+
+     public void display() {
+         System.out.println(text);
+         for (int i = 0; i < responses.size(); i++) {
+             System.out.println((i + 1) + ". " + responses.get(i).text);
+         }
+     }
+ }
+
+ class Response {
+     String text;
+     String nextNodeKey; //oder DialogueNode nextNode;
+     @Nullable
+     String requiredEvent;
+
+     public Response(String text, String nextNodeKey, String requiredEvent) {
+         this.text = text;
+         this.nextNodeKey = nextNodeKey;
+         if(){
+         this.requiredEvent = requiredEvent;
+         }
+         public boolean canDisplay() {
+
+         if(requiredItem==null){return true}
+          return Player.completedEvent(requiredEvent);
+         }
+ 9786
+     }
+ }
+
+ import java.util.HashMap;
+
+ class DialogueTree {
+     HashMap<String, DialogueNode> nodes = new HashMap<>();
+
+     public void addNode(String key, DialogueNode node) {
+         nodes.put(key, node);
+     }
+
+
+ }
+
+
+ class DialogueManager {
+     private HashMap<String, DialogueNode> nodes = new HashMap<>();
+     private String currentNodeKey;
+
+     public void addNode(String key, DialogueNode node) {
+         nodes.put(key, node);
+     }
+
+     public void startDialogue(String key) {
+         if (nodes.containsKey(key)) {
+             currentNodeKey = key;
+             getNode(key).display();
+         } else {
+             System.out.println("Dialog nicht gefunden!");
+             //throw exeption
+         }
+     }
+     public DialogueNode getNode(String key) {
+             return nodes.get(key);
+         }
+     public void chooseResponse(int index) {
+         if (currentNodeKey == null) {
+             System.out.println("Kein aktiver Dialog!");
+             return;
+         }
+
+         DialogueNode currentNode = nodes.get(currentNodeKey);
+         if (index < 1 || index > currentNode.responses.size()) {
+             System.out.println("Ungültige Auswahl!");
+             //Exeption
+             return;
+         }
+
+         String nextKey = currentNode.responses.get(index - 1).nextNodeKey;
+         startDialogue(nextKey);
+     }
+ }
+
+ import java.util.HashMap;
+
+ class DialogueTree {
+     HashMap<String, DialogueNode> nodes = new HashMap<>();
+
+     public void addNode(String key, DialogueNode node) {
+         nodes.put(key, node);
+     }
+
+     public DialogueNode getNode(String key) {
+         return nodes.get(key);
+     }
+ }
+
+
+
+
+
+public class EntitySorter
+ {
+    public static void main(String[] args)
+    {
+        ArrayList<GameObject> entities = new ArrayList<>();
+        ArrayList<GameObject> npcs = new ArrayList<>();
+
+        // Beispiel-Entities hinzufügen
+        entities.add(new GameObject("Entity A", 50, 200));
+        entities.add(new GameObject("Entity B", 70, 100));
+
+        // Beispiel-NPCs hinzufügen
+        npcs.add(new GameObject("NPC X", 30, 300));
+        npcs.add(new GameObject("NPC Y", 90, 150));
+
+        // **Zwei Listen kombinieren**
+        ArrayList<GameObject> allObjects = new ArrayList<>();
+        allObjects.addAll(entities);
+        allObjects.addAll(npcs);
+
+        // **Sortieren nach Y-Koordinate (kleinster zuerst)**
+        Collections.sort(allObjects, Comparator.comparing(obj -> obj.y));
+
+        // **Zeichnen der Objekte**
+        for (GameObject obj : allObjects) {
+            obj.draw();
+        }
+    }
+ }
+
+
+
+                Quadtree:
+import java.util.ArrayList;
+
+class QuadTree {
+    private static final int MAX_OBJECTS = 4; // Maximale Objekte pro Bereich bevor Teilung
+    private static final int MAX_LEVELS = 5; // Maximale Tiefe des Baums
+    private int level;
+    private ArrayList<GameEntity> entities;
+    private QuadTree[] nodes;
+    private float x, y, width, height;
+
+    public QuadTree(int level, float x, float y, float width, float height) {
+        this.level = level;
+        this.entities = new ArrayList<>();
+        this.nodes = new QuadTree[4]; // Vier Unterbereiche
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    // Unterteilt den Bereich in vier Quadranten
+    public void split() {
+        float subWidth = width / 2;
+        float subHeight = height / 2;
+
+        nodes[0] = new QuadTree(level + 1, x, y, subWidth, subHeight); // Links oben
+        nodes[1] = new QuadTree(level + 1, x + subWidth, y, subWidth, subHeight); // Rechts oben
+        nodes[2] = new QuadTree(level + 1, x, y + subHeight, subWidth, subHeight); // Links unten
+        nodes[3] = new QuadTree(level + 1, x + subWidth, y + subHeight, subWidth, subHeight); // Rechts unten
+    }
+
+    // Fügt eine Entity hinzu und teilt, falls nötig
+    public void insert(GameEntity entity) {
+        if (nodes[0] != null) {
+            int index = getIndex(entity);
+            if (index != -1) {
+                nodes[index].insert(entity);
+                return;
+            }
+        }
+
+        entities.add(entity);
+
+        if (entities.size() > MAX_OBJECTS && level < MAX_LEVELS) {
+            if (nodes[0] == null) {
+                split();
+            }
+
+            int i = 0;
+            while (i < entities.size()) {
+                int index = getIndex(entities.get(i));
+                if (index != -1) {
+                    nodes[index].insert(entities.remove(i));
+                } else {
+                    i++;
+                }
+            }
+        }
+    }
+
+    // Bestimmt, in welchem Quadranten eine Entity liegt
+    private int getIndex(GameEntity entity) {
+        int index = -1;
+        float midX = x + width / 2;
+        float midY = y + height / 2;
+
+        boolean topQuadrant = entity.getY() < midY;
+        boolean bottomQuadrant = entity.getY() >= midY;
+
+        if (entity.getX() < midX) {
+            if (topQuadrant) index = 0;
+            else if (bottomQuadrant) index = 2;
+        } else {
+            if (topQuadrant) index = 1;
+            else if (bottomQuadrant) index = 3;
+        }
+        return index;
+    }
+
+    // Holt alle relevanten Objekte zum Zeichnen
+    public ArrayList<GameEntity> retrieve(ArrayList<GameEntity> returnEntities, GameEntity entity) {
+        int index = getIndex(entity);
+        if (index != -1 && nodes[0] != null) {
+            nodes[index].retrieve(returnEntities, entity);
+        }
+
+        returnEntities.addAll(entities);
+        return returnEntities;
+    }
+}
+
+
+public class GameWorld {
+    private QuadTree quadTree;
+    private ArrayList<GameEntity> allEntities;
+
+    public GameWorld() {
+        quadTree = new QuadTree(0, 0, 0, 1000, 1000); // Weltgröße festlegen
+        allEntities = new ArrayList<>();
+
+        // Beispiel-Entities hinzufügen
+        allEntities.add(new GameEntity("Entity A", 50, 200));
+        allEntities.add(new GameEntity("Entity B", 70, 100));
+        allEntities.add(new GameEntity("NPC X", 30, 300));
+        allEntities.add(new GameEntity("NPC Y", 90, 150));
+
+        for (GameEntity entity : allEntities) {
+            quadTree.insert(entity);
+        }
+    }
+
+    public void render() {
+        ArrayList<GameEntity> drawableEntities = new ArrayList<>();
+        for (GameEntity entity : allEntities) {
+            quadTree.retrieve(drawableEntities, entity);
+        }
+
+        // Sortierung nach Y für korrektes Rendering
+        drawableEntities.sort((e1, e2) -> Float.compare(e1.getY(), e2.getY()));
+
+        for (GameEntity entity : drawableEntities) {
+            entity.draw();
+        }
+    }
+}

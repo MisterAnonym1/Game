@@ -21,7 +21,7 @@ class Level {
     Stage testentitys;
     Stage gegnerliste;
     Stage projectiles;
-    //ArrayList<NPC> npcs = new ArrayList<>();
+    Stage npcs;
     //ArrayList<Item> itemlist = new ArrayList<Item>();
     Main log;
 
@@ -38,6 +38,7 @@ class Level {
         testentitys = new Stage(log.viewport,log.spriteBatch);
         gegnerliste= new Stage(log.viewport,log.spriteBatch);
         projectiles= new Stage(log.viewport,log.spriteBatch);
+        npcs = new Stage(log.viewport,log.spriteBatch);
 
         rownotwalls = new int[rows.length];
         doorsnummer = 0;
@@ -76,10 +77,11 @@ class Level {
         }
         gegnerliste.clear();
 
-        //for (NPC npc : npcs) {
-          //  npc.destroy();
-        //}
-        //npcs.clear();
+        for (Actor np : npcs.getActors()) {
+            NPC npc = (NPC) np;
+            npc.destroy();
+        }
+        npcs.clear();
         for (Actor prc : projectiles.getActors()) {
             Projectile pro= (Projectile) prc;
                 pro.destroy();
@@ -94,7 +96,8 @@ class Level {
         testentitys.act(delta);
         gegnerliste.act(delta);
         projectiles.act(delta);
-        //npcs
+        npcs.act();
+        //items?
     }
     public void draw(Batch batch)
     {
@@ -111,7 +114,26 @@ class Level {
         testentitys.draw();
         gegnerliste.draw();
         projectiles.draw();
-        //npcs.draw
+        npcs.draw();
+        //items.draw
+    }
+    void showHitboxes()
+    {
+        MyTile.hitboxalpha = 1;
+        Entity.hitboxalpha = 0.5f;
+        Projectile.hitboxalpha = 0.5f;
+        Testentity.hitboxalpha = 0.5f;
+        NPC.hitboxalpha=0.5f;
+    }
+
+
+    void hideHitboxes()
+    {
+        MyTile.hitboxalpha = 0;
+        Entity.hitboxalpha = 0;
+        Projectile.hitboxalpha = 0;
+        Testentity.hitboxalpha = 0;
+        NPC.hitboxalpha=0;
     }
 
 
@@ -290,21 +312,6 @@ class Level {
 
     }
 
-    void showHitboxes()
-    {
-        MyTile.hitboxalpha = 1;
-        Entity.hitboxalpha = 0.5f;
-        Projectile.hitboxalpha = 0.5f;
-        Testentity.hitboxalpha = 0.5f;
-    }
 
-
-    void hideHitboxes()
-    {
-        MyTile.hitboxalpha = 0;
-        Entity.hitboxalpha = 0;
-        Projectile.hitboxalpha = 0;
-        Testentity.hitboxalpha = 0;
-    }
 
 }

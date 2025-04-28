@@ -13,6 +13,7 @@ public class Script {
                     "ich bin der der Zerstörer"
                 },
                 {// zweites Statement
+                    "zweites Statement",
                    "danke für deinen Kauf",
                     "ich gebe dir nächstes mal einen Treue Bonus"
                 }
@@ -21,6 +22,11 @@ public class Script {
                 {//erstes Statement
                     "ich bin der 2. npc",
                     "Gustav Klauk ist mein Name",
+                    "wie du glaubst mir nicht?",
+                },
+                {//zweites Statment
+                    "(2. STatement) warum bin ich so naiv?",
+                    "meine Waren sind viel zu billig",
                     "wie du glaubst mir nicht?",
                 }
 

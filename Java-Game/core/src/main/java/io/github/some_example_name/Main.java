@@ -54,6 +54,7 @@ public class Main implements ApplicationListener {
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
     NPC currentNPC;
+    static boolean debugging=false;
     @Override
     public void create() {
         backgroundTexture = new Texture("background.png");
@@ -66,7 +67,7 @@ public class Main implements ApplicationListener {
         viewport = new FitViewport(800, 500, ocam);
         entityStage= new Stage(viewport,spriteBatch);
         //entityStage= new Stage();
-        Player = new Player(400,250,1300,100, viewport);
+        Player = new Player(400,250,300,100, viewport);
         Player.setWorldbounds(-0,800,0,500);
         touchPos = new Vector2();
         werther= new Testentity(200,200,this);
@@ -85,7 +86,9 @@ public class Main implements ApplicationListener {
         currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
         entityStage.addActor(new Schlange(this,0,0));
         shape.setAutoShapeType(true);
-        // Prüfe auf Überschneidung
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
     }
 
     @Override
@@ -174,6 +177,7 @@ public class Main implements ApplicationListener {
         entityStage.act(delta);
         revtext.act(delta);
         ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
+
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
         }
 
@@ -201,7 +205,7 @@ public class Main implements ApplicationListener {
         //renderer.setView(ocam);
         //renderer.render();
         spriteBatch.setColor(1,1,1,1);
-        spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
+        //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
         matrix.actAndDraw(spriteBatch,delta);
         spriteBatch.end();
 
@@ -225,10 +229,10 @@ public class Main implements ApplicationListener {
 
 
         werther.draw(spriteBatch,0.4f);
-        Player.draw(spriteBatch,shape,1.0f);
+        Player.draw(spriteBatch,shape, delta,1.0f);
         revtext.draw(spriteBatch);
-        currentNPC.draw(spriteBatch,1);
-        currentNPC.drawInConversation(spriteBatch,1f);
+       currentNPC.draw(spriteBatch,1);
+        currentNPC.drawInConversation(spriteBatch);
          spriteBatch.end();
 
     }

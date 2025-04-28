@@ -33,7 +33,7 @@ public class NPC extends Entity
         maxline = Script.npcscript[scriptIndex][0].length;;
         hitboxOffsetX = 25;
         hitboxOffsetY = 35;
-
+        hitboxalpha=0.5f;
 
         //hitbox.setAlpha(1); //Aus kommentieren um die Hitbox sichtbar zu mahcen. Achtung macht dei Hitbox durchlässig wenn auskommentiert.
     }
@@ -43,11 +43,12 @@ public class NPC extends Entity
     {
         super.draw(batch, parentalpha);
     }
-    public void drawInConversation(SpriteBatch batch, float parentalpha)
+    public void drawInConversation(SpriteBatch batch)
     {
         if(inConversation){
             batch.draw(backround, viewport.getScreenX(), viewport.getScreenY(), viewport.getWorldWidth(), viewport.getWorldHeight());
-            batch.draw(texture,viewport.getScreenX()+viewport.getScreenWidth()/2.0f, viewport.getScreenY()+viewport.getScreenHeight()/2.0f,getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
+            batch.draw(texture,viewport.getScreenX()+viewport.getScreenWidth()/2.0f-hitbox.getWidth()/1f, viewport.getScreenY()+viewport.getScreenHeight()/2.0f-hitbox.getHeight()/1.0f,getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
+            System.out.println("lol");
             text.draw(batch);}
     }
 
@@ -62,9 +63,9 @@ public class NPC extends Entity
                  nextline();
                 if(line >= maxline)
                 {
-
+                    statementfinished=true;
                 }
-                else{statementfinished=true;}
+                else{}
 
             }
             text.act(delta);

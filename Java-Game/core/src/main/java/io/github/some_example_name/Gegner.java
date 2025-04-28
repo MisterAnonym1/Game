@@ -238,40 +238,4 @@ abstract class Gegner extends Entity
     }
 
 }
-class SightRay //Klasse als Sicht Linie für Gegner
-{
 
-
-    Ray topRay,lowRay;
-    Rectangle hitbox;
-    Player player;
-    Gegner gegner;
-    SightRay(Gegner gegner, Player play)
-    {
-        this.hitbox=gegner.hitbox;
-        player=play;
-        lowRay = new Ray(new Vector3(hitbox.getX(),hitbox.getY(),0), new Vector3(0,0,0));
-        topRay = new Ray(new Vector3(hitbox.getX()+hitbox.getWidth(),hitbox.getY()+hitbox.getHeight(),0),new Vector3(0,0,0));
-    }
-    void update()
-    {
-        if(gegner==null||gegner.isdead()){return;}
-        if(player==null)
-        {
-            throw new NullPointerException("Spieler nicht definiert/ ==null in Ray");
-        }
-        lowRay.set(hitbox.getX(),hitbox.getY(),0, player.getCenterX(), player.getCenterY(), 0);
-        topRay.set(hitbox.getX()+hitbox.getWidth(),hitbox.getY()+hitbox.getHeight(),0,player.getCenterX(), player.getCenterY(),0);
-    }
-    void draw(ShapeRenderer shape)
-    {
-        shape.line(lowRay.origin, lowRay.direction);
-        shape.line(topRay.origin, topRay.direction);
-    }
-    boolean overlaps(Rectangle shape)
-    {
-        //Intersector.intersectRayBoundsFast(lowRay,shape);
-
-        return false;
-    }
-}
