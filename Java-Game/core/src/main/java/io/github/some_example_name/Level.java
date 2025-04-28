@@ -32,7 +32,7 @@ class Level {
     double xcoplayer;
     double ycoplayer;
 
-    Level(String[] rows,Main log) {
+    Level(String[] rows, Main log) {
         this.rows = rows;
         this.log=log;
         testentitys = new Stage(log.viewport,log.spriteBatch);
@@ -110,11 +110,12 @@ class Level {
         for (MyTile tile : teleporters) {
             tile.draw(batch);
         }
-
+        batch.end();
         testentitys.draw();
         gegnerliste.draw();
         projectiles.draw();
         npcs.draw();
+        batch.begin();
         //items.draw
     }
     void showHitboxes()

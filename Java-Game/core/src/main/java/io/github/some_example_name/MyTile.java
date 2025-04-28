@@ -30,7 +30,7 @@ import com.badlogic.gdx.math.Rectangle;
         public MyTile(int column, int row, String filepath,boolean hasHitbox) {
             super(new TextureRegion(new Texture(filepath)));
             setPosition(columnToX(column), rowToY(row));
-            scale(6.46f);
+            //scale(6.46f);
             this.column = column;
             this.row = row;
             if(hasHitbox) {
@@ -40,7 +40,7 @@ import com.badlogic.gdx.math.Rectangle;
         public MyTile(int column, int row, TextureRegion texreg,boolean hasHitbox) {
             super(texreg);
             setPosition(columnToX(column), rowToY(row));
-            scale(6.46f);
+            //scale(6.46f);
             this.column = column;
             this.row = row;
             if(hasHitbox) {
@@ -48,10 +48,10 @@ import com.badlogic.gdx.math.Rectangle;
         }
 
         int columnToX(int column) {
-            return 128 * column;
+            return 10 * column;
         }
         public int rowToY(int row) {
-            return 128 * row;
+            return 10 * row;
         }
 
         void setNorth(MyTile neighboor)

@@ -37,6 +37,7 @@ public class Main implements ApplicationListener {
     Matrix matrix;
     Music music;
     TiledMap map;
+    Level level1;
     private OrthogonalTiledMapRenderer renderer;
     public static Label.LabelStyle labelStyle;
     OrthographicCamera ocam;
@@ -66,6 +67,7 @@ public class Main implements ApplicationListener {
 
         ocam=new OrthographicCamera(800,500);
         viewport = new FitViewport(800, 500, ocam);
+        level1 = new Level(Levels.levels[0], this);
         entityStage= new Stage(viewport,spriteBatch);
         //entityStage= new Stage();
         Player = new Player(400,250,300,100, viewport);
@@ -202,6 +204,7 @@ public class Main implements ApplicationListener {
         shape.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
+        level1.draw(spriteBatch);
         float worldWidth = Gdx.graphics.getWidth();
         float worldHeight = Gdx.graphics.getHeight();
         //renderer.setView(ocam);
@@ -210,7 +213,7 @@ public class Main implements ApplicationListener {
         //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
         matrix.actAndDraw(spriteBatch,delta);
         spriteBatch.end();
-
+        level1.render();
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(5);
