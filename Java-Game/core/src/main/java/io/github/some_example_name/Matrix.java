@@ -73,7 +73,7 @@ class VerticalRevtext extends Sprite
     float counter;
     float centerX;
     float centerY;
-    float charDelay=0.3f;
+    float charDelay=0.01f;
 
     BitmapFont font;
      GlyphLayout layout;

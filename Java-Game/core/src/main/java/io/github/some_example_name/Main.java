@@ -37,6 +37,7 @@ public class Main implements ApplicationListener {
     Matrix matrix;
     Music music;
     TiledMap map;
+    Level level1;
     private OrthogonalTiledMapRenderer renderer;
     public static Label.LabelStyle labelStyle;
     OrthographicCamera ocam;
@@ -54,6 +55,7 @@ public class Main implements ApplicationListener {
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
     NPC currentNPC;
+    KARLTOFFEL_BOSS El_Karltoffelboss;
     static boolean debugging=false;
     @Override
     public void create() {
@@ -65,10 +67,12 @@ public class Main implements ApplicationListener {
 
         ocam=new OrthographicCamera(800,500);
         viewport = new FitViewport(800, 500, ocam);
+        level1 = new Level(Levels.levels[0], this);
         entityStage= new Stage(viewport,spriteBatch);
         //entityStage= new Stage();
         Player = new Player(400,250,300,100, viewport);
         Player.setWorldbounds(-0,800,0,500);
+
         touchPos = new Vector2();
         werther= new Testentity(200,200,this);
         entityStage.addActor(werther);
@@ -86,7 +90,7 @@ public class Main implements ApplicationListener {
         currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
         entityStage.addActor(new Schlange(this,0,0));
         shape.setAutoShapeType(true);
-
+        El_Karltoffelboss = new KARLTOFFEL_BOSS(0,0,this, "El_Karlotoffel" );
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -201,6 +205,7 @@ public class Main implements ApplicationListener {
         shape.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
+        level1.draw(spriteBatch);
         float worldWidth = Gdx.graphics.getWidth();
         float worldHeight = Gdx.graphics.getHeight();
         //renderer.setView(ocam);
@@ -209,7 +214,7 @@ public class Main implements ApplicationListener {
         //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
         matrix.actAndDraw(spriteBatch,delta);
         spriteBatch.end();
-
+        level1.render();
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(5);
@@ -234,6 +239,7 @@ public class Main implements ApplicationListener {
         revtext.draw(spriteBatch);
        currentNPC.draw(spriteBatch,1);
         currentNPC.drawInConversation(spriteBatch);
+        El_Karltoffelboss.draw(spriteBatch,1.0f);
          spriteBatch.end();
 
     }
