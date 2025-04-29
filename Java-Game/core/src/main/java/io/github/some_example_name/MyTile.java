@@ -56,6 +56,7 @@ import com.badlogic.gdx.math.Rectangle;
 
         void setNorth(MyTile neighboor)
         {
+
             if(neighboor == null) {
                 return;
             }
