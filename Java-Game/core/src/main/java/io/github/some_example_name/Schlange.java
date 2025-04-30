@@ -23,7 +23,7 @@ class Schlange extends Gegner
     void sterben() {
 
         player.damageby(40);
-
+        destroy();
 
     }
 

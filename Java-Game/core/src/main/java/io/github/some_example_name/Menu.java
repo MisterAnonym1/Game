@@ -12,7 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import org.w3c.dom.Text;
 
-
+/*
 public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
     boolean onscreen = false; //ob ein Screen gerade aktiv ist oder nicht
     Revtext textbox; //erschafft eine Textbox, <---dein ernst? ich kann selber sehen
@@ -216,16 +216,16 @@ class Updatetxt implements Runnable {
 
 }
 
-public class Knopf extends TextureActor
+class Knopf extends TextureActor
 {
-    boolean aktiv;
+    boolean activ;
     boolean gedrückt;
     boolean hold;
 
     Knopf(float x, float y,String filepath, boolean nureinmal)
     { super(filepath);
         setPosition(x,y);
-        aktiv = true;
+        activ = true;
         hold = !nureinmal;
         gedrückt = false;
         toFront();
@@ -242,6 +242,7 @@ public class Knopf extends TextureActor
     }
 
 
+
     public void onMouseLeave(double x, double y)
     {
        setColor(1f,1f,1f,1);
@@ -251,13 +252,16 @@ public class Knopf extends TextureActor
 
     public void onMouseDown(double x, double y, int key) {
         setColor(0.5f,0.5f,0.5f,1);
+        Gdx.input.getX(), Gdx.input.getY()
 
     }
 
-
-    public void onMouseUp(double x, double y, int key) {
-        if(aktiv)
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        if(activ)
         {
+
             gedrückt = true;
             setColor(0.7f, 0.7f, 0.7f, 1);
             if(!hold)
@@ -266,6 +270,7 @@ public class Knopf extends TextureActor
                 aktiv = false;
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
             }
+
         }
     }
 
@@ -276,3 +281,4 @@ interface GameChange {
      void onPress();
 
 }
+*/
