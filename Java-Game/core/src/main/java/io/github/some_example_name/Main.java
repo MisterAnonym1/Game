@@ -36,6 +36,7 @@ public class Main implements ApplicationListener {
     OrthographicCamera ocam;
     SpriteBatch spriteBatch;
     Level currentlevel;
+    int levelzahl;
     FitViewport viewport;
     Batch batch;
     Player Player;
@@ -59,7 +60,8 @@ public class Main implements ApplicationListener {
 
         ocam=new OrthographicCamera(800,500);
         viewport = new FitViewport(800, 500, ocam);
-        level1 = new Level(LevelList.levels[0], this);
+        levelzahl = 1;
+        level1 = new Level(LevelList.levels[levelzahl], this);
         //entityStage= new Stage();
         Player = new Player(400,250,300,100, viewport);
         Player.setWorldbounds(-0,800,0,500);
