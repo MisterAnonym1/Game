@@ -174,6 +174,19 @@ abstract class Gegner extends Entity
         }
     }
 
+    /*public void engagePlayer(float delta){
+        attackdelay+=delta;
+
+        if (attackdelay>=2)
+        {
+            //line of sight
+            attackdelay=0;
+            Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
+            vec.setLength(this.getHeight()/2);
+            logic.level1.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
+        }
+    };*/
+
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
