@@ -3,14 +3,17 @@ package io.github.some_example_name;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import org.w3c.dom.Text;
 
-
-/*public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
+/*
+public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
     boolean onscreen = false; //ob ein Screen gerade aktiv ist oder nicht
     Revtext textbox; //erschafft eine Textbox, <---dein ernst? ich kann selber sehen
 
@@ -18,7 +21,7 @@ import org.w3c.dom.Text;
 }
 
 public class Deathscreen extends Menu {
-   /* Button knopf;
+    Button knopf;
     Rectangle screen;
     Star star;
     int delay;
@@ -184,13 +187,13 @@ class DevMenu extends Menu
         }
     }
 
-   /*public void act()
+   public void act()
    {
 
       if(onscreen) {
          texte[0].setText("loadedwalls amount: " + logic.loadedwalls.size());
       }
-   }*
+   }
 }
 
 
@@ -213,70 +216,69 @@ class Updatetxt implements Runnable {
 
 }
 
-public class Knopf extends Sprite
+class Knopf extends TextureActor
 {
-    boolean aktiv;
+    boolean activ;
     boolean gedrückt;
-    boolean einmal;
+    boolean hold;
 
-    Knopf(double x, double y, SpriteLibrary spriteL, int nummer, boolean nureinmal)
-    { super(x, y, spriteL, nummer, ScaleMode.nearest_neighbour);
-        aktiv = true;
-        einmal = nureinmal;
+    Knopf(float x, float y,String filepath, boolean nureinmal)
+    { super(filepath);
+        setPosition(x,y);
+        activ = true;
+        hold = !nureinmal;
         gedrückt = false;
-        bringToFront();
+        toFront();
     }
 
     public void onMouseEnter(double x, double y)
     {
 
-        tint("#b9b0b0");
-        getWorld().setCursor("pointer");
+
+        setColor(0.7f, 0.7f, 0.7f, 1);
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
+
 
     }
+
 
 
     public void onMouseLeave(double x, double y)
     {
-        tint("#ffffff");
-        getWorld().setCursor("default");
+       setColor(1f,1f,1f,1);
+        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 
 
     public void onMouseDown(double x, double y, int key) {
-        tint("#716868");
+        setColor(0.5f,0.5f,0.5f,1);
+        Gdx.input.getX(), Gdx.input.getY()
 
     }
 
-
-    public void onMouseUp(double x, double y, int key) {
-        if(aktiv)
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        if(activ)
         {
+
             gedrückt = true;
-            tint("#b9b0b0");
-            if(einmal == true)
+            setColor(0.7f, 0.7f, 0.7f, 1);
+            if(!hold)
             {
                 setVisible(false);
                 aktiv = false;
-                getWorld().setCursor("default");
+                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
             }
+
         }
     }
 
 }
 
+@FunctionalInterface
+interface GameChange {
+     void onPress();
 
-class GameChangeListener implements ChangeListener {
-    Main game;
-    String zustand;
-    GameChangeListener(Main game, String zustand)
-    {
-        this.game = game;
-        this.zustand = zustand;
-    }
-    public void onChange(Object changedObject, String newValue) {
-        game.setState(zustand);
-        game.getWorld().setCursor("default");
-    }
-
-}*/
+}
+*/

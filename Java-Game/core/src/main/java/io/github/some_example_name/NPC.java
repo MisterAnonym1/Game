@@ -39,16 +39,23 @@ public class NPC extends Entity
     }
 
     @Override
-    public void draw(Batch batch, float parentalpha)
+    public void draw(Batch batch, float delta)
     {
-        super.draw(batch, parentalpha);
+        super.draw(batch, delta);
     }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        Level.npcs.remove(this);
+    }
+
     public void drawInConversation(SpriteBatch batch)
     {
         if(inConversation){
             batch.draw(backround, viewport.getScreenX(), viewport.getScreenY(), viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(texture,viewport.getScreenX()+viewport.getScreenWidth()/2.0f-hitbox.getWidth()/1f, viewport.getScreenY()+viewport.getScreenHeight()/2.0f-hitbox.getHeight()/1.0f,getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
-            System.out.println("lol");
+            System.out.println("Conversation started succesfully");
             text.draw(batch);}
     }
 
@@ -88,6 +95,14 @@ public class NPC extends Entity
             text.skip();
         }
     }
+
+    @Override
+    public void destroy() {
+        backround.dispose();
+        super.destroy();
+
+    }
+
     void onPress() {
         inConversation=true;
         if(backround==null)
@@ -114,8 +129,7 @@ public class NPC extends Entity
         text.reset();
     }
 }
-/*
-public class Trader extends NPC {
+ class Trader extends NPC {
     Revtext text;
     Sprite hintergrund;
     double lastx;
@@ -124,15 +138,28 @@ public class Trader extends NPC {
     int lineindex;
     int maxline;
     int line;
-    Trader(float x, float y, String filepath, String fileBackround, int lineindex,Main log){
-        super(x, y, filepath,log.Player);
+    Trader(float x, float y, String filepath, String fileBackground, int lineindex,Main log){
+        super(x, y, filepath, fileBackground, lineindex, log);
         addAction(Actions.delay(1));
-        hintergrund = new Sprite(new Texture(fileBackround));
-        hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
+        //hintergrund = new Sprite(new Texture(fileBackground));
+        //hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
     }
 
-    void Trade(){
+    @Override void nextline()
+    {
+        if(line < maxline)
+        {
+            text.newText(Script.npcscript[scriptIndex][1][line]);
+        }
+    }
+
+    void interact(){
+        //inConversation = true;
+        onPress();
+        System.out.println("Entered trader menu succesfully");
+        //nextline();
+
 
     }
 
-}*/
+}

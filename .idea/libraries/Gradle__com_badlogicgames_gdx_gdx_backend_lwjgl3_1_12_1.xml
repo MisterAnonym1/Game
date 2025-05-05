@@ -4,7 +4,11 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl3/1.12.1/12a144cacb34f0392cd8354f798d99e4836a51a8/gdx-backend-lwjgl3-1.12.1.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl3/1.12.1/6e65c22e06a73033cafc92160e87fef8fc3166aa/gdx-backend-lwjgl3-1.12.1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-backend-lwjgl3/1.12.1/236aefacb9cfe75a8a5a3d930aad77b533881141/gdx-backend-lwjgl3-1.12.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

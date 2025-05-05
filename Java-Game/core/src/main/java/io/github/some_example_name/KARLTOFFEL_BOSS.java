@@ -1,5 +1,7 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.math.Vector2;
+
 public class KARLTOFFEL_BOSS extends Boss{
     KARLTOFFEL_BOSS(float x, float y, Main logic, String filepath){
         super(x, y, logic,"El_Karltoffel.png");
@@ -7,32 +9,36 @@ public class KARLTOFFEL_BOSS extends Boss{
         maxspeed = 100;
         spawnx = x;
         spawny = y;
-        curlevel = logic.currentlevel;
-        this.logic = logic;
         maxhealth = 1000;
         curhealth = 1000;
-        this.player = logic.Player;
         hitboxOffsetX = 25;
         hitboxOffsetY = 35;
-        scale(5.0f);
+        scale(0.3f);
 
     }
     public boolean update(float delta){
         playerinview();
         if(curhealth <= 0) {
-            counter--;
-            if(counter <= 0) {
+
                 sterben();
                 return true;
-            }
         }
-        else {
+
             engagePlayer(delta);
-        }
+
         return false;
     };
     public void engagePlayer(float delta){
+        attackdelay+=delta;
 
+        if (attackdelay>=2)
+        {
+            //line of sight
+            attackdelay=0;
+            Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
+            vec.setLength(this.getHeight()/2);
+            logic.level1.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
+        }
     };
     public void sterben(){
         destroy();

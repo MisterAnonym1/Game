@@ -4,7 +4,9 @@
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.12.1/a2d066c09329c457045c284c42d6f37122840aa/gdx-1.12.1.jar!/" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.12.1/942ca06f18b83f84a35dfa6e9bd2022c39155048/gdx-1.12.1-javadoc.jar!/" />
+    </JAVADOC>
     <SOURCES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx/1.12.1/ab23b5d3982f3d89ba30f1c4db509aa7568c3024/gdx-1.12.1-sources.jar!/" />
     </SOURCES>

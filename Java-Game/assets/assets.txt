@@ -1,4 +1,9 @@
 .idea/assets.iml
+.idea/git_toolbox_blame.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
 Al Assad.png
 Amble-Regular-26.fnt
 background.png
@@ -8,6 +13,7 @@ drop.png
 El_Karltoffel.png
 El_Karltoffel_Gescailt.png
 Fireball.png
+HappySheep_All.png
 libgdx.png
 Lines.txt
 Loadingsheet.png
