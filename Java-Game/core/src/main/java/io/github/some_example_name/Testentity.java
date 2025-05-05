@@ -17,7 +17,6 @@ public class Testentity extends Entity {
     int spawnx=0;
     int spawny=0;
     float delay=0;
-    Animation<TextureRegion> walkAnimation;
     boolean collides = false;
     Main logic;
 
@@ -40,19 +39,25 @@ public class Testentity extends Entity {
     }
 
     @Override
-    public void draw(Batch batch, float parentAlpha) {
+    public void draw(Batch batch,float delta) {
         //super.draw(batch, parentAlpha);
-        animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
+        animationstateTime += delta; // Accumulate elapsed animation time
         TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
 
         batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
 
     @Override
+    public void destroy() {
+        super.destroy();
+        Level.testentitys.remove(this);
+    }
+
+    @Override
     void initializeHitbox() {
-        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/4.1f, getHeight()/4.62f);
         hitboxOffsetX=10;
         hitboxOffsetY=10;
+        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/4.1f, getHeight()/4.62f);
     }
 
     void setrandompoint(float centerx, float centery, float radius)

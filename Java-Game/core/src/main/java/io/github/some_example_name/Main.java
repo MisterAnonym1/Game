@@ -4,29 +4,22 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.DelayAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-import static java.lang.Math.*;
 
 
 public class Main implements ApplicationListener {
@@ -37,6 +30,7 @@ public class Main implements ApplicationListener {
     Matrix matrix;
     Music music;
     TiledMap map;
+    Level level1;
     private OrthogonalTiledMapRenderer renderer;
     public static Label.LabelStyle labelStyle;
     OrthographicCamera ocam;
@@ -45,7 +39,6 @@ public class Main implements ApplicationListener {
     FitViewport viewport;
     Batch batch;
     Player Player;
-    Stage entityStage;
     Vector2 touchPos;
     Testentity werther;
     Array<Sprite> dropSprites;
@@ -54,6 +47,7 @@ public class Main implements ApplicationListener {
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
     NPC currentNPC;
+    KARLTOFFEL_BOSS El_Karltoffelboss;
     static boolean debugging=false;
     @Override
     public void create() {
@@ -65,13 +59,13 @@ public class Main implements ApplicationListener {
 
         ocam=new OrthographicCamera(800,500);
         viewport = new FitViewport(800, 500, ocam);
-        entityStage= new Stage(viewport,spriteBatch);
+        level1 = new Level(LevelList.levels[0], this);
         //entityStage= new Stage();
         Player = new Player(400,250,300,100, viewport);
         Player.setWorldbounds(-0,800,0,500);
+
         touchPos = new Vector2();
         werther= new Testentity(200,200,this);
-        entityStage.addActor(werther);
         ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
         bucketRectangle = new Rectangle();
         map = new TmxMapLoader().load("Test Karte 2.tmx");
@@ -83,12 +77,15 @@ public class Main implements ApplicationListener {
         music.play();
         revtext = new Revtext(400,250,1,0.1f,"Hallo das ist ein Revtext");
         matrix= new Matrix(viewport);
-        currentNPC= new TreassureChest (500,200,"bucket.png","own Watertile 2.png",0,this);
-        entityStage.addActor(new Schlange(this,0,0));
+        currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
         shape.setAutoShapeType(true);
-
+        El_Karltoffelboss = new KARLTOFFEL_BOSS(0,0,this, "El_Karlotoffel" );
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+        level1.load();
+
+
     }
 
     @Override
@@ -117,13 +114,15 @@ public class Main implements ApplicationListener {
                 deltaFactor/=1+delta;
 
             }
+            if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {
+               debugging = !debugging;
+
+            }
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
              Vector2 vec= new Vector2(1,1);
             vec.setAngleDeg(Player.directionline);
-            FireBall ball=new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y));
-            ball.centerAt(Player);
-            entityStage.addActor(ball);
+            level1.projectiles.add(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             ocam.zoom += 0.02f;
@@ -145,13 +144,6 @@ public class Main implements ApplicationListener {
 
         float effectiveViewportWidth = ocam.viewportWidth ;
         float effectiveViewportHeight = ocam.viewportHeight;
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            ocam.rotate(-0.5f, 0, 0, 1);
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.E)) {
-            ocam.rotate(0.5f, 0, 0, 1);
-            //viewport.update((int)effectiveViewportWidth, (int)effectiveViewportHeight);
-        }
 
 
         //float effectiveViewportWidth = ocam.viewportWidth * ocam.zoom;
@@ -173,9 +165,10 @@ public class Main implements ApplicationListener {
 
         Player.act(delta);
         currentNPC.act(delta);
-        //werther.addAction(Actions.rotateBy(0.1f));
-        entityStage.act(delta);
+        //werther.addAction(Actions.rotateBy(0.1f))
+        El_Karltoffelboss.act(delta);
         revtext.act(delta);
+        level1.act(delta);
         ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
 
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
@@ -202,13 +195,14 @@ public class Main implements ApplicationListener {
         spriteBatch.begin();
         float worldWidth = Gdx.graphics.getWidth();
         float worldHeight = Gdx.graphics.getHeight();
-        //renderer.setView(ocam);
-        //renderer.render();
         spriteBatch.setColor(1,1,1,1);
+
+
+
         //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
         matrix.actAndDraw(spriteBatch,delta);
+        level1.draw(spriteBatch,shape,delta);
         spriteBatch.end();
-
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(5);
@@ -223,16 +217,15 @@ public class Main implements ApplicationListener {
 
         shape.end();
 
-
-        entityStage.draw();
         spriteBatch.begin();
 
 
-        werther.draw(spriteBatch,0.4f);
+        //werther.draw(spriteBatch,delta);
         Player.draw(spriteBatch,shape, delta,1.0f);
         revtext.draw(spriteBatch);
-       currentNPC.draw(spriteBatch,1);
+       currentNPC.draw(spriteBatch,delta);
         currentNPC.drawInConversation(spriteBatch);
+        El_Karltoffelboss.draw(spriteBatch,delta);
          spriteBatch.end();
 
     }

@@ -96,6 +96,7 @@ public class Script {
         "Bereite dich vor... oder warte einfach.",
         "Speicher wird optimiert. Hoffentlich.",
         "Die Magie des Ladens läuft.",
+        "Deine Werbung könnte hier stehen",
         "Nicht der langsamste Ladebildschirm!",
         "Die KI denkt nach…",
         "Loading... please don’t blink.",

@@ -25,7 +25,7 @@ public class Matrix {
         texts.add(new VerticalRevtext(0,500,fontsize,string,charDelay));
         layout = texts.get(0).layout;
 
-        for(int i=1; i<port.getScreenWidth()/(layout.width*1.1);i++)
+        for(int i=1; i<port.getWorldWidth()/(layout.width*1.1);i++)
         {
             mixString();
             texts.add(new VerticalRevtext(i*layout.width*1.1f,500,fontsize,string,charDelay));
@@ -73,7 +73,7 @@ class VerticalRevtext extends Sprite
     float counter;
     float centerX;
     float centerY;
-    float charDelay=0.3f;
+    float charDelay=0.01f;
 
     BitmapFont font;
      GlyphLayout layout;

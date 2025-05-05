@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -33,15 +34,14 @@ class Entity extends TextureActor
     EntityStatus status;
     Rectangle worldbounds;
     Player player;
+    Animation<TextureRegion> defaultAnimation;
+    Animation<TextureRegion> walkAnimation;
     public enum EntityStatus { inactiv, idle, engaging }
 
     Entity(float x, float y, TextureRegion tex, Player player)
     {
         super(tex);
-        //texture=tex;
         this.player=player;
-        //setWidth(texture.getRegionWidth());
-        //setHeight(texture.getRegionHeight());
         collisionOn = true;
         additionalForce = new Vector2(0, 0);
         movement = new Vector2(0, 0);
@@ -53,66 +53,35 @@ class Entity extends TextureActor
     }
     Entity(float x, float y, String filepath,Player player)
     {
-        //super(new TextureRegion(new Texture(filepath)));
          this(x,y,new TextureRegion(new Texture(filepath)), player);
-        /*this.player=player;
-        //setWidth(texture.getTexture().getWidth());
-        //setHeight(texture.getTexture().getHeight());
-        collisionOn = true;
-        additionalForce = new Vector2(0, 0);
-        movement = new Vector2(0, 0);
-        curhealth = 100;
-        weight = 1;
-        status = EntityStatus.inactiv;
+    }
 
-        setPosition(x,y);*/
+
+
+
+    public void draw(Batch batch, float delta) {
+        animationstateTime += delta;
+        if (defaultAnimation==null){super.draw(batch, 1);}
+        else {
+            TextureRegion currentFrame = defaultAnimation.getKeyFrame(animationstateTime, true);
+            batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+        }
 
     }
 
-    /*public void draw (Batch batch, float parentAlpha)
-    {
-        batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
-        //batch.setColor(getColor().r,getColor().g,getColor().b, hitboxalpha);
-        batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
-    }*/
-
-    @Override
-    public void draw(Batch batch, float parentAlpha) {
-        batch.end();
-        //drawShadow(new ShapeRenderer());
-        batch.begin();
-        super.draw(batch, parentAlpha);
-
-    }
-
-    public void drawHitbox(ShapeRenderer shape)
-    {
-
-        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        shape.setColor(1f, 1f, 0f, hitboxalpha  );
-        shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
-
-    }
     public void drawShadow(ShapeRenderer shape)
     {
-        Gdx.gl.glEnable(GL20.GL_BLEND);
+        //Gdx.gl.glEnable(GL20.GL_BLEND);
         //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        //shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.setColor(0.1f, 0.1f, 0.1f, 0.4f  );
+
         shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
         drawHitbox(shape);
-        //shape.end();
-        //shape.dispose();
+
     }
     void centerAtActor(Entity other)
     {
        setPosition(other.getX()+other.hitbox.width/2-getWidth()/2,other.getY()+other.hitbox.height/2-getHeight()/2);
     }
-    /*@Override
-    public void act(float delta) {
-        super.act(Math.min(delta,1/30f));
-    }*/
-
     void sethealth(int health, boolean ignoremax)
     //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
     {
@@ -135,23 +104,6 @@ class Entity extends TextureActor
     {
        sethealth(health,false);
     }
-    /*void scale(float factor)
-    {
-
-        setSize(getWidth()*factor,getHeight()*factor);
-
-
-    }*/
-
-
-    /*public void setSize(float width, float height) {
-        float factorw=width/getWidth();
-        float factorh =height/getHeight();
-        super.setSize(width, height);
-        hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
-        hitboxOffsetX*=factorw;
-        hitboxOffsetY*= factorh;
-    }*/
 
     boolean damageby(int damage)
     {
@@ -168,11 +120,6 @@ class Entity extends TextureActor
         return false;
 
     }
-    /*void initializeHitbox()
-    {
-        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth(), getHeight());
-
-    }*/
 
     void setWorldbounds(Rectangle rec)
     {
@@ -275,6 +222,7 @@ class Entity extends TextureActor
 
 
         moveatdirection(deltatime);
+
     }
 
 

@@ -321,3 +321,25 @@ public class GameWorld {
         }
     }
 }
+
+///Perzeptron für smarEntity//
+class Perzeptron
+ {
+  float[]weights;
+  float theta;
+  Perzeptron(float[] list, float theta)
+  {
+      weights=list;
+      this.theta=theta;
+  }
+  boolean firing(float[]input)
+     {
+         if(input.length!=weights.length) throw new IllegalArgumentException("weights.length!=input.length");
+         float answer=-theta;
+         for(int i=0;i<input.length;i++)
+         {
+             answer+=weights[i]*input[i];
+         }
+         return  answer>0;
+     }
+}

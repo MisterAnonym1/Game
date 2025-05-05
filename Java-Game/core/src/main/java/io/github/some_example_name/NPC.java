@@ -39,10 +39,17 @@ public class NPC extends Entity
     }
 
     @Override
-    public void draw(Batch batch, float parentalpha)
+    public void draw(Batch batch, float delta)
     {
-        super.draw(batch, parentalpha);
+        super.draw(batch, delta);
     }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        Level.npcs.remove(this);
+    }
+
     public void drawInConversation(SpriteBatch batch)
     {
         if(inConversation){
