@@ -277,30 +277,6 @@ class Entity extends TextureActor
     }
 
 
-    @Override
-    public void setX(float x) {
-        super.setX(x);
-       // hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void setY(float y) {
-        super.setY(y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void moveBy(float x, float y) {
-        super.moveBy(x, y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void setPosition(float x, float y) {
-        super.setPosition(x, y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
 
 
     public boolean inradiusof(Entity other, float radius)

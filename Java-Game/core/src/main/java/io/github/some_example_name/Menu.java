@@ -9,17 +9,23 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import org.w3c.dom.Text;
 
-/*
+
 public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
     boolean onscreen = false; //ob ein Screen gerade aktiv ist oder nicht
     Revtext textbox; //erschafft eine Textbox, <---dein ernst? ich kann selber sehen
 
 
 }
-
+/*
 public class Deathscreen extends Menu {
     Button knopf;
     Rectangle screen;
@@ -215,51 +221,108 @@ class Updatetxt implements Runnable {
     }
 
 }
-
+*/
 class Knopf extends TextureActor
 {
     boolean activ;
-    boolean gedrückt;
     boolean hold;
 
-    Knopf(float x, float y,String filepath, boolean nureinmal)
+
+    Knopf(float x, float y,String filepath, boolean nureinmal, GameChange code)
     { super(filepath);
         setPosition(x,y);
         activ = true;
+        GameChange change;
         hold = !nureinmal;
-        gedrückt = false;
         toFront();
+        change=code;
+        debug();
+        setBounds(hitbox.getX() , hitbox.getY(), hitbox.getWidth(), hitbox.getHeight());
+        setTouchable(Touchable.enabled);
+        addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                System.out.println("Button wurde geändert!");
+            }
+        });
+        addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                    if(!activ){return false;};
+                    onMouseDown();
+                    this.testi();
+                    if(!hold){ return true;}
+                    change.onPress();
+                    return true;
+                    // WICHTIG: Muss `true` zurückgeben, damit `touchUp` ausgelöst wird
+                }
+
+            private void testi() {
+                System.out.println("test in listener funktioniert");
+            }
+
+
+            @Override
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                onMouseLeave();
+                if(!hold){
+                    change.onPress();
+                    setVisible(false);
+                    activ = false;
+                    Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+                }
+
+
+            }
+
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+               onMouseEnter();
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                onMouseLeave();
+            }
+        });
+
     }
 
-    public void onMouseEnter(double x, double y)
+    public void onMouseEnter()
     {
-
-
+        if(!activ){return;};
         setColor(0.7f, 0.7f, 0.7f, 1);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
 
 
     }
 
+    @Override
+    public Actor hit(float x, float y, boolean touchable) {
+        System.out.println("actor has been hit");
+        //new ClickListener()
+        return super.hit(x, y, touchable);
+    }
 
-
-    public void onMouseLeave(double x, double y)
+    public void onMouseLeave()
     {
-       setColor(1f,1f,1f,1);
+        if(!activ){return;};
+        setColor(1f,1f,1f,1);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
     }
 
 
-    public void onMouseDown(double x, double y, int key) {
+    public void onMouseDown() {
+        if(!activ){return;};
         setColor(0.5f,0.5f,0.5f,1);
-        Gdx.input.getX(), Gdx.input.getY()
+        //Gdx.input.getX(), Gdx.input.getY()
 
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
-        if(activ)
+        /*if(activ)
         {
 
             gedrückt = true;
@@ -267,11 +330,11 @@ class Knopf extends TextureActor
             if(!hold)
             {
                 setVisible(false);
-                aktiv = false;
+                activ = false;
                 Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
             }
 
-        }
+        }*/
     }
 
 }
@@ -281,4 +344,4 @@ interface GameChange {
      void onPress();
 
 }
-*/
+
