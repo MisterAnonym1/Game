@@ -145,7 +145,7 @@ class NpcData
        this.scale=scale;
     }
 }
-/*
+
  class Trader extends NPC {
     Revtext text;
     Sprite hintergrund;
@@ -179,4 +179,4 @@ class NpcData
 
     }
 
-}*/
+}

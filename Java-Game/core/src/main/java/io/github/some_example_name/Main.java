@@ -180,6 +180,17 @@ public class Main implements ApplicationListener {
         uiStage.act(delta);
         ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
 
+        for (MyTile tile : currentlevel.teleporters)
+        {
+            if(Player.hitbox.overlaps(tile.hitbox)) //Hitbox im Player erstellen
+            {
+                currentlevel.destroy();
+                levelzahl++;
+                currentlevel = new Level(LevelList.levels[levelzahl], this);
+                currentlevel.load();
+                break;
+            }
+        }
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
         }
 

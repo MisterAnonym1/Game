@@ -1,19 +1,5 @@
 package io.github.some_example_name;
 
-public class Tile extends Main {
-
-    void teleport() //sollte gehen, nur collidesWith muss definiert werden.
-   {
-      for (MyTile tile : currentlevel.teleporters)
-      {
-         if(Player.hitbox.collidesWith(tile.hitbox)) //Hitbox im Player erstellen
-         {
-             level1 = new Level(LevelList.levels[levelzahl+1], this);
-             levelzahl++;
-             level1.load();
-            break;
-         }
-      }
 
 /*
       if(player.collisionOn) {
@@ -45,4 +31,4 @@ public class Tile extends Main {
       return false;
    }
      */
-}
+
