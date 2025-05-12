@@ -2,8 +2,8 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class KARLTOFFEL_BOSS extends Boss{
-    KARLTOFFEL_BOSS(float x, float y, Main logic, String filepath){
+public class Karltoffelboss extends Boss{
+    Karltoffelboss(float x, float y, Main logic, String filepath){
         super(x, y, logic,"El_Karltoffel.png");
         acceleration = 100;
         maxspeed = 100;

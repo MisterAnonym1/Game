@@ -47,7 +47,7 @@ public class Main implements ApplicationListener {
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
     NPC currentNPC;
-    KARLTOFFEL_BOSS El_Karltoffelboss;
+    Karltoffelboss El_Karltoffelboss;
     static boolean debugging=false;
     @Override
     public void create() {
@@ -79,7 +79,7 @@ public class Main implements ApplicationListener {
         matrix= new Matrix(viewport);
         currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
         shape.setAutoShapeType(true);
-        El_Karltoffelboss = new KARLTOFFEL_BOSS(0,0,this, "El_Karlotoffel" );
+        El_Karltoffelboss = new Karltoffelboss(0,0,this, "El_Karlotoffel" );
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 

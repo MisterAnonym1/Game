@@ -31,7 +31,6 @@ abstract class Gegner extends Entity
     int delay;
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     abstract boolean update(float delta);// soll acten zurückgeben ob gegner aus liste entfernt werden soll
-    abstract void engagePlayer(float delta);
     abstract void sterben();
 
     Gegner(float x, float y, Main logic, String filepath) {
@@ -180,7 +179,7 @@ abstract class Gegner extends Entity
         }
     }
 
-    /*public void engagePlayer(float delta){
+    public void engagePlayer(float delta){
         attackdelay+=delta;
 
         if (attackdelay>=2)
@@ -191,7 +190,7 @@ abstract class Gegner extends Entity
             vec.setLength(this.getHeight()/2);
             logic.level1.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
         }
-    };*/
+    };
 
     @Override
     public void draw(Batch batch, float delta) {
@@ -263,6 +262,17 @@ abstract class Gegner extends Entity
         return neighbors;
 
     }
-    //Allerlei mögliche Atacken //
+    public void simpleattack (){
+        while (getdistance(player)<= 2)
+        {}
+    };
+    public void bombattack(){
+        while (getdistance(player)<= 2)
+        {}
+    };
+    public void fireballattack(){
+        while (getdistance(player)<= 10)
+        {}
+    };
 }
 
