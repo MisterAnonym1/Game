@@ -55,12 +55,12 @@ class Schlange extends Gegner
         }
         //counter--;
         if(inradiusof(player, 800)) {
-            attack();
+            simpleattack();
 
         }
         else
         {
-
+            this.dashattack(delta);
             if(playerinview()) { //läuft direkt gerade zum Spieler
                 counter = 0;
                 movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());

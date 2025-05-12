@@ -35,12 +35,16 @@ public class Karltoffelboss extends Boss{
         {
             //line of sight
             attackdelay=0;
-            Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
-            vec.setLength(this.getHeight()/2);
-            logic.currentlevel.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
+            fireballattack();
         }
     };
     public void sterben(){
         destroy();
     };
+
+    @Override
+    public void dashattack(float delta) {
+        super.dashattack(delta);
+    }
+
 }
