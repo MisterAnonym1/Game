@@ -200,6 +200,10 @@ abstract class Gegner extends Entity
     @Override
     public void destroy() {
         super.destroy();
+        Level.deleteList.add(this);
+    }
+    @Override
+    public void removeFromLevel() {
         Level.gegnerliste.remove(this);
     }
 

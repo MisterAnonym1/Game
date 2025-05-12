@@ -31,13 +31,13 @@ public class Karltoffelboss extends Boss{
     public void engagePlayer(float delta){
         attackdelay+=delta;
 
-        if (attackdelay>=2)
+        if (attackdelay>=2)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
         {
             //line of sight
             attackdelay=0;
             Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
             vec.setLength(this.getHeight()/2);
-            logic.level1.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
+            logic.currentlevel.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
         }
     };
     public void sterben(){

@@ -37,6 +37,16 @@ public class NPC extends Entity
 
         //hitbox.setAlpha(1); //Aus kommentieren um die Hitbox sichtbar zu mahcen. Achtung macht dei Hitbox durchlässig wenn auskommentiert.
     }
+    NPC(float x, float y, String filepath, String fileBackround, int scriptindex,float scale,Main log)
+    {
+        this(x,y,filepath,fileBackround,scriptindex,log);
+        scale(scale);
+    }
+    NPC(NpcData data,float x, float y,Main log)
+    {
+        this(x,y,data.filepath,data.fileBackround,data.scriptindex,log);
+        scale(data.scale);
+    }
 
     @Override
     public void draw(Batch batch, float delta)
@@ -45,8 +55,7 @@ public class NPC extends Entity
     }
 
     @Override
-    public void destroy() {
-        super.destroy();
+    public void removeFromLevel() {
         Level.npcs.remove(this);
     }
 
@@ -55,12 +64,13 @@ public class NPC extends Entity
         if(inConversation){
             batch.draw(backround, viewport.getScreenX(), viewport.getScreenY(), viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(texture,viewport.getScreenX()+viewport.getScreenWidth()/2.0f-hitbox.getWidth()/1f, viewport.getScreenY()+viewport.getScreenHeight()/2.0f-hitbox.getHeight()/1.0f,getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
-            System.out.println("Conversation started succesfully");
+            System.out.println("lol");
             text.draw(batch);}
     }
 
     public void act(float delta)
     {
+        super.act(delta);
         if(inConversation&&!statementfinished)
         {
             if(text.linefinished)
@@ -95,14 +105,6 @@ public class NPC extends Entity
             text.skip();
         }
     }
-
-    @Override
-    public void destroy() {
-        backround.dispose();
-        super.destroy();
-
-    }
-
     void onPress() {
         inConversation=true;
         if(backround==null)
@@ -129,6 +131,21 @@ public class NPC extends Entity
         text.reset();
     }
 }
+
+class NpcData
+{
+    String filepath, fileBackround;
+    int scriptindex;
+    float scale;
+    NpcData( String filepath, String fileBackround, int scriptindex,float scale)
+    {
+       this.filepath=filepath;
+       this.fileBackround= fileBackround;
+       this.scriptindex=scriptindex;
+       this.scale=scale;
+    }
+}
+/*
  class Trader extends NPC {
     Revtext text;
     Sprite hintergrund;
@@ -162,4 +179,4 @@ public class NPC extends Entity
 
     }
 
-}
+}*/

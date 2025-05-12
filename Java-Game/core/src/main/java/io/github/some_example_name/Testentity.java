@@ -26,16 +26,18 @@ public class Testentity extends Entity {
         acceleration = 100;
         maxspeed = 100;
         setSize(200,200);
-        hitboxOffsetX=10;
-        hitboxOffsetY=10;
         spawnx = (int)x;
         spawny = (int)y;
         logic = log;
-        scale(1.4f);
-        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.5f);
+
+        scale(1f);
+        hitboxOffsetX=10;
+        hitboxOffsetY=10;
+        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.2f);
         direction = new Vector2(0, 0);
         targetpos = new Position(spawnx , spawny );
         gotopoint(targetpos.x, targetpos.y);
+        //rotateBy(40);
     }
 
     @Override
@@ -47,23 +49,22 @@ public class Testentity extends Entity {
         batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
 
+
     @Override
-    public void destroy() {
-        super.destroy();
+    public void removeFromLevel() {
         Level.testentitys.remove(this);
     }
 
     @Override
     void initializeHitbox() {
-        hitboxOffsetX=10;
-        hitboxOffsetY=10;
+
         hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/4.1f, getHeight()/4.62f);
     }
 
     void setrandompoint(float centerx, float centery, float radius)
     {
-        delay = MathUtils.round((float) (MathUtils.random() * 1.0 + 0.6f));
-        boolean collides=false;
+        delay =  MathUtils.random() * 1.0f + 2.6f;
+        boolean collides;
         while (true) {
             float angle = MathUtils.random(0,360);
             float length = MathUtils.random((float) (radius * 0.1), radius);
@@ -74,7 +75,8 @@ public class Testentity extends Entity {
             targetpos = new Position(Math.round(centerx + pos.x), Math.round(centery + pos.y));
             //new Rectangle(targetpos.x, targetpos.y, 20, 20).setAlpha(1);
             Vector2 vec = new Vector2(targetpos.x - getCenterX(), targetpos.y - getCenterY());
-            Rectangle line2 = new Rectangle(getCenterX(), getCenterY() - getHeight() / 2, vec.len(), Math.max(getWidth(), getHeight()));
+            ///Rectangle line2 = new Rectangle(getCenterX(), getCenterY() - getHeight() / 2, vec.len(), Math.max(getWidth(), getHeight()));
+
             //line2.setOrigin(getCenterX(), getCenterY());
 
             //line2.rotate(vec.getAngleDeg());
@@ -98,7 +100,7 @@ public class Testentity extends Entity {
     }
     void gotopoint(float x, float y)
     {
-        direction = new Vector2(x - getCenterX(), -getCenterY() + y);
+        direction = new Vector2(x - getCenterX(), y-getCenterY());
 
     }
     boolean isatdestination() {
@@ -117,7 +119,8 @@ public class Testentity extends Entity {
 
     }
     @Override
-    public void act(float delta) {
+    public void act(float delta)
+    {
         super.act(delta);
         if(isatdestination())
         {
@@ -138,6 +141,9 @@ public class Testentity extends Entity {
             updatemovement(direction,delta);
         }
     }
+
+
+
 }
 
 

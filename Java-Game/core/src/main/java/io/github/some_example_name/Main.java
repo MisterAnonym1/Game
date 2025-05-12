@@ -30,18 +30,20 @@ public class Main implements ApplicationListener {
     Matrix matrix;
     Music music;
     TiledMap map;
-    Level level1;
+    Stage uiStage;
     private OrthogonalTiledMapRenderer renderer;
     public static Label.LabelStyle labelStyle;
     OrthographicCamera ocam;
     SpriteBatch spriteBatch;
     Level currentlevel;
+    int levelzahl;
     FitViewport viewport;
     Batch batch;
     Player Player;
     Vector2 touchPos;
     Testentity werther;
     Array<Sprite> dropSprites;
+    SpriteButton testbutton;
     float dropTimer;
     float deltaFactor=1;
     Rectangle bucketRectangle;
@@ -51,17 +53,21 @@ public class Main implements ApplicationListener {
     static boolean debugging=false;
     @Override
     public void create() {
-        backgroundTexture = new Texture("background.png");
-        shape= new ShapeRenderer();
-        dropTexture = new Texture("drop.png");
-        music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
-        spriteBatch = new SpriteBatch();
-
         ocam=new OrthographicCamera(800,500);
         viewport = new FitViewport(800, 500, ocam);
-        level1 = new Level(LevelList.levels[0], this);
-        //entityStage= new Stage();
-        Player = new Player(400,250,300,100, viewport);
+        shape= new ShapeRenderer();
+        spriteBatch = new SpriteBatch();
+
+
+        backgroundTexture = new Texture("background.png");
+        dropTexture = new Texture("drop.png");
+        music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
+
+
+
+        currentlevel = new Level(LevelList.levels[0], this);
+        uiStage=new Stage(new FitViewport(800,500));
+        Player = new Player(400,250,300,100, viewport, uiStage.getViewport());
         Player.setWorldbounds(-0,800,0,500);
 
         touchPos = new Vector2();
@@ -83,16 +89,19 @@ public class Main implements ApplicationListener {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        level1.load();
-
+        testbutton=new SpriteButton(300,300,"drop.png",1);
+        uiStage.addActor(testbutton);
+        currentlevel.load();
+        Gdx.input.setInputProcessor(uiStage);
 
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true);
+        uiStage.getViewport().update(width, height, true);
         ocam.update();
-        System.out.println(width+"w "+ height +"h\n");
+        //System.out.println(width+"w "+ height +"h\n");
     }
 
     @Override
@@ -122,7 +131,7 @@ public class Main implements ApplicationListener {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
              Vector2 vec= new Vector2(1,1);
             vec.setAngleDeg(Player.directionline);
-            level1.projectiles.add(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
+            currentlevel.projectiles.add(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             ocam.zoom += 0.02f;
@@ -165,10 +174,10 @@ public class Main implements ApplicationListener {
 
         Player.act(delta);
         currentNPC.act(delta);
-        //werther.addAction(Actions.rotateBy(0.1f))
         El_Karltoffelboss.act(delta);
         revtext.act(delta);
-        level1.act(delta);
+        currentlevel.act(delta);
+        uiStage.act(delta);
         ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
 
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
@@ -201,7 +210,7 @@ public class Main implements ApplicationListener {
 
         //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
         matrix.actAndDraw(spriteBatch,delta);
-        level1.draw(spriteBatch,shape,delta);
+        currentlevel.draw(spriteBatch,shape,delta);
         spriteBatch.end();
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
@@ -226,6 +235,7 @@ public class Main implements ApplicationListener {
        currentNPC.draw(spriteBatch,delta);
         currentNPC.drawInConversation(spriteBatch);
         El_Karltoffelboss.draw(spriteBatch,delta);
+        uiStage.draw();
          spriteBatch.end();
 
     }
