@@ -20,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 
 public class Main implements ApplicationListener {
@@ -37,7 +36,9 @@ public class Main implements ApplicationListener {
     OrthographicCamera ocam;
     SpriteBatch spriteBatch;
     Level currentlevel;
+    int levelzahl;
     FitViewport viewport;
+    Batch batch;
     Player Player;
     Vector2 touchPos;
     Testentity werther;
@@ -220,8 +221,6 @@ public class Main implements ApplicationListener {
 
         //Player.drawHitbox(shape);
         //werther.drawHitbox(shape);
-        //testbutton.drawHitbox(shape);
-
         shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
 

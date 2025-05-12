@@ -37,16 +37,6 @@ public class NPC extends Entity
 
         //hitbox.setAlpha(1); //Aus kommentieren um die Hitbox sichtbar zu mahcen. Achtung macht dei Hitbox durchlässig wenn auskommentiert.
     }
-    NPC(float x, float y, String filepath, String fileBackround, int scriptindex,float scale,Main log)
-    {
-        this(x,y,filepath,fileBackround,scriptindex,log);
-        scale(scale);
-    }
-    NPC(NpcData data,float x, float y,Main log)
-    {
-        this(x,y,data.filepath,data.fileBackround,data.scriptindex,log);
-        scale(data.scale);
-    }
 
     @Override
     public void draw(Batch batch, float delta)
@@ -54,9 +44,9 @@ public class NPC extends Entity
         super.draw(batch, delta);
     }
 
-
     @Override
-    public void removeFromLevel() {
+    public void destroy() {
+        super.destroy();
         Level.npcs.remove(this);
     }
 
@@ -131,6 +121,7 @@ public class NPC extends Entity
         text.reset();
     }
 }
+ class Trader extends NPC {
 class NpcData
 {
     String filepath, fileBackround;
@@ -154,15 +145,28 @@ class NpcData
     int lineindex;
     int maxline;
     int line;
-    Trader(float x, float y, String filepath, String fileBackround, int lineindex,Main log){
-        super(x, y, filepath,log.Player);
+    Trader(float x, float y, String filepath, String fileBackground, int lineindex,Main log){
+        super(x, y, filepath, fileBackground, lineindex, log);
         addAction(Actions.delay(1));
-        hintergrund = new Sprite(new Texture(fileBackround));
-        hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
+        //hintergrund = new Sprite(new Texture(fileBackground));
+        //hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
     }
 
-    void Trade(){
+    @Override void nextline()
+    {
+        if(line < maxline)
+        {
+            text.newText(Script.npcscript[scriptIndex][1][line]);
+        }
+    }
+
+    void interact(){
+        //inConversation = true;
+        onPress();
+        System.out.println("Entered trader menu succesfully");
+        //nextline();
+
 
     }
 
-}*/
+}
