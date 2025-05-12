@@ -93,7 +93,7 @@ public class Main implements ApplicationListener {
         uiStage.addActor(testbutton);
         currentlevel.load();
         Gdx.input.setInputProcessor(uiStage);
-
+        new InventoryManager().setValueByKey("Coins", 187);
     }
 
     @Override
