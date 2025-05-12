@@ -28,12 +28,12 @@ class PartikelSprite extends TextureActor
     @Override
     public void act(float delta)
     {
+        super.act(delta);
         delay-=delta;
         if(delay <= 0)
         {
             destroy();
         }
-        super.act(delta);
     }
 
     @Override

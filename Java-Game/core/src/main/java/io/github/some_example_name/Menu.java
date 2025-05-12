@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -16,7 +17,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import org.w3c.dom.Text;
+
+import java.util.function.Consumer;
 
 
 public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
@@ -222,62 +226,52 @@ class Updatetxt implements Runnable {
 
 }
 */
-class Knopf extends TextureActor
+class SpriteButton extends Button
 {
-    boolean activ;
-    boolean hold;
 
-
-    Knopf(float x, float y,String filepath, boolean nureinmal, GameChange code)
-    { super(filepath);
+    private Runnable onClick;  // Wird einmal beim Klick ausgeführt
+    private Runnable onHold;   // Wird durchgehend ausgeführt, solange gedrückt
+    private Runnable onUp;
+    private Consumer<Boolean> onCheck;
+    // Funktioniert wie eine Checkbox
+    private boolean isChecked = false;
+    private boolean isPressed = false;
+    //private boolean isTouching = false; // Speichert, ob der Button gedrückt wird
+    SpriteButton(float x, float y,String filepath, float scale)
+    {
+        this(x,y,new TextureRegion(new Texture(filepath)),scale);
+    }
+    SpriteButton(float x, float y,TextureRegion region, float scale)
+    {
+        super(new TextureRegionDrawable(region));
         setPosition(x,y);
-        activ = true;
-        GameChange change;
-        hold = !nureinmal;
+        setDisabled(false);
+        //scaleBy(scale);
+        setSize(getWidth()*scale,getHeight()*scale);
         toFront();
-        change=code;
-        debug();
-        setBounds(hitbox.getX() , hitbox.getY(), hitbox.getWidth(), hitbox.getHeight());
-        setTouchable(Touchable.enabled);
-        addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                System.out.println("Button wurde geändert!");
-            }
-        });
         addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                    if(!activ){return false;};
-                    onMouseDown();
-                    this.testi();
-                    if(!hold){ return true;}
-                    change.onPress();
-                    return true;
-                    // WICHTIG: Muss `true` zurückgeben, damit `touchUp` ausgelöst wird
-                }
-
-            private void testi() {
-                System.out.println("test in listener funktioniert");
+                if(isDisabled()){return false;};
+                onMouseDown();
+                if (onClick != null) onClick.run();
+                return true;
+                // WICHTIG: Muss `true` zurückgeben, damit `touchUp` ausgelöst wird
             }
+
 
 
             @Override
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
-                onMouseLeave();
-                if(!hold){
-                    change.onPress();
-                    setVisible(false);
-                    activ = false;
-                    Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
-                }
-
-
+                //onMouseLeave();
+                isChecked = !isChecked;
+                if (onUp != null) onUp.run();
+                if (onCheck != null) onCheck.accept(isChecked);// Umschalten für Checkbox-Funktion
             }
 
             @Override
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-               onMouseEnter();
+                onMouseEnter();
             }
 
             @Override
@@ -288,60 +282,47 @@ class Knopf extends TextureActor
 
     }
 
+
     public void onMouseEnter()
     {
-        if(!activ){return;};
+        //if(!activ){return;};
         setColor(0.7f, 0.7f, 0.7f, 1);
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
-
-
+        Gdx.graphics.setSystemCursor(com.badlogic.gdx.graphics.Cursor.SystemCursor.Hand);
     }
 
-    @Override
-    public Actor hit(float x, float y, boolean touchable) {
-        System.out.println("actor has been hit");
-        //new ClickListener()
-        return super.hit(x, y, touchable);
-    }
+
 
     public void onMouseLeave()
     {
-        if(!activ){return;};
         setColor(1f,1f,1f,1);
         Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        if(isPressed){onMouseEnter();}
+        isPressed = false;
+
     }
 
 
     public void onMouseDown() {
-        if(!activ){return;};
+        isPressed = true;
         setColor(0.5f,0.5f,0.5f,1);
-        //Gdx.input.getX(), Gdx.input.getY()
 
     }
-
     @Override
     public void act(float delta) {
         super.act(delta);
-        /*if(activ)
-        {
-
-            gedrückt = true;
-            setColor(0.7f, 0.7f, 0.7f, 1);
-            if(!hold)
-            {
-                setVisible(false);
-                activ = false;
-                Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
-            }
-
-        }*/
+        if(isDisabled()){return;}
+        if(isPressed){
+            onMouseDown();
+            if (onHold != null) {
+                onHold.run(); // Wird durchgehend ausgeführt, solange gedrückt
+            }}
     }
+    public void setOnClick(Runnable action) { this.onClick = action; }
+    public void setOnHold(Runnable action) { this.onHold = action; }
+    public void setOnCheck(Consumer<Boolean> action) { this.onCheck = action; }
+    public void setOnUp(Runnable action) { this.onUp = action; }
 
-}
 
-@FunctionalInterface
-interface GameChange {
-     void onPress();
 
 }
 

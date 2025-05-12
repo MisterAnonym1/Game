@@ -37,6 +37,16 @@ public class NPC extends Entity
 
         //hitbox.setAlpha(1); //Aus kommentieren um die Hitbox sichtbar zu mahcen. Achtung macht dei Hitbox durchlässig wenn auskommentiert.
     }
+    NPC(float x, float y, String filepath, String fileBackround, int scriptindex,float scale,Main log)
+    {
+        this(x,y,filepath,fileBackround,scriptindex,log);
+        scale(scale);
+    }
+    NPC(NpcData data,float x, float y,Main log)
+    {
+        this(x,y,data.filepath,data.fileBackround,data.scriptindex,log);
+        scale(data.scale);
+    }
 
     @Override
     public void draw(Batch batch, float delta)
@@ -45,8 +55,7 @@ public class NPC extends Entity
     }
 
     @Override
-    public void destroy() {
-        super.destroy();
+    public void removeFromLevel() {
         Level.npcs.remove(this);
     }
 
@@ -61,6 +70,7 @@ public class NPC extends Entity
 
     public void act(float delta)
     {
+        super.act(delta);
         if(inConversation&&!statementfinished)
         {
             if(text.linefinished)
@@ -121,7 +131,7 @@ public class NPC extends Entity
         text.reset();
     }
 }
- class Trader extends NPC {
+
 class NpcData
 {
     String filepath, fileBackround;
@@ -169,4 +179,4 @@ class NpcData
 
     }
 
-}
+}*/

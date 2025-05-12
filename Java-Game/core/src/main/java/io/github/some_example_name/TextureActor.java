@@ -103,8 +103,20 @@ public class TextureActor extends Actor
     @Override
     public void act(float delta) {
         super.act(delta);
-        hitbox.setPosition(getX() + hitboxOffsetX, getY() + hitboxOffsetY);
+        //hitbox.setPosition(getX() + hitboxOffsetX, getY() + hitboxOffsetY);
     }
+
+    @Override
+    protected void positionChanged() {
+        super.positionChanged();
+        hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);
+    }
+
+    @Override
+    protected void sizeChanged() {
+        super.sizeChanged();
+    }
+
     void centerAt(TextureActor other)
     {
         setPosition(other.getCenterX()-getWidth()/2, other.getCenterY()-getHeight()/2);
@@ -137,10 +149,7 @@ public class TextureActor extends Actor
         //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
         hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
 
-    @Override
-    protected void positionChanged() {
-        super.positionChanged();
-    }
+
 
     public void destroy()
     {

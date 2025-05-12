@@ -43,7 +43,7 @@ public class Main implements ApplicationListener {
     Vector2 touchPos;
     Testentity werther;
     Array<Sprite> dropSprites;
-    Knopf testbutton;
+    SpriteButton testbutton;
     float dropTimer;
     float deltaFactor=1;
     Rectangle bucketRectangle;
@@ -67,7 +67,7 @@ public class Main implements ApplicationListener {
 
         currentlevel = new Level(LevelList.levels[0], this);
         uiStage=new Stage(new FitViewport(800,500));
-        Player = new Player(400,250,300,100, viewport);
+        Player = new Player(400,250,300,100, viewport, uiStage.getViewport());
         Player.setWorldbounds(-0,800,0,500);
 
         touchPos = new Vector2();
@@ -89,8 +89,8 @@ public class Main implements ApplicationListener {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        testbutton=new Knopf(300,300,"drop.png",true,() -> System.out.println("Knopf gedrückt"));
-
+        testbutton=new SpriteButton(300,300,"drop.png",1);
+        uiStage.addActor(testbutton);
         currentlevel.load();
         Gdx.input.setInputProcessor(uiStage);
 
@@ -101,7 +101,7 @@ public class Main implements ApplicationListener {
         viewport.update(width, height, true);
         uiStage.getViewport().update(width, height, true);
         ocam.update();
-        System.out.println(width+"w "+ height +"h\n");
+        //System.out.println(width+"w "+ height +"h\n");
     }
 
     @Override
@@ -177,7 +177,6 @@ public class Main implements ApplicationListener {
         El_Karltoffelboss.act(delta);
         revtext.act(delta);
         currentlevel.act(delta);
-        testbutton.act(delta);
         uiStage.act(delta);
         ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
 

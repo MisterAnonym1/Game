@@ -29,11 +29,11 @@ public class Testentity extends Entity {
         spawnx = (int)x;
         spawny = (int)y;
         logic = log;
-        scale(1.4f);
-        hitboxOffsetX=90;
-        hitboxOffsetY=90;
+
         scale(1f);
-        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.5f);
+        hitboxOffsetX=10;
+        hitboxOffsetY=10;
+        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.2f);
         direction = new Vector2(0, 0);
         targetpos = new Position(spawnx , spawny );
         gotopoint(targetpos.x, targetpos.y);
@@ -57,6 +57,7 @@ public class Testentity extends Entity {
 
     @Override
     void initializeHitbox() {
+
         hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/4.1f, getHeight()/4.62f);
     }
 
@@ -118,7 +119,9 @@ public class Testentity extends Entity {
 
     }
     @Override
-    public void act(float delta) {
+    public void act(float delta)
+    {
+        super.act(delta);
         if(isatdestination())
         {
             delay-=delta;
@@ -137,8 +140,10 @@ public class Testentity extends Entity {
             ismoving = true;
             updatemovement(direction,delta);
         }
-        super.act(delta);
     }
+
+
+
 }
 
 
