@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-class Revtext extends Sprite {
+class Revtext extends Actor {
     String maintext;
     CharSequence showtext;
     boolean linefinished;
@@ -46,20 +46,18 @@ class Revtext extends Sprite {
         lineDelay=(0.1f-chardelay)*mainText.length()+0.2f;
         setCenter(centerx,centery);
         linefinished = false;
-
+        toFront();
         //font.setColor(Color.WHITE);
         //setBorderColor(256 * 256 * 256 + 256 * 256 + 256);
         //setBorderWid setAlpha(1);
 
     }
     @Override
-    public void draw(Batch sbatch) {
-
+    public void draw(Batch sbatch,float parentalpha) {
+        sbatch.setColor(getColor().r,getColor().g,getColor().b,parentalpha);
         font.draw(sbatch, showtext, getX(), getY());
     }
-    void setVisible(boolean visible) {
-        setAlpha(visible?1:0);
-    }
+
     CharSequence reveal()
     {
         showtext = showtext.toString() + maintext.charAt(nummer);
@@ -78,6 +76,12 @@ class Revtext extends Sprite {
         reset();
         center(newtext);
         maintext = newtext;
+    }
+    void setText(String text)
+    {
+        showtext=text;
+        maintext=text;
+        linefinished=true;
     }
     public void act(float delta)
     {
@@ -124,13 +128,13 @@ class Revtext extends Sprite {
     {
         center(maintext);
     }
-    @Override
    public void setCenter(float x, float y)
     {
         this.centerX = x;
         this.centerY = y;
         center();
     }
+
 
 
 }

@@ -17,6 +17,7 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -30,7 +31,7 @@ public class Main implements ApplicationListener {
     Matrix matrix;
     Music music;
     TiledMap map;
-    Stage uiStage;
+    static Stage uiStage;
     private OrthogonalTiledMapRenderer renderer;
     public static Label.LabelStyle labelStyle;
     OrthographicCamera ocam;
@@ -38,12 +39,14 @@ public class Main implements ApplicationListener {
     Level currentlevel;
     int levelzahl;
     FitViewport viewport;
+    static Skin skin;
     Batch batch;
     Player Player;
     Vector2 touchPos;
     Testentity werther;
     Array<Sprite> dropSprites;
     SpriteButton testbutton;
+    AdvancedTextButton textbutton;
     float dropTimer;
     float deltaFactor=1;
     Rectangle bucketRectangle;
@@ -62,12 +65,12 @@ public class Main implements ApplicationListener {
         backgroundTexture = new Texture("background.png");
         dropTexture = new Texture("drop.png");
         music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
-
+        skin= new Skin(Gdx.files.internal("ui/uiskin.json"));
 
 
         currentlevel = new Level(LevelList.levels[0], this);
         uiStage=new Stage(new FitViewport(800,500));
-        Player = new Player(400,250,300,100, viewport, uiStage.getViewport());
+        Player = new Player(400,250,300,100, viewport);
         Player.setWorldbounds(-0,800,0,500);
 
         touchPos = new Vector2();
@@ -90,7 +93,11 @@ public class Main implements ApplicationListener {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         testbutton=new SpriteButton(300,300,"drop.png",1);
+        testbutton.setOnUp( ()-> this.spriteBatch.setColor(1,1,1,0.6f));
+        textbutton=new AdvancedTextButton("Hallo guten Tag",300,300,1, new Color(0.5f,1f,0.4f,1),new Color(1f,0.4f,0.4f,1) );
+        testbutton.setOnUp( ()-> this.Player.setColor(1,1,1,1f));
         uiStage.addActor(testbutton);
+        uiStage.addActor(textbutton);
         currentlevel.load();
         Gdx.input.setInputProcessor(uiStage);
 

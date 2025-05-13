@@ -25,7 +25,7 @@ class Player extends Entity
     Animation<TextureRegion> walkAnimation;
 
     boolean isattacking;
-    Player(float x, float y, float speed, int leben, Viewport view, Viewport uiviewport) {
+    Player(float x, float y, float speed, int leben, Viewport view) {
 
 
         super(x, y,"Se_Player_ja.jpg",null);
@@ -36,7 +36,7 @@ class Player extends Entity
         acceleration = speed;
         curhealth = leben;
         maxhealth = leben;
-        healthbar = new HealthBar(100, 400, maxhealth, 1, uiviewport);
+        healthbar = new HealthBar(100, 400, maxhealth, 1, Main.uiStage.getViewport());
         weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
         setSize(200, 180);
