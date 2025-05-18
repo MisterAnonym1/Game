@@ -35,8 +35,8 @@ class Level {
     int doorsnummer;
 
 
-    double xcoplayer;
-    double ycoplayer;
+    float xcoplayer;
+    float ycoplayer;
 
     Level(String[] rows, Main mainlogic) {
         this.rows = rows;

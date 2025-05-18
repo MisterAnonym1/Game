@@ -98,7 +98,7 @@ class Player extends Entity
         }
         return false;
     }
-    void sethealth(int health, boolean ignoremax)
+    void sethealth(float health, boolean ignoremax)
     {
         super.sethealth(health, ignoremax);
         healthbar.healTo(health);
@@ -249,6 +249,6 @@ class Player extends Entity
         //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
         //+stayinWorldbounds();
         weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
-        damageby(8.0f*deltatime);
+        //damageby(8.0f*deltatime);
     }
 }

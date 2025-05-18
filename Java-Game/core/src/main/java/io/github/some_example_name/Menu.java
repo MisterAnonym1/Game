@@ -41,7 +41,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     }
 }
 
-public class LoadingScreen extends Menu
+ class LoadingScreen extends Menu
 {
     Animation<TextureRegion> loading;
     boolean finished_loading = false;
@@ -51,7 +51,7 @@ public class LoadingScreen extends Menu
     {
         delay=1;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         main = mainl;
-        loading = Animator.getAnimation("Loadingsheet.png",15,1,0,14,0.2f);
+        loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.2f);
     }
     void setfinished()
     {
@@ -74,6 +74,7 @@ public class LoadingScreen extends Menu
             frame.getTexture().dispose();
             break;
         }
+        remove();
 
     }
 
@@ -83,10 +84,9 @@ public class LoadingScreen extends Menu
         if(delay > 0) {
             delay-=delta;
         }
-        if(finished_loading && delay <= 0) {
+        if(main.gamestate==Gamestate.playing && delay <= 0) {
             destroy();
-            main.Player.healthbar.setVisible(true);
-            main.gamestate = Gamestate.playing;
+            //main.Player.healthbar.setVisible(true);
         }
     }
 }
@@ -103,7 +103,7 @@ public class LoadingScreen extends Menu
         this.main=main;
         knopf = new AdvancedTextButton("Respawn",300, 520, 3,Color.SCARLET,Color.BLACK );
         //knopf.addChangeListener(new GameChangeListener(game, "respawn"));
-        knopf.setOnUp(main::render); ///jhfrebyhfj
+        knopf.setOnUp(()->this.destroy()); ///jhfrebyhfj
 
     }
 
@@ -113,7 +113,45 @@ public class LoadingScreen extends Menu
         ScreenUtils.clear(new Color(197, 187, 187,textbox.getColor().a));
         textbox.draw(batch,1);
         knopf.draw(batch,1);
-        //+ new ShapeRenderer().draw(star)...
+        batch.end();
+
+        ShapeRenderer shape = new ShapeRenderer();
+        Gdx.gl.glLineWidth(15);
+        shape.setProjectionMatrix(batch.getProjectionMatrix());
+        shape.begin(ShapeRenderer.ShapeType.Line);
+
+        shape.setColor(0.8f,0.8f,0.8f,1);
+        float centerX = 400;
+        float centerY = 250;
+        float outerRadius = 100;
+        float innerRadius = 50;
+
+        float[] vertices = {
+            // Spitze oben
+            centerX, centerY + outerRadius,
+            // Oben links (innere Ecke)
+            centerX - innerRadius, centerY + innerRadius,
+            // Linke Spitze
+            centerX - outerRadius, centerY,
+            // Unten links (innere Ecke)
+            centerX - innerRadius, centerY - innerRadius,
+            // Spitze unten
+            centerX, centerY - outerRadius,
+            // Unten rechts (innere Ecke)
+            centerX + innerRadius, centerY - innerRadius,
+            // Rechte Spitze
+            centerX + outerRadius, centerY,
+            // Oben rechts (innere Ecke)
+            centerX + innerRadius, centerY + innerRadius
+        };
+
+        shape.polygon(vertices);
+        shape.end();
+        batch.begin();
+    }
+    void destroy(){
+        main.setState("respawn");
+        remove();
     }
 
     @Override
@@ -146,13 +184,13 @@ class Startmenu extends Menu
     {
         main = gamel;
         hintergrund = new Texture("Forest sun backround.png");
-        textbox = new Revtext(400, 330, 70, 0.2f,"Press \"Enter\" to start");
-        textbox.setColor(new Color(80, 190, 61,1));
+        textbox = new Revtext(400, 280, 3, 0.1f,"Press \"Enter\" to start");
+        textbox.setColor(new Color(80/255.0f, 190/255.0f, 61/255.0f,1));
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
-        randomtext = new Revtext(400, 200, 45, 0.2f,Script.startmenuscript[ran]);
+        randomtext = new Revtext(400, 200, 2, 0.1f,Script.startmenuscript[ran]);
         //randomtext.setBorderColor(Color.black, 1);
         //randomtext.setBorderWidth(6);
-        exit = new SpriteButton(675, 120, "dm",1);
+        exit = new SpriteButton(675, 120, "Credits Button V1.png",1);
         exit.setOnUp( ()->System.exit(187));
 
     }
@@ -203,6 +241,7 @@ class DevMenu extends Menu
     DevMenu(Main main)
     {
         texte = new Revtext[8];
+        setOffscreen();
         delay=1;
         this.main = main;
         for (int i = 0; i < texte.length - 1; i++)
@@ -235,7 +274,10 @@ class DevMenu extends Menu
 
     public void act(float delta)
    {
-
+       if(Main.debugging != onscreen)
+       {
+           onscreen = !onscreen;
+       }
       if(onscreen) {
 
           delay-=delta;

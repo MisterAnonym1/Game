@@ -83,7 +83,7 @@ class Entity extends TextureActor
     {
        setPosition(other.getX()+other.hitbox.width/2-getWidth()/2,other.getY()+other.hitbox.height/2-getHeight()/2);
     }
-    void sethealth(int health, boolean ignoremax)
+    void sethealth(float health, boolean ignoremax)
     //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
     {
         if(health > maxhealth) {

@@ -22,38 +22,39 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import java.util.ArrayList;
 
+enum Gamestate { startmenu, pausemenu, playing, dead, dialouge, loading }
 public class Main implements ApplicationListener {
-    Texture backgroundTexture;
+    ArrayList<MyTile> loadedwalls = new ArrayList<>();
     ShapeRenderer shape;
     Texture dropTexture;
     Revtext revtext;
     Matrix matrix;
     Music music;
-    TiledMap map;
+    //TiledMap map;
     static Stage uiStage;
-    private OrthogonalTiledMapRenderer renderer;
-    public static Label.LabelStyle labelStyle;
+   // private OrthogonalTiledMapRenderer renderer;
     OrthographicCamera ocam;
     SpriteBatch spriteBatch;
     Level currentlevel;
-    int levelzahl;
+    int levelnummer;
     FitViewport viewport;
     static Skin skin;
-    Batch batch;
     Player Player;
     Vector2 touchPos;
     Testentity werther;
     Array<Sprite> dropSprites;
     SpriteButton testbutton;
     AdvancedTextButton textbutton;
-    float dropTimer;
     float deltaFactor=1;
     Rectangle bucketRectangle;
     Rectangle dropRectangle;
-    NPC currentNPC;
-    KARLTOFFEL_BOSS El_Karltoffelboss;
+    NPC dialougnpc;///kann auch alle Unterklassen von NPC speichern
+    //KARLTOFFEL_BOSS El_Karltoffelboss;
     static boolean debugging=false;
+    boolean DevMode=false;
+    Gamestate gamestate;//siehe oben
     @Override
     public void create() {
         ocam=new OrthographicCamera(800,500);
@@ -62,33 +63,26 @@ public class Main implements ApplicationListener {
         spriteBatch = new SpriteBatch();
 
 
-        backgroundTexture = new Texture("background.png");
         dropTexture = new Texture("drop.png");
         music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
         skin= new Skin(Gdx.files.internal("ui/uiskin.json"));
 
 
-        currentlevel = new Level(LevelList.levels[0], this);
         uiStage=new Stage(new FitViewport(800,500));
-        Player = new Player(400,250,300,100, viewport);
-        Player.setWorldbounds(-0,800,0,500);
+
 
         touchPos = new Vector2();
-        werther= new Testentity(200,200,this);
         ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
-        bucketRectangle = new Rectangle();
-        map = new TmxMapLoader().load("Test Karte 2.tmx");
-        renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
-        labelStyle = new Label.LabelStyle();
-        labelStyle.font= new BitmapFont();
+        //map = new TmxMapLoader().load("Test Karte 2.tmx");
+        //renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         music.setLooping(true);
-        music.setVolume(.2f); // .2f ist das selbe wie 0.2f
+        music.setVolume(.1f); // .2f ist das selbe wie 0.2f
         music.play();
         revtext = new Revtext(400,250,1,0.1f,"Hallo das ist ein Revtext");
         matrix= new Matrix(viewport);
-        currentNPC= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
+        //dialougnpc= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
         shape.setAutoShapeType(true);
-        El_Karltoffelboss = new KARLTOFFEL_BOSS(0,0,this, "El_Karlotoffel" );
+        //El_Karltoffelboss = new KARLTOFFEL_BOSS(0,0,this, "El_Karlotoffel" );
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -98,7 +92,8 @@ public class Main implements ApplicationListener {
         testbutton.setOnUp( ()-> this.Player.setColor(1,1,1,1f));
         uiStage.addActor(testbutton);
         uiStage.addActor(textbutton);
-        currentlevel.load();
+
+        setState("startmenu");
         Gdx.input.setInputProcessor(uiStage);
 
     }
@@ -119,6 +114,7 @@ public class Main implements ApplicationListener {
     }
 
     private void input() {
+        if(gamestate!=Gamestate.playing){return;}
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
         if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
@@ -147,12 +143,12 @@ public class Main implements ApplicationListener {
             ocam.zoom -= 0.02f;
         }
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-            if(currentNPC.inConversation)
+            if(dialougnpc.inConversation)
             {
-                currentNPC.onLeave();
+                dialougnpc.onLeave();
             }
             else{
-                currentNPC.onPress();
+                dialougnpc.onPress();
             }
 
 
@@ -168,38 +164,38 @@ public class Main implements ApplicationListener {
 
     }
 
-    private void logic() {
-        float worldWidth = viewport.getWorldWidth();
-        float worldHeight = viewport.getWorldHeight();
-        float bucketWidth = Player.getWidth();
-        float bucketHeight = Player.getHeight();
+    private void logic()
+    {
+
 
         float delta = Gdx.graphics.getDeltaTime();
         //System.out.println(delta+" frames");
         delta= Math.min(delta,1/30.0f);
         delta=delta/deltaFactor;
-
-        Player.act(delta);
-        currentNPC.act(delta);
-        El_Karltoffelboss.act(delta);
-        revtext.act(delta);
-        currentlevel.act(delta);
         uiStage.act(delta);
-        ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
-
-        for (MyTile tile : currentlevel.teleporters)
+        if(gamestate==Gamestate.playing)
         {
-            if(Player.hitbox.overlaps(tile.hitbox)) //Hitbox im Player erstellen
+            Player.act(delta);
+            //dialougnpc.act(delta);
+            //El_Karltoffelboss.act(delta);
+            revtext.act(delta);
+            currentlevel.act(delta);
+
+            ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
+
+            for (MyTile tile : currentlevel.teleporters)
             {
-                currentlevel.destroy();
-                levelzahl++;
-                currentlevel = new Level(LevelList.levels[levelzahl], this);
-                currentlevel.load();
+                if(Player.hitbox.overlaps(tile.hitbox)) //Hitbox im Player erstellen
+                {
+                    setState("newlevel");
                 break;
+                }
             }
         }
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
-        }
+
+
+    }
 
 
 
@@ -227,37 +223,110 @@ public class Main implements ApplicationListener {
 
 
         //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
-        matrix.actAndDraw(spriteBatch,delta);
-        currentlevel.draw(spriteBatch,shape,delta);
-        spriteBatch.end();
+        //matrix.actAndDraw(spriteBatch,delta);
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        Gdx.gl.glLineWidth(5);
-        shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.setColor(1,1,1,0.8f);
+        if(gamestate==Gamestate.playing)
+        {
+            currentlevel.draw(spriteBatch,shape,delta);
+            //dialougnpc.draw(spriteBatch,delta);
+            //dialougnpc.drawInConversation(spriteBatch);
+            // El_Karltoffelboss.draw(spriteBatch,delta);
+            Player.draw(spriteBatch,shape, delta,1.0f);
+        }
+        else{uiStage.draw();}
 
-        //Player.drawHitbox(shape);
-        //werther.drawHitbox(shape);
-        shape.end();
-        shape.begin(ShapeRenderer.ShapeType.Line);
-
-
-        shape.end();
-
-        spriteBatch.begin();
-
-
-        //werther.draw(spriteBatch,delta);
-        Player.draw(spriteBatch,shape, delta,1.0f);
-        revtext.draw(spriteBatch);
-       currentNPC.draw(spriteBatch,delta);
-        currentNPC.drawInConversation(spriteBatch);
-        El_Karltoffelboss.draw(spriteBatch,delta);
-        uiStage.draw();
-         spriteBatch.end();
+        spriteBatch.end();
 
     }
 
+    void setState(String newState) {
+        // jenachdem was man beim "newState" angibt
+        // wird unterschiedliches ausgeführt
+
+        switch(newState) {
+            case "startmenu" :
+                gamestate = Gamestate.startmenu;
+                uiStage.addActor(new Startmenu(this));
+
+                break;
+            case "DevMode" :
+                DevMode = true;
+                uiStage.addActor(new DevMenu(this));
+            case "beforeGame" :
+                gamestate = Gamestate.loading;
+                Player = new Player(400,250,DevMode ? 400 : 250,100, viewport);
+                Player.setWorldbounds(-0,800,0,500);
+                levelnummer = -1;
+            case "newlevel" : //triggert den Modus um eine neues Level zu laden
+                gamestate = Gamestate.loading;
+                uiStage.addActor(new LoadingScreen(this));
+                //Player.healthbar.setVisible(false);
+                if(levelnummer + 1 < LevelList.levels.length)
+                {
+                    levelnummer++;
+                }
+                showLevel(this.levelnummer);
+                gamestate=Gamestate.playing;
+                break;
+            case "pause" :
+
+                gamestate = Gamestate.pausemenu;
+                break;
+            case "dead" :
+                uiStage.addActor(new Deathscreen(this));
+                //Sound.playSound(Sound.pong_d);
+                gamestate = Gamestate.dead;
+                break;
+            case "respawn" :
+                Player.sethealth(Player.maxhealth, false);
+                Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
+                //-->entitys zurück an ihren spawn
+                //-->leben der Entitys zurück setzten und inactive machen
+                gamestate = Gamestate.playing;
+                break;
+            case "returntogame" :
+                dialougnpc.onLeave();
+                gamestate = Gamestate.playing;
+                break;
+            case "dialouge" :
+                gamestate = Gamestate.dialouge;
+                dialougnpc.onPress();
+                break;
+
+        }
+    }
+
+
+
+    void showLevel(int level) {
+        // aktuell sichtbares Level zerstören
+        if(currentlevel != null) {
+            currentlevel.destroy();
+        }
+
+        currentlevel = new Level(LevelList.levels[level],this);
+        currentlevel.load();
+
+
+      /*if(devmenu.onscreen) {
+         devmenu.setOffscreen();
+         player.hitbox.setAlpha(0);
+       }
+      */
+        if(Player != null) {
+
+            //player.bringToFront();
+            Player.setWorldbounds(0, 0, 3189, currentlevel.getHeight());
+            Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
+        }
+
+        // Nummer des Levels anzeigen:
+        if(levelnummer != 0) {
+
+        }
+    }
 
 
     @Override

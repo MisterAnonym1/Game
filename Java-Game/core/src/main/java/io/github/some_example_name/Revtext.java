@@ -54,8 +54,9 @@ class Revtext extends Actor {
     }
     @Override
     public void draw(Batch sbatch,float parentalpha) {
-        sbatch.setColor(getColor().r,getColor().g,getColor().b,parentalpha);
+        font.setColor(getColor().r,getColor().g,getColor().b,parentalpha);
         font.draw(sbatch, showtext, getX(), getY());
+
     }
 
     CharSequence reveal()
