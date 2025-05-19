@@ -192,12 +192,13 @@ class Startmenu extends Menu
         //randomtext.setBorderWidth(6);
         exit = new SpriteButton(675, 120, "Credits Button V1.png",1);
         exit.setOnUp( ()->System.exit(187));
-
+        Main.uiStage.addActor(exit);
     }
 
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+        batch.setColor(1,1,1,1);
         batch.draw(hintergrund, 0, 0, 800, 500);
         textbox.draw(batch,1);
         randomtext.draw(batch,1);
