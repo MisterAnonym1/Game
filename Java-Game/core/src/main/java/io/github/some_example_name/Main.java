@@ -16,7 +16,6 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -43,13 +42,9 @@ public class Main implements ApplicationListener {
     static Skin skin;
     Player Player;
     Vector2 touchPos;
-    Testentity werther;
-    Array<Sprite> dropSprites;
     SpriteButton testbutton;
     AdvancedTextButton textbutton;
     float deltaFactor=1;
-    Rectangle bucketRectangle;
-    Rectangle dropRectangle;
     NPC dialougnpc;///kann auch alle Unterklassen von NPC speichern
     //KARLTOFFEL_BOSS El_Karltoffelboss;
     static boolean debugging=false;
@@ -95,7 +90,7 @@ public class Main implements ApplicationListener {
 
         setState("startmenu");
         Gdx.input.setInputProcessor(uiStage);
-
+        new InventoryManager().setValueByKey("Coins", 187);
     }
 
     @Override
@@ -134,7 +129,7 @@ public class Main implements ApplicationListener {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
              Vector2 vec= new Vector2(1,1);
             vec.setAngleDeg(Player.directionline);
-            currentlevel.projectiles.add(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
+            Level.projectiles.add(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A)) {
             ocam.zoom += 0.02f;
@@ -153,10 +148,6 @@ public class Main implements ApplicationListener {
 
 
         }
-
-        float effectiveViewportWidth = ocam.viewportWidth ;
-        float effectiveViewportHeight = ocam.viewportHeight;
-
 
         //float effectiveViewportWidth = ocam.viewportWidth * ocam.zoom;
         //float effectiveViewportHeight = ocam.viewportHeight * ocam.zoom;
