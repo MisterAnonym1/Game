@@ -2,8 +2,8 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.math.Vector2;
 
-public class KARLTOFFEL_BOSS extends Boss{
-    KARLTOFFEL_BOSS(float x, float y, Main logic, String filepath){
+public class Karltoffelboss extends Boss{
+    Karltoffelboss(float x, float y, Main logic, String filepath){
         super(x, y, logic,"El_Karltoffel.png");
         acceleration = 100;
         maxspeed = 100;
@@ -35,12 +35,16 @@ public class KARLTOFFEL_BOSS extends Boss{
         {
             //line of sight
             attackdelay=0;
-            Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
-            vec.setLength(this.getHeight()/2);
-            logic.currentlevel.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
+            fireballattack();
         }
     };
     public void sterben(){
         destroy();
     };
+
+    @Override
+    public void dashattack(float delta) {
+        super.dashattack(delta);
+    }
+
 }

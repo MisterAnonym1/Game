@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -31,8 +32,8 @@ abstract class Gegner extends Entity
     int delay;
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     abstract boolean update(float delta);// soll acten zurückgeben ob gegner aus liste entfernt werden soll
-    abstract void engagePlayer(float delta);
     abstract void sterben();
+    Animation<TextureRegion> explosionAnimation;
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -180,6 +181,16 @@ abstract class Gegner extends Entity
         }
     }
 
+    public void engagePlayer(float delta){
+        attackdelay+=delta;
+
+        if (attackdelay>=2)
+        {
+            //line of sight
+            attackdelay=0;
+        }
+    };
+
     @Override
     public void draw(Batch batch, float delta) {
         super.draw(batch, delta);
@@ -254,6 +265,36 @@ abstract class Gegner extends Entity
         return neighbors;
 
     }
-    //Allerlei mögliche Atacken //
+    public void simpleattack (){
+        if (getdistance(player)<= 20) {
+            player.damageby(30);
+        }
+    };
+    public void bombattack(){
+        if (getdistance(player)<= 20) {
+            explosionAnimation = Animator.getAnimation("Se_Player_ja.jpg",3,2,1,5,0.2f);
+            player.damageby(50);
+            this.destroy();
+        }
+    };
+    public void fireballattack(){
+        if(getdistance(player)<= 100) {
+            Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
+            vec.setLength(this.getHeight()/2);
+            Level.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
+        }
+    };
+    public void dashattack (float delta) {
+        if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
+            acceleration = 600;
+            maxspeed = 600;
+            counter = 0;
+            movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
+            ismoving = true;
+            updatemovement(movement, delta);
+            player.damageby(30);
+        }
+    };
 }
+
 

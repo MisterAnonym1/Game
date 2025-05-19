@@ -43,22 +43,7 @@ class Schlange extends Gegner
         return false;
     }
 
-    public void attack() {
 
-/*
-        counter = 3;
-        this.stopActing();
-        Sprite expose = new Sprite(getCenterX(), getCenterY(), SpriteLibrary.Space_Shooter_1, 12);
-        expose.bringToFront();
-        expose.scale(7.5);
-        Sound.playSound(Sound.far_bomb);
-        Sound.playSound(Sound.far_explosion);
-        Sound.playSound(Sound.short_shoot);
-        expose.playAnimation(12, 23, RepeatType.once, 27);
-        expose.bringToFront();
-        sethealth(0, true);
-*/
-    }
 
 
 
@@ -70,12 +55,12 @@ class Schlange extends Gegner
         }
         //counter--;
         if(inradiusof(player, 800)) {
-            attack();
+            simpleattack();
 
         }
         else
         {
-
+            this.dashattack(delta);
             if(playerinview()) { //läuft direkt gerade zum Spieler
                 counter = 0;
                 movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
