@@ -25,11 +25,11 @@ public class Script {
                     "wie du glaubst mir nicht?",
                         "Sehr wohl. Möchtest du etwas kaufen?",
                 },
-                {//zweites Statment
-                    "(2. STatement) warum bin ich so naiv?",
-                    "meine Waren sind viel zu billig",
-                    "wie du glaubst mir nicht?",
-                }
+                    {//zweites Statment
+                            "(2. STatement) warum bin ich so naiv?",
+                            "meine Waren sind viel zu billig",
+                            "wie du glaubst mir nicht?",
+                    }
 
             }
 
@@ -81,7 +81,9 @@ public class Script {
             "Jetzt wird’s ernst.",
             "I am the voice inside the machine.",//+++++++++++
             "This is not a bug, it’s a feature.",//+++++++++++
-            "Are you even real?"
+            "Are you even real?",
+            "Lorem Ipsum.",
+            "This game is sponsored by Raid: Shadow Legends!"
 
         };
     static String[] loadingscreenscript=
@@ -94,7 +96,7 @@ public class Script {
         "Mehr Ladebalken = mehr Spaß!",
         "Physik berechnet deine Fehler.",
         "Bereite dich vor... oder warte einfach.",
-        "Speicher wird optimiert. Hoffentlich.",
+        "Speicher wird optimiert... Hoffentlich.",
         "Die Magie des Ladens läuft.",
         "Deine Werbung könnte hier stehen",
         "Nicht der langsamste Ladebildschirm!",

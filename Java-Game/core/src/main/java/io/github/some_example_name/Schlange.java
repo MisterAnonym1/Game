@@ -56,6 +56,9 @@ class Schlange extends Gegner
         //counter--;
         if(inradiusof(player, 800)) {
             simpleattack();
+            locateplayer(30, 800);
+            //updatemovement(movement, delta);
+            ismoving = true;
 
         }
         else
@@ -64,6 +67,7 @@ class Schlange extends Gegner
             if(playerinview()) { //läuft direkt gerade zum Spieler
                 counter = 0;
                 movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
+                //locateplayer(0, 1600);
                 ismoving = true;
                 updatemovement(movement, delta);
             }

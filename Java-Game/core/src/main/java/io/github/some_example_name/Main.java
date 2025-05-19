@@ -158,7 +158,6 @@ public class Main implements ApplicationListener {
     private void logic()
     {
 
-
         float delta = Gdx.graphics.getDeltaTime();
         //System.out.println(delta+" frames");
         delta= Math.min(delta,1/30.0f);
@@ -166,26 +165,68 @@ public class Main implements ApplicationListener {
         uiStage.act(delta);
         if(gamestate==Gamestate.playing)
         {
-            Player.act(delta);
-            //dialougnpc.act(delta);
-            //El_Karltoffelboss.act(delta);
-            revtext.act(delta);
-            currentlevel.act(delta);
 
-            ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
-
-            for (MyTile tile : currentlevel.teleporters)
-            {
-                if(Player.hitbox.overlaps(tile.hitbox)) //Hitbox im Player erstellen
-                {
-                    setState("newlevel");
-                break;
-                }
-            }
         }
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
 
+      if(gamestate == Gamestate.playing)
+      {
+         //updatewalls(); <- Muss noch implementiert werden
+         Player.act(delta);
+         //dialougnpc.act(delta);
+         //El_Karltoffelboss.act(delta);
+         revtext.act(delta);
+         currentlevel.act(delta);
 
+         ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
+
+         for (MyTile tile : currentlevel.teleporters)
+         {
+             if(Player.hitbox.overlaps(tile.hitbox)) //Hitbox im Player erstellen
+             {
+                 setState("newlevel");
+                 break;
+             }
+             }
+         //checkplayercollision(); <- Muss noch implementiert werden
+         Player.stayinWorldbounds();
+         //updateEntitys(); <- Muss noch implementiert werden
+         if(Player.curhealth <= 0) {
+            setState("dead");
+         }
+         if(DevMode) {
+            if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+               setState("dead");
+            }
+            else if(Gdx.input.isKeyPressed(Input.Keys.H)) {
+               Player.sethealth(Player.maxhealth, false);
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+               if(Gdx.input.isKeyPressed(Input.Keys.T)) {
+                  Player.collisionOn = true;
+               }
+               else if(Gdx.input.isKeyPressed(Input.Keys.F)) {
+                  Player.collisionOn = false;
+               }
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.I)) {
+               if(Gdx.input.isKeyPressed(Input.Keys.T)) {
+                  Player.invincible = true;
+               }
+               else if(Gdx.input.isKeyPressed(Input.Keys.F)) {
+                  Player.invincible = false;
+               }
+            }
+
+         }
+      }
+
+      if(gamestate == Gamestate.dialouge) {
+         if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+         {
+            setState("returntogame");
+         }
+      }
     }
 
 
