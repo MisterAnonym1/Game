@@ -18,8 +18,6 @@ public class TextureActor extends Actor
     TextureRegion texture;
     Rectangle hitbox;
     float hitboxOffsetX=0, hitboxOffsetY=0;
-    float alpha;
-    ArrayList<TextureActor> array;
     TextureActor(String filepath)
     {
         super();;
@@ -27,6 +25,8 @@ public class TextureActor extends Actor
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         initializeHitbox();
+        //setOrigin(getCenterX(), getCenterY());
+
     }
     TextureActor(TextureRegion texture)
     {
@@ -35,6 +35,9 @@ public class TextureActor extends Actor
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         initializeHitbox();
+        //setOrigin(getCenterX(), getCenterY());
+        //setOrigin(hitbox.getX()+hitbox.getWidth(), hitbox.getY()+hitbox.getHeight());
+
     }
     TextureActor(String filepath ,float xTexture,float yTexture,float width,float heigth)
     {
@@ -43,12 +46,15 @@ public class TextureActor extends Actor
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         initializeHitbox();
+        //setOrigin(hitbox.getX()+hitbox.getWidth(), hitbox.getY()+hitbox.getHeight());
+
     }
 
     @Override
     public void draw(Batch batch, float fixDenCodeTheoDuKeck) {
         //Animation und so
         //batch.setColor(getColor().r,getColor().g,getColor().b,1);
+        super.draw(batch,1);
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
     public void drawHitbox(ShapeRenderer shape)
@@ -97,8 +103,20 @@ public class TextureActor extends Actor
     @Override
     public void act(float delta) {
         super.act(delta);
+        //hitbox.setPosition(getX() + hitboxOffsetX, getY() + hitboxOffsetY);
+    }
+
+    @Override
+    protected void positionChanged() {
+        super.positionChanged();
         hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);
     }
+
+    @Override
+    protected void sizeChanged() {
+        super.sizeChanged();
+    }
+
     void centerAt(TextureActor other)
     {
         setPosition(other.getCenterX()-getWidth()/2, other.getCenterY()-getHeight()/2);
@@ -107,6 +125,32 @@ public class TextureActor extends Actor
     {
         setPosition(x-getWidth()/2, y-getHeight()/2);
     }
+    @Override
+    public void setX(float x) {
+        super.setX(x);
+        // hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
+
+    @Override
+    public void setY(float y) {
+        super.setY(y);
+        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
+
+    @Override
+    public void moveBy(float x, float y) {
+        super.moveBy(x, y);
+        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
+
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x, y);
+        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
+
+
+
     public void destroy()
     {
 
@@ -117,6 +161,11 @@ public class TextureActor extends Actor
             //addAction(Actions.removeActor())
         }
         remove();
+        Level.deleteList.add(this);
+    }
+    public void removeFromLevel()
+    {
+        //throw  new IllegalArgumentException("Die Methode der super klasse darf nicht gecallt werden UWU");
     }
     @Override
     public void setSize(float width, float height) {
@@ -133,6 +182,7 @@ public class TextureActor extends Actor
         hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
         hitboxOffsetX*=factorw;
         hitboxOffsetY*= factorh;
+        //setOrigin(getCenterX(), getCenterY());
     }
     void scale(float factor)
     {

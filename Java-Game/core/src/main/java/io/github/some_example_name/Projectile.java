@@ -28,17 +28,22 @@ class PartikelSprite extends TextureActor
     @Override
     public void act(float delta)
     {
+        super.act(delta);
         delay-=delta;
         if(delay <= 0)
         {
             destroy();
         }
-        super.act(delta);
     }
 
     @Override
     public void destroy() {
         super.destroy();
+        Level.deleteList.add(this);
+    }
+
+    @Override
+    public void removeFromLevel() {
         Level.projectiles.remove(this);
     }
 }
@@ -49,7 +54,6 @@ class Projectile extends PartikelSprite
 {
 
     Vector2 movement;
-    Rectangle hitbox;
     int damage = 0;
     boolean collisionOn=true,isacting =false;
     static float hitboxalpha = 0;
@@ -78,17 +82,11 @@ class Projectile extends PartikelSprite
     @Override
     public void act(float delta)
     {
-
-        delay-=delta;
-        if(delay <= 0)
-        {
-            onHit();
-            return;
-        }
+        super.act(delta);
         moveBy(movement.x*delta, movement.y*delta);
         reducemovement(delta);
-        delay+=delta;
-        super.act(delta);
+        hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);
+
 
     }
 

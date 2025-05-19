@@ -11,10 +11,10 @@ public class LibgdxHelperClass {
 
  class Animator{
 
-    static public Animation<TextureRegion> getAnimation(String sheet_path, int sheet_cols, int sheet_rows, int firstFrame, int lastFrame, float frameDuration)
+    static public Animation<TextureRegion> getAnimation(String sheet_path, int sheet_cols, int sheet_rows, int firstFrameStartswithOne1, int lastFrame, float frameDuration)
     {
         lastFrame=Math.min(lastFrame, sheet_cols*sheet_rows-1);
-        int frames=lastFrame-firstFrame +1;
+        int frames=lastFrame-firstFrameStartswithOne1 +1;
         float frameduration= frameDuration;
         if (frameduration<=0)
         {
@@ -34,7 +34,7 @@ public class LibgdxHelperClass {
         // left, going across first. The Animation constructor requires a 1D array.
         TextureRegion[] walkFrames = new TextureRegion[Math.min(sheet_cols * sheet_rows,frames)];
         int index = 0;
-        for (int i = (int) Math.ceil((float)firstFrame/sheet_cols)-1; i <= Math.ceil((float)lastFrame/sheet_cols)-1; i++) {
+        for (int i = (int) Math.ceil((float)firstFrameStartswithOne1/sheet_cols)-1; i <= Math.ceil((float)lastFrame/sheet_cols)-1; i++) {
             for (int j = 0; j < sheet_cols; j++) {
                 walkFrames[index++] = tmp[i][j];
 

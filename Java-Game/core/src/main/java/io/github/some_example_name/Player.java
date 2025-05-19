@@ -36,7 +36,7 @@ class Player extends Entity
         acceleration = speed;
         curhealth = leben;
         maxhealth = leben;
-        healthbar = new HealthBar(100, 400, maxhealth, 1, view);
+        healthbar = new HealthBar(100, 400, maxhealth, 1, Main.uiStage.getViewport());
         weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
         setSize(200, 180);
@@ -72,15 +72,16 @@ class Player extends Entity
         weapon.setDebug(true);
         weapon.drawDebug(shape);
         shape.end();
-        batch.begin();
 
+        batch.begin();
         weapon.draw(batch,parentAlpha);
         batch.end();
-        healthbar.draw(shape);
+
+        healthbar.draw();
         batch.begin();
     }
 
-    boolean damageby(int damage)
+    boolean damageby(float damage)
     {
         if(invincible) {
             return false;
@@ -97,7 +98,7 @@ class Player extends Entity
         }
         return false;
     }
-    void sethealth(int health, boolean ignoremax)
+    void sethealth(float health, boolean ignoremax)
     {
         super.sethealth(health, ignoremax);
         healthbar.healTo(health);
@@ -159,8 +160,7 @@ class Player extends Entity
 
     public void act(float deltatime)
     {
-
-
+        super.act(deltatime);
         weapon.act(deltatime);
             //Math.sin(((float)swingduration / 5) * 3.14159) * 30 * (ismirrored ? -1 : 1)
 
@@ -249,6 +249,6 @@ class Player extends Entity
         //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
         //+stayinWorldbounds();
         weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
-        super.act(deltatime);
+        //damageby(8.0f*deltatime);
     }
 }

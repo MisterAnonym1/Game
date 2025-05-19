@@ -5,15 +5,15 @@ public class LevelList { //Hier werden alle Level gespeichert
             {
 
                     {
-                            "########",
-                            "########",
-                            "##@   ##",
-                            "##    ##",
-                            "##    ##",
-                            "##    ##",
-                            "## m d##",
-                            "########",
-                            "########"
+                            "#####################",
+                            "##@               d##",
+                            "##      ttt        ##",
+                            "##           ggggg ##",
+                            "##    n      g   g ##",
+                            "##         n ggggg ##",
+                            "##                 ##",
+                            "## m d             ##",
+                            "#####################",
                     },
 
                     {
@@ -64,4 +64,27 @@ public class LevelList { //Hier werden alle Level gespeichert
                             "####################################################################"
                     }
             };
+
+
+    static NpcData[][] NPCDATA = {
+        {///Level 1
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f)
+        },
+        {///Level 2
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+
+        },
+        {///Level 3
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+
+
+        }
+    };
 }
+

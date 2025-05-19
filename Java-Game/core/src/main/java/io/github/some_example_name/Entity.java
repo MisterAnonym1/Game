@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g3d.particles.values.MeshSpawnShapeValue;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,7 +21,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 class Entity extends TextureActor
 {
-    int maxhealth, curhealth;
+    float maxhealth, curhealth;
     float maxspeed, acceleration, directionline=0;
     boolean collisionOn, ismoving, isattacking;
     //Rectangle hitbox;
@@ -82,7 +83,7 @@ class Entity extends TextureActor
     {
        setPosition(other.getX()+other.hitbox.width/2-getWidth()/2,other.getY()+other.hitbox.height/2-getHeight()/2);
     }
-    void sethealth(int health, boolean ignoremax)
+    void sethealth(float health, boolean ignoremax)
     //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
     {
         if(health > maxhealth) {
@@ -277,30 +278,6 @@ class Entity extends TextureActor
     }
 
 
-    @Override
-    public void setX(float x) {
-        super.setX(x);
-       // hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void setY(float y) {
-        super.setY(y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void moveBy(float x, float y) {
-        super.moveBy(x, y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void setPosition(float x, float y) {
-        super.setPosition(x, y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
 
 
     public boolean inradiusof(Entity other, float radius)
@@ -472,10 +449,10 @@ class HealthBar extends Sprite {
     float maxLaenge;
     float currentHealth;
     Viewport viewport;
-    HealthBar(int xPos, int yPos, float maxhealth, float size, Viewport view) {
-        h1 = new Rectangle(xPos, yPos, 300, 50f);
-        h3 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
-        h2 = new Rectangle(xPos + 7f, yPos + 6f, 286f, 38f);
+    HealthBar(float xPos, float yPos, float maxhealth, float size, Viewport view) {
+        h1 = new Rectangle(xPos, yPos, 296f, 48f);
+        h3 = new Rectangle(xPos + 5f, yPos + 6f, 286f, 38f);
+        h2 = new Rectangle(xPos + 5f, yPos + 6f, 286f, 38f);
        viewport=view;
 
        /* h1.setFillColor(new Color(80, 74, 74))
@@ -491,16 +468,24 @@ class HealthBar extends Sprite {
         h2.setWidth((maxLaenge * currentHealth / maxHealth)<0?0:maxLaenge * currentHealth / maxHealth);
 
     }
-    void draw(ShapeRenderer shape)
+    void draw()
     {
+        ShapeRenderer shape= new ShapeRenderer();
+        shape.setProjectionMatrix(viewport.getCamera().combined);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shape.begin(ShapeRenderer.ShapeType.Filled);
-        shape.setColor(80/256,74/256,74/256,100/256);
-        shape.rect(viewport.getScreenX()+h1.x,viewport.getScreenY()+h1.y,h1.width,h1.height);
+        shape.setColor(0.2f,0.2f,0.2f,1);
+        shape.rect(h1.x,+h1.y,h1.width,h1.height);
+
+
+        //shape.setColor(127.0f/255f,1,0f,1f);
+        shape.setColor(100.0f/255f,117.0f/255f,100.0f/255f,1f);
+        shape.rect(h3.x,h3.y,h3.width,h3.height);
 
         shape.setColor(Color.CHARTREUSE);
-        shape.rect(viewport.getScreenX()+h2.x,viewport.getScreenY()+h2.y,h2.width,h2.height);
+        shape.rect(h2.x,h2.y,h2.width,h2.height);
 
-        shape.rect(viewport.getScreenX()+h3.x,viewport.getScreenY()+h3.y,h3.width,h3.height);
         shape.end();
     }
     void healTo(float health)
@@ -511,7 +496,8 @@ class HealthBar extends Sprite {
     void heal(float heal)
     {
         currentHealth += heal;
-        currentHealth = Math.min(currentHealth, maxHealth);
+        //currentHealth = Math.min(currentHealth, maxHealth);
+        currentHealth= MathUtils.clamp(currentHealth, 0,maxHealth);
         h2.setWidth(maxLaenge * currentHealth / maxHealth);
     }
 

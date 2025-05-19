@@ -21,7 +21,7 @@ public class SmartNPC extends Gegner {
 
 
     @Override
-    void engagePlayer(float delta) {
+    public void engagePlayer(float delta) {
 
     }
 

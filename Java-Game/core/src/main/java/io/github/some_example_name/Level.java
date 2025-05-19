@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -26,19 +27,20 @@ class Level {
     static ArrayList<Gegner> gegnerliste= new ArrayList<>();
     static ArrayList<Projectile> projectiles= new ArrayList<>();
     static ArrayList<NPC> npcs= new ArrayList<>();
+    static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
     //ArrayList<Item> itemlist = new ArrayList<Item>();
-    Main log;
+    Main logic;
     SpriteBatch batch;
     int[]rownotwalls;
     int doorsnummer;
 
 
-    double xcoplayer;
-    double ycoplayer;
+    float xcoplayer;
+    float ycoplayer;
 
-    Level(String[] rows, Main log) {
+    Level(String[] rows, Main mainlogic) {
         this.rows = rows;
-        this.log=log;
+        this.logic=mainlogic;
         /*testentitys = new Stage(log.viewport,log.spriteBatch);
         gegnerliste= new Stage(log.viewport,log.spriteBatch);
         projectiles= new Stage(log.viewport,log.spriteBatch);
@@ -88,8 +90,11 @@ class Level {
             pro.destroy();
         }
         projectiles.clear();
+
         //itemlist.clear();
 
+
+        deleteList.clear();
     }
 
 
@@ -106,7 +111,14 @@ class Level {
         for (NPC npc : npcs) {
             npc.act(delta);
         }
+
         //items?
+
+
+        for (TextureActor actor : deleteList) {
+            actor.removeFromLevel();
+        }
+        deleteList.clear();
     }
     public void draw(Batch batch,ShapeRenderer shape, float delta)
     {
@@ -119,9 +131,14 @@ class Level {
             tile.draw(batch);
         }
         batch.end();
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         drawShadows(shape);
+        if(Main.debugging)
+        {
+            drawHitboxes(shape);
+        }
         batch.begin();
 
         for (MyTile tile : walls) {
@@ -140,10 +157,7 @@ class Level {
             npc.draw(batch,delta);
         }
 
-        if(Main.debugging)
-        {
-            drawHitboxes(shape);
-        }
+
         //items.draw
     }
     void drawHitboxes(ShapeRenderer shape)
@@ -238,7 +252,7 @@ class Level {
                             }
                             else
                             { if(randomn <= 8)
-                            { newtileNotwall(column, line, new TextureRegion(new Texture("bucket.png"))); }
+                            { newtileNotwall(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
                             else
                             { notWallsTiles.add(new MyTile(column, line, "Ph.Boden_Tile_1.png", false));
 
@@ -250,13 +264,14 @@ class Level {
                         break;
 
                     case 'n' :
-                        ///npcs.add(new NPC(column * 128, line * 128, "", 2, 0));
+                        npcs.add(new NPC(MyTile.columnToX(column), MyTile.rowToY(line), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
                         break;
                     case 'd' :
-                        teleporters.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), true));
-
+                        teleporters.add(new MyTile(column, line, new TextureRegion(new Texture("drop.png")), true));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
+                        rownotwalls[line]++;
                         break;
                     case 'i' :
                   /*ItemType type= Item.getrandomtype();
@@ -271,27 +286,27 @@ class Level {
                         int i=1;
                         break;
                     case 't' :
-                        testentitys.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(line), log));
+                        testentitys.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(line), logic));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
                         break;
                     case '$' :
                         break;
                     case '@' :
-                        xcoplayer = column * 128;
-                        ycoplayer = line * 128;
+                        xcoplayer = MyTile.columnToX(column);
+                        ycoplayer = MyTile.rowToY(line);
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
                         break;
                     case 'm' :
-                        ///gegnerliste.add(new Mage(log, column * 128, line * 128));
+                        //gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(line) ));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         break;
                     case 'k' :
                         //notWallsTiles.add(new MyTile(column, line, SpriteLibrary.Hamster, 2));
                         break;
                     case 'g' :
-                        ///gegnerliste.add(new Schlange(log, column * 128, line * 128));
+                        gegnerliste.add(new Schlange(logic, MyTile.columnToX(column), MyTile.rowToY(line)));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
                         break;
