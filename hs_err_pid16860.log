@@ -1,0 +1,32 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  EXCEPTION_ACCESS_VIOLATION (0xc0000005) at pc=0x00007ffc7035fdb5, pid=16860, tid=2392
+#
+# JRE version: Java(TM) SE Runtime Environment (21.0.4+8) (build 21.0.4+8-LTS-274)
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (21.0.4+8-LTS-274, mixed mode, sharing, tiered, compressed oops, compressed class ptrs, g1 gc, windows-amd64)
+# Problematic frame:
+# C  [ig12icd64.dll+0x2afdb5]
+#
+# No core dump will be written. Minidumps are not enabled by default on client versions of Windows
+#
+# If you would like to submit a bug report, please visit:
+#   https://bugreport.java.com/bugreport/crash.jsp
+# The crash happened outside the Java Virtual Machine in native code.
+# See problematic frame for where to report the bug.
+#
+
+---------------  S U M M A R Y ------------
+
+Command Line: -Ddebugger.agent.enable.coroutines=true -Dkotlinx.coroutines.debug.enable.creation.stack.trace=false -agentlib:jdwp=transport=dt_socket,server=n,suspend=y,address=127.0.0.1:53810 -javaagent:C:\Users\rober\AppData\Local\JetBrains\IdeaIC2024.2\captureAgent\debugger-agent.jar -Dfile.encoding=UTF-8 -Duser.country=DE -Duser.language=de -Duser.variant io.github.some_example_name.lwjgl3.Lwjgl3Launcher
+
+Host: 11th Gen Intel(R) Core(TM) i5-1135G7 @ 2.40GHz, 8 cores, 15G,  Windows 10 , 64 bit Build 19041 (10.0.19041.5794)
+Time: Mon May 19 15:12:00 2025 Mitteleuropäische Sommerzeit elapsed time: 516.330625 seconds (0d 0h 8m 36s)
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x0000025b319e8f90):  JavaThread "JDWP Transport Listener: dt_socket" daemon [_thread_in_native, id=2392, stack(0x000000f5f1000000,0x000000f5f1100000) (1024K)]
+
+Stack: [0x000000f5f1000000,0x000000f5f1100000],  sp=0x000000f5f10fe7d0,  free space=1017k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+C  [ig12icd64.dll+0x2afdb5]
