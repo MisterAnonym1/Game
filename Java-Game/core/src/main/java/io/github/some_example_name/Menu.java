@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -32,8 +33,9 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     boolean onscreen = false;//ob ein Screen gerade aktiv ist oder nicht
     float delay=1;
     Main main;
-    Revtext textbox; //erschafft eine Textbox, <---dein ernst? ich kann selber sehen
-
+    Revtext textbox;//erschafft eine Textbox, <---dein ernst? ich kann selber sehen
+    final float ScreenWidth=1024;
+    final float ScreenHeight=576;
     @Override
     public void act(float delta) {
         super.act(delta);
@@ -49,9 +51,10 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 
     LoadingScreen(Main mainl)
     {
+        super();
         delay=1;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         main = mainl;
-        loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.2f);
+        loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.1f);
     }
     void setfinished()
     {
@@ -63,7 +66,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         ScreenUtils.clear(Color.WHITE);
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion currentFrame = loading.getKeyFrame(animationstateTime, true);
-        batch.draw(currentFrame,400,250,getOriginX(),getOriginY(),200,150,getScaleX(),getScaleY(),getRotation());
+        batch.draw(currentFrame,ScreenWidth/2f-200,ScreenHeight/2f-150,getOriginX(),getOriginY(),400,300,getScaleX(),getScaleY(),getRotation());
 
     }
 
@@ -95,36 +98,46 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
  class Deathscreen extends Menu {
     AdvancedTextButton knopf;
     Deathscreen(Main main) { //erschafft den Screen;
-
+        super();
         int ran = MathUtils.random(0, Script.deathscreenscript.length - 1);
-        textbox = new Revtext(400, 100, 70, 0.2f,Script.deathscreenscript[ran]);
-        textbox.setColor(new Color(144, 21, 20,1));
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.8f, 3, 0.06f,Script.deathscreenscript[ran]);
+        textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
         delay=1;
         this.main=main;
-        knopf = new AdvancedTextButton("Respawn",300, 520, 3,Color.SCARLET,Color.BLACK );
-        //knopf.addChangeListener(new GameChangeListener(game, "respawn"));
-        knopf.setOnUp(()->this.destroy()); ///jhfrebyhfj
+        knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 130, 3,Color.SCARLET,Color.BLACK );
+        knopf.getLabel().setFontScale(2f); // 1.5x größer
+        knopf.setOnUp(()->this.destroy());
+        Main.uiStage.addActor(knopf);
+
+
+        setColor(1,1,1,0);
+        addAction(Actions.fadeIn(1.1f));
 
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if(delay>0) {return;}
-        ScreenUtils.clear(new Color(197, 187, 187,textbox.getColor().a));
-        textbox.draw(batch,1);
-        knopf.draw(batch,1);
+        //if(knopf.getColor().a>=0.85f){
+        //ScreenUtils.clear(new Color(40/255.0f, 30/255.0f, 30/255.0f,textbox.getColor().a));}
         batch.end();
-
         ShapeRenderer shape = new ShapeRenderer();
-        Gdx.gl.glLineWidth(15);
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glLineWidth(14);
         shape.setProjectionMatrix(batch.getProjectionMatrix());
-        shape.begin(ShapeRenderer.ShapeType.Line);
 
-        shape.setColor(0.8f,0.8f,0.8f,1);
-        float centerX = 400;
-        float centerY = 250;
-        float outerRadius = 100;
-        float innerRadius = 50;
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(new Color(40/255.0f, 30/255.0f, 30/255.0f,getColor().a));
+        shape.rect(0,0,ScreenWidth,ScreenHeight);
+        //shape.rect(0,0,ScreenWidth,ScreenHeight,Color.SCARLET,Color.CHARTREUSE,Color.WHITE, Color.BLUE);
+        shape.end();
+
+        shape.begin(ShapeRenderer.ShapeType.Line);
+        shape.setColor(0.3f,0.2f,0.2f,getColor().a);
+        float centerX = ScreenWidth/2.0f;
+        float centerY = ScreenHeight/2.0f;
+        float outerRadius = 45;
+        float innerRadius = 100;
 
         float[] vertices = {
             // Spitze oben
@@ -147,10 +160,15 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 
         shape.polygon(vertices);
         shape.end();
+
         batch.begin();
+        textbox.draw(batch,getColor().a);
+        knopf.draw(batch,getColor().a);
+
     }
     void destroy(){
         main.setState("respawn");
+        knopf.remove();
         remove();
     }
 
@@ -158,16 +176,9 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     public void act(float delta)
     {
         super.act(delta);
-        if(delay > 0) {
-            delay-=delta;
-            if (delay<=0)
-            {
-                textbox.setColor(1,1,1,0);
-                knopf.setColor(1,1,1,0);
-                textbox.addAction(Actions.fadeIn(1.2f));
-                knopf.addAction(Actions.fadeIn(1.2f));
-            }
-        }
+        delay-=delta;
+        if(Gdx.input.isKeyPressed(Input.Keys.R)||Gdx.input.isKeyPressed(Input.Keys.ENTER)||Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        {destroy();}
         textbox.act(delta);
         knopf.act(delta);
     }
@@ -182,12 +193,13 @@ class Startmenu extends Menu
     Revtext randomtext;
     Startmenu(Main gamel)
     {
+        super();
         main = gamel;
         hintergrund = new Texture("Forest sun backround.png");
-        textbox = new Revtext(400, 280, 3, 0.1f,"Press \"Enter\" to start");
+        textbox = new Revtext(ScreenWidth/2f, 280, 3, 0.05f,"Press \"Enter\" to start");
         textbox.setColor(new Color(80/255.0f, 190/255.0f, 61/255.0f,1));
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
-        randomtext = new Revtext(400, 200, 2, 0.1f,Script.startmenuscript[ran]);
+        randomtext = new Revtext(ScreenWidth/2f, 200, 2, 0.07f,Script.startmenuscript[ran]);
         //randomtext.setBorderColor(Color.black, 1);
         //randomtext.setBorderWidth(6);
         exit = new SpriteButton(675, 120, "Credits Button V1.png",1);
@@ -199,7 +211,7 @@ class Startmenu extends Menu
     @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.setColor(1,1,1,1);
-        batch.draw(hintergrund, 0, 0, 800, 500);
+        batch.draw(hintergrund, 0, 0, 1024,576);
         textbox.draw(batch,1);
         randomtext.draw(batch,1);
         exit.draw(batch,1);
@@ -208,6 +220,8 @@ class Startmenu extends Menu
 
     public void destroy() {
       hintergrund.dispose();
+      remove();
+      exit.remove();
     }
 
     @Override
@@ -241,6 +255,7 @@ class DevMenu extends Menu
     int fpscounter;
     DevMenu(Main main)
     {
+        super();
         texte = new Revtext[8];
         setOffscreen();
         delay=1;
@@ -405,16 +420,16 @@ class SpriteButton extends Button
     private boolean isChecked = false;
     private boolean isPressed = false;
 
-     public AdvancedTextButton(String text, float x, float y, float scale, Color textcolor,Color box )
+     public AdvancedTextButton(String text, float centerx, float centery, float scale, Color textcolor,Color box )
      {
-         this(text,x,y,scale);
+         this(text,centerx,centery,scale);
          getLabel().setColor(box);
          getLabel().setColor(textcolor);
      }
-    public AdvancedTextButton(String text, float x, float y, float scale) {
+    public AdvancedTextButton(String text, float centerx, float centery, float scale) {
         super(text,  Main.skin);
-        setPosition(x, y);
         setSize(getWidth() * scale, getHeight() * scale);
+        setPosition(centerx-getWidth()/2.0f,centery-getHeight()/2.0f);
         toFront();
 
         addListener(new ClickListener() {

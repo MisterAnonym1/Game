@@ -49,6 +49,7 @@ class MeeleWeapon extends TextureActor
     void attack() {
         addAction(Actions.timeScale(0.9f,Actions.rotateBy((ismirrored ? 60 :-60 ),0.2f)));
         addAction(Actions.after(Actions.rotateBy((ismirrored ? -60 :60 ),0.2f)));
+
     }
     void mirror()
     {

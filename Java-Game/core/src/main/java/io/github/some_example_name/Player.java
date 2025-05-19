@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -28,7 +29,7 @@ class Player extends Entity
     Player(float x, float y, float speed, int leben, Viewport view) {
 
 
-        super(x, y,"Se_Player_ja.jpg",null);
+        super(x, y,new TextureRegion(new Texture("Se_Player_ja.jpg"),0,0,200,180),null);
         toBack();
         player=this;
         weight = 0.5f;
@@ -39,7 +40,7 @@ class Player extends Entity
         healthbar = new HealthBar(100, 400, maxhealth, 1, Main.uiStage.getViewport());
         weapon=new Pipe(x,y,this);
         //healthbar.setVisible(false);
-        setSize(200, 180);
+        //setSize(200, 180);
         scale(1f);
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Se_Player_ja.jpg",3,2,1,5,0.2f);

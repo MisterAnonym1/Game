@@ -42,8 +42,6 @@ public class Main implements ApplicationListener {
     static Skin skin;
     Player Player;
     Vector2 touchPos;
-    SpriteButton testbutton;
-    AdvancedTextButton textbutton;
     float deltaFactor=1;
     NPC dialougnpc;///kann auch alle Unterklassen von NPC speichern
     //KARLTOFFEL_BOSS El_Karltoffelboss;
@@ -52,8 +50,8 @@ public class Main implements ApplicationListener {
     Gamestate gamestate;//siehe oben
     @Override
     public void create() {
-        ocam=new OrthographicCamera(800,500);
-        viewport = new FitViewport(800, 500, ocam);
+        ocam=new OrthographicCamera(1024,576);
+        viewport = new FitViewport(1024,576, ocam);
         shape= new ShapeRenderer();
         spriteBatch = new SpriteBatch();
 
@@ -63,7 +61,7 @@ public class Main implements ApplicationListener {
         skin= new Skin(Gdx.files.internal("ui/uiskin.json"));
 
 
-        uiStage=new Stage(new FitViewport(800,500));
+        uiStage=new Stage(new FitViewport(1024,576));
 
 
         touchPos = new Vector2();
@@ -80,13 +78,6 @@ public class Main implements ApplicationListener {
         //El_Karltoffelboss = new KARLTOFFEL_BOSS(0,0,this, "El_Karlotoffel" );
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
-        testbutton=new SpriteButton(300,300,"drop.png",1);
-        testbutton.setOnUp( ()-> this.spriteBatch.setColor(1,1,1,0.6f));
-        textbutton=new AdvancedTextButton("Hallo guten Tag",300,300,1, new Color(0.5f,1f,0.4f,1),new Color(1f,0.4f,0.4f,1) );
-        testbutton.setOnUp( ()-> this.Player.setColor(1,1,1,1f));
-        uiStage.addActor(testbutton);
-        uiStage.addActor(textbutton);
 
         setState("startmenu");
         Gdx.input.setInputProcessor(uiStage);
@@ -109,45 +100,57 @@ public class Main implements ApplicationListener {
     }
 
     private void input() {
-        if(gamestate!=Gamestate.playing){return;}
         float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
-        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-        {
-            if (Gdx.input.isKeyPressed(Input.Keys.UP) ) {
-                deltaFactor*=1+delta;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.DOWN) ) {
-                deltaFactor/=1+delta;
 
-            }
-            if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {
-               debugging = !debugging;
-
-            }
-        }
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
              Vector2 vec= new Vector2(1,1);
             vec.setAngleDeg(Player.directionline);
             Level.projectiles.add(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            ocam.zoom += 0.02f;
+        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+            ocam.zoom += 1*delta;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.Q)) {
-            ocam.zoom -= 0.02f;
+        if (Gdx.input.isKeyPressed(Input.Keys.F)) {
+            ocam.zoom -= 1*delta;
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-            if(dialougnpc.inConversation)
+
+        if(DevMode)
+        {
+
+
+            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
             {
-                dialougnpc.onLeave();
-            }
-            else{
-                dialougnpc.onPress();
+                //STRG
+                if (Gdx.input.isKeyPressed(Input.Keys.R) ) {
+                    deltaFactor*=1+delta;
+                }
+                if (Gdx.input.isKeyPressed(Input.Keys.F) ) {
+                    deltaFactor/=1+delta;
+
+                }
+                if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {
+                    debugging = !debugging;
+
+                }
+                //STRG
             }
 
+            if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+                setState("dead");
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.H)) {
+                Player.sethealth(Player.maxhealth, false);
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.C)) {
+                Player.collisionOn=!Player.collisionOn;
+            }
+            if(Gdx.input.isKeyPressed(Input.Keys.I)) {
+                Player.invincible = !Player.invincible;
+            }
 
         }
+
 
         //float effectiveViewportWidth = ocam.viewportWidth * ocam.zoom;
         //float effectiveViewportHeight = ocam.viewportHeight * ocam.zoom;
@@ -159,14 +162,10 @@ public class Main implements ApplicationListener {
     {
 
         float delta = Gdx.graphics.getDeltaTime();
-        //System.out.println(delta+" frames");
         delta= Math.min(delta,1/30.0f);
         delta=delta/deltaFactor;
         uiStage.act(delta);
-        if(gamestate==Gamestate.playing)
-        {
 
-        }
         //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
 
       if(gamestate == Gamestate.playing)
@@ -182,43 +181,19 @@ public class Main implements ApplicationListener {
 
          for (MyTile tile : currentlevel.teleporters)
          {
-             if(Player.hitbox.overlaps(tile.hitbox)) //Hitbox im Player erstellen
+             if(Player.hitbox.overlaps(tile.hitbox))
              {
                  setState("newlevel");
                  break;
              }
              }
          //checkplayercollision(); <- Muss noch implementiert werden
-         Player.stayinWorldbounds();
+         //Player.stayinWorldbounds();
          //updateEntitys(); <- Muss noch implementiert werden
          if(Player.curhealth <= 0) {
             setState("dead");
          }
-         if(DevMode) {
-            if(Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-               setState("dead");
-            }
-            else if(Gdx.input.isKeyPressed(Input.Keys.H)) {
-               Player.sethealth(Player.maxhealth, false);
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.C)) {
-               if(Gdx.input.isKeyPressed(Input.Keys.T)) {
-                  Player.collisionOn = true;
-               }
-               else if(Gdx.input.isKeyPressed(Input.Keys.F)) {
-                  Player.collisionOn = false;
-               }
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.I)) {
-               if(Gdx.input.isKeyPressed(Input.Keys.T)) {
-                  Player.invincible = true;
-               }
-               else if(Gdx.input.isKeyPressed(Input.Keys.F)) {
-                  Player.invincible = false;
-               }
-            }
 
-         }
       }
 
       if(gamestate == Gamestate.dialouge) {
@@ -227,6 +202,8 @@ public class Main implements ApplicationListener {
             setState("returntogame");
          }
       }
+
+      //----
     }
 
 
@@ -248,29 +225,31 @@ public class Main implements ApplicationListener {
         shape.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
+
         float worldWidth = Gdx.graphics.getWidth();
         float worldHeight = Gdx.graphics.getHeight();
         spriteBatch.setColor(1,1,1,1);
-
-
 
         //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
         //matrix.actAndDraw(spriteBatch,delta);
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        if(gamestate==Gamestate.playing)
+
+        if(gamestate != Gamestate.startmenu&&gamestate != Gamestate.loading)
         {
-            currentlevel.draw(spriteBatch,shape,delta);
+        currentlevel.draw(spriteBatch,shape,delta);
             //dialougnpc.draw(spriteBatch,delta);
             //dialougnpc.drawInConversation(spriteBatch);
             // El_Karltoffelboss.draw(spriteBatch,delta);
-            Player.draw(spriteBatch,shape, delta,1.0f);
+        Player.draw(spriteBatch,shape, delta,1.0f);
         }
-        else{uiStage.draw();}
+
+        uiStage.draw();
 
         spriteBatch.end();
 
+        //------
     }
 
     void setState(String newState) {
@@ -307,6 +286,7 @@ public class Main implements ApplicationListener {
                 gamestate = Gamestate.pausemenu;
                 break;
             case "dead" :
+                if(gamestate==Gamestate.dead){return;}
                 uiStage.addActor(new Deathscreen(this));
                 //Sound.playSound(Sound.pong_d);
                 gamestate = Gamestate.dead;
@@ -327,6 +307,19 @@ public class Main implements ApplicationListener {
                 dialougnpc.onPress();
                 break;
 
+        }
+        //--------
+    }
+
+    public Vector2 resolveCollision(Rectangle rectA, Rectangle rectB) {
+        float overlapX = Math.min(rectA.x + rectA.width, rectB.x + rectB.width) - Math.max(rectA.x, rectB.x);
+        float overlapY = Math.min(rectA.y + rectA.height, rectB.y + rectB.height) - Math.max(rectA.y, rectB.y);
+
+        // Prüfe, ob horizontale oder vertikale Bewegung kleiner ist
+        if (overlapX < overlapY) {
+            return new Vector2(rectA.x < rectB.x ? -overlapX : overlapX, 0); // Nach links oder rechts schieben
+        } else {
+            return new Vector2(0, rectA.y < rectB.y ? -overlapY : overlapY); // Nach oben oder unten schieben
         }
     }
 
@@ -358,6 +351,7 @@ public class Main implements ApplicationListener {
         if(levelnummer != 0) {
 
         }
+        //------
     }
 
 

@@ -23,7 +23,7 @@ public class Lwjgl3Launcher {
         configuration.useVsync(true);
 
 
-        configuration.setWindowedMode(800, 500); // this line changes the size of the window
+        configuration.setWindowedMode(1024,576); // this line changes the size of the window
         configuration.setWindowIcon("libgdx128.png", "libgdx64.png", "libgdx32.png", "libgdx16.png");
 
         //// Limits FPS to the refresh rate of the currently active monitor, plus 1 to try to match fractional

@@ -53,7 +53,7 @@ public class TextureActor extends Actor
     @Override
     public void draw(Batch batch, float fixDenCodeTheoDuKeck) {
         //Animation und so
-        //batch.setColor(getColor().r,getColor().g,getColor().b,1);
+        batch.setColor(getColor().r,getColor().g,getColor().b,1);
         super.draw(batch,1);
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
