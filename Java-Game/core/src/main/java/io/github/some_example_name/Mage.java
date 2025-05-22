@@ -7,23 +7,21 @@ class Mage extends Gegner
 
 
 
-    Mage(Main logic, float x, float y, String filepath) {
-        super( x, y,logic, filepath);
+    Mage(Main logic, float x, float y) {
+        super( x, y,logic, "bucket.png");
         acceleration = 12;
         maxspeed = 12;
         maxhealth = 100;
         curhealth = 100;
         hitboxOffsetX = 30;
         hitboxOffsetY = 5;
-        scale(2);
+        setSize(50,50);
         //hitbox = new Rectangle(getCenterX() - hitboxOffsetX, getCenterY() - hitboxOffsetY, 50, 35);
         //hitbox.setAlpha(0);
     }
 
     void sterben() {
-
-        destroy();
-
+        Level.deleteList.add(this);
     }
 
 
@@ -48,20 +46,23 @@ class Mage extends Gegner
 
 
         attackdelay = 30;
-        Vector2 attackvec = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
+        Vector2 attackvec1=new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
 
         if(player.ismoving) {
-            //attackvec = player.movement;
-            //attackvec.setLength(0);
-            attackvec=new Vector2(-getCenterX() + player.getCenterX()+player.movement.x*15, -getCenterY() + player.getCenterY()+player.movement.y*15);
-            attackvec.setLength(20);
-            System.out.println(1);
+
+            Vector2 attackvec2 = player.movement;
+            //attackvec2.setLength(attackvec2.len()*attackvec1.len()/FireBall.speed); ///brauche es für Triangulation
+            attackvec2.setLength(   (float) Math.sqrt((attackvec1.len()*attackvec1.len()*player.movement.len()*player.movement.len())/(FireBall.speed*FireBall.speed-player.movement.len()*player.movement.len())       )  ); ///brauche es für Triangulation
+
+            attackvec1.add(attackvec2);
+            //attackvec=new Vector2(-getCenterX() + player.getCenterX()+player.movement.x*15, -getCenterY() + player.getCenterY()+player.movement.y*15);
         }
 
 
 
-        Projectile expose = new FireBall(getCenterX(), getCenterY(),  attackvec);
-        expose.scale(10);
+
+        Projectile expose = new FireBall(getCenterX(), getCenterY(),  attackvec1);
+        //expose.scale(1);
         expose.setdamage(20);
         logic.currentlevel.projectiles.add(expose);
 

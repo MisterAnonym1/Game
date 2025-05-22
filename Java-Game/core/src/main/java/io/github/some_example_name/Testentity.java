@@ -17,7 +17,6 @@ public class Testentity extends Entity {
     int spawnx=0;
     int spawny=0;
     float delay=0;
-    boolean collides = false;
     Main logic;
 
     Position targetpos;
@@ -113,11 +112,8 @@ public class Testentity extends Entity {
         }
         return false;
     }
-    void moveatrelativeAngle(float length, float angle)
-    {
-        super.moveatAngle(length, angle);
 
-    }
+
     @Override
     public void act(float delta)
     {

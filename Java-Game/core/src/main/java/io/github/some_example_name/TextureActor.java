@@ -18,6 +18,7 @@ public class TextureActor extends Actor
     TextureRegion texture;
     Rectangle hitbox;
     float hitboxOffsetX=0, hitboxOffsetY=0;
+    boolean collisionOn=true;
     TextureActor(String filepath)
     {
         super();;
@@ -51,10 +52,10 @@ public class TextureActor extends Actor
     }
 
     @Override
-    public void draw(Batch batch, float fixDenCodeTheoDuKeck) {
+    public void draw(Batch batch, float delta) {
         //Animation und so
         batch.setColor(getColor().r,getColor().g,getColor().b,1);
-        super.draw(batch,1);
+        //super.draw(batch,1);
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
     public void drawHitbox(ShapeRenderer shape)
@@ -76,6 +77,12 @@ public class TextureActor extends Actor
     {
         return getY()+getHeight()/2;
     }
+
+    @Override
+    public void setPosition(float x, float y) {
+        super.setPosition(x+hitboxOffsetX+(-getWidth()+hitbox.getWidth())/2, y+hitboxOffsetY+(-getHeight()+hitbox.getHeight())/2);
+    }
+
     public float getdistance(TextureActor other)
     {
         float disx = other.getCenterX() - getCenterX();
@@ -103,13 +110,12 @@ public class TextureActor extends Actor
     @Override
     public void act(float delta) {
         super.act(delta);
-        //hitbox.setPosition(getX() + hitboxOffsetX, getY() + hitboxOffsetY);
     }
 
     @Override
     protected void positionChanged() {
         super.positionChanged();
-        hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);
     }
 
     @Override
@@ -125,29 +131,6 @@ public class TextureActor extends Actor
     {
         setPosition(x-getWidth()/2, y-getHeight()/2);
     }
-    @Override
-    public void setX(float x) {
-        super.setX(x);
-        // hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void setY(float y) {
-        super.setY(y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void moveBy(float x, float y) {
-        super.moveBy(x, y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
-
-    @Override
-    public void setPosition(float x, float y) {
-        super.setPosition(x, y);
-        //hitbox.setPosition(getX() - hitboxOffsetX, getY() - hitboxOffsetY);}
-        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);}
 
 
 
@@ -161,11 +144,10 @@ public class TextureActor extends Actor
             //addAction(Actions.removeActor())
         }
         remove();
-        Level.deleteList.add(this);
     }
     public void removeFromLevel()
     {
-        //throw  new IllegalArgumentException("Die Methode der super klasse darf nicht gecallt werden UWU");
+        //throw  new IllegalArgumentException("Die Methode der super klasse muss überschrieben werden);
     }
     @Override
     public void setSize(float width, float height) {

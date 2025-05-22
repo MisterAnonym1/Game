@@ -55,47 +55,48 @@ class Level {
     /**
      * Zerstört das Level, d.h. alle angezeigten Tiles und Kisten
 */
-    public void destroy() {
-        for (MyTile wall : walls) {
-            wall.destroy();
+        public void destroy() {
+            for (MyTile wall : walls) {
+                wall.destroy();
+            }
+            walls.clear();
+
+            for (MyTile notwall : notWallsTiles) {
+                notwall.destroy();
+            }
+            notWallsTiles.clear();
+
+            for (MyTile teleport : teleporters) {
+                teleport.destroy();
+            }
+            teleporters.clear();
+
+            for (Testentity testentity : testentitys) {
+                testentity.destroy();
+            }
+            testentitys.clear();
+
+            for (Gegner geg : gegnerliste) {
+                    geg.destroy();
+            }
+            gegnerliste.clear();
+
+            for (NPC npc : npcs) {
+                npc.destroy();
+            }
+            npcs.clear();
+
+            for (Projectile pro : projectiles) {
+                pro.destroy();
+            }
+            projectiles.clear();
+
+            //itemlist.clear();
+            for (TextureActor actor : deleteList) {
+                actor.destroy();
+            }
+            deleteList.clear();
         }
-        walls.clear();
-
-        for (MyTile notwall : notWallsTiles) {
-            notwall.destroy();
-        }
-        notWallsTiles.clear();
-
-        for (MyTile teleport : teleporters) {
-            teleport.destroy();
-        }
-        teleporters.clear();
-
-        for (Testentity testentity : testentitys) {
-            testentity.destroy();
-        }
-        testentitys.clear();
-
-        for (Gegner geg : gegnerliste) {
-                geg.destroy();
-        }
-        gegnerliste.clear();
-
-        for (NPC npc : npcs) {
-            npc.destroy();
-        }
-        npcs.clear();
-
-        for (Projectile pro : projectiles) {
-            pro.destroy();
-        }
-        projectiles.clear();
-
-        //itemlist.clear();
-
-
-        deleteList.clear();
-    }
 
 
     public void act(float delta) {
@@ -117,6 +118,7 @@ class Level {
 
         for (TextureActor actor : deleteList) {
             actor.removeFromLevel();
+            actor.destroy();
         }
         deleteList.clear();
     }
@@ -134,9 +136,11 @@ class Level {
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glLineWidth(5);
         drawShadows(shape);
         if(Main.debugging)
         {
+
             drawHitboxes(shape);
         }
         batch.begin();
@@ -184,6 +188,7 @@ class Level {
         for (NPC npc : npcs) {
             npc.drawHitbox(shape);
         }
+        logic.Player.drawHitbox(shape);
         shape.end();
     }
     void drawShadows(ShapeRenderer shape)
@@ -204,24 +209,7 @@ class Level {
         }
         shape.end();
     }
-    void showHitboxes()
-    {
-        /*MyTile.hitboxalpha = 1;
-        Entity.hitboxalpha = 1f;
-        Projectile.hitboxalpha = 1f;
-        Testentity.hitboxalpha = 0.5f;
-        NPC.hitboxalpha=0.5f;*/
-    }
 
-
-    void hideHitboxes()
-    {
-        /*MyTile.hitboxalpha = 0;
-        Entity.hitboxalpha = 0;
-        Projectile.hitboxalpha = 0;
-        Testentity.hitboxalpha = 0;
-        NPC.hitboxalpha=0;*/
-    }
 
 
     public void load() {
@@ -299,8 +287,9 @@ class Level {
                         rownotwalls[line]++;
                         break;
                     case 'm' :
-                        //gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(line) ));
+                        gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(line) ));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
+                        rownotwalls[line]++;
                         break;
                     case 'k' :
                         //notWallsTiles.add(new MyTile(column, line, SpriteLibrary.Hamster, 2));

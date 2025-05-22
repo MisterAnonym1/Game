@@ -47,6 +47,7 @@ public class Main implements ApplicationListener {
     //KARLTOFFEL_BOSS El_Karltoffelboss;
     static boolean debugging=false;
     boolean DevMode=false;
+    int deathcount=0;
     Gamestate gamestate;//siehe oben
     @Override
     public void create() {
@@ -100,20 +101,9 @@ public class Main implements ApplicationListener {
     }
 
     private void input() {
-        float speed = 4f;
         float delta = Gdx.graphics.getDeltaTime();
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-             Vector2 vec= new Vector2(1,1);
-            vec.setAngleDeg(Player.directionline);
-            Level.projectiles.add(new FireBall(Player.getCenterX(),Player.getCenterY(),new Vector2(vec.x,vec.y)));
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.R)) {
-            ocam.zoom += 1*delta;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.F)) {
-            ocam.zoom -= 1*delta;
-        }
+
 
         if(DevMode)
         {
@@ -133,20 +123,27 @@ public class Main implements ApplicationListener {
                     debugging = !debugging;
 
                 }
+                if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+                    setState("dead");
+                }
+                if(Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+                    Player.sethealth(Player.maxhealth, false);
+                }
+                if(Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+                    Player.collisionOn=!Player.collisionOn;
+                }
+                if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+                    Player.invincible = !Player.invincible;
+                }
                 //STRG
             }
 
-            if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-                setState("dead");
+
+            if (Gdx.input.isKeyPressed(Input.Keys.R)) {
+                ocam.zoom += 1*delta;
             }
-            if(Gdx.input.isKeyPressed(Input.Keys.H)) {
-                Player.sethealth(Player.maxhealth, false);
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.C)) {
-                Player.collisionOn=!Player.collisionOn;
-            }
-            if(Gdx.input.isKeyPressed(Input.Keys.I)) {
-                Player.invincible = !Player.invincible;
+            if (Gdx.input.isKeyPressed(Input.Keys.F)) {
+                ocam.zoom -= 1*delta;
             }
 
         }
@@ -170,26 +167,31 @@ public class Main implements ApplicationListener {
 
       if(gamestate == Gamestate.playing)
       {
-         //updatewalls(); <- Muss noch implementiert werden
+         updatewalls();
          Player.act(delta);
          //dialougnpc.act(delta);
          //El_Karltoffelboss.act(delta);
          revtext.act(delta);
          currentlevel.act(delta);
 
-         ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
 
-         for (MyTile tile : currentlevel.teleporters)
-         {
-             if(Player.hitbox.overlaps(tile.hitbox))
-             {
-                 setState("newlevel");
-                 break;
-             }
-             }
-         //checkplayercollision(); <- Muss noch implementiert werden
+
+
          //Player.stayinWorldbounds();
-         //updateEntitys(); <- Muss noch implementiert werden
+         updateEntitys();
+         checkplayercollision();
+          //ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
+          if( new Vector2( ocam.position.x - Player.getCenterX(),ocam.position.y - Player.getCenterY()).len()>=30 )
+          {
+              ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
+          }
+          else
+          {
+              ocam.position.x = Player.getCenterX();
+              ocam.position.y = Player.getCenterY();
+
+          }
+
          if(Player.curhealth <= 0) {
             setState("dead");
          }
@@ -220,7 +222,7 @@ public class Main implements ApplicationListener {
 
         ocam.update();
         viewport.apply();
-        //viewport.update((int)ocam.viewportWidth,(int)ocam.viewportHeight);
+
 
         shape.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
@@ -287,13 +289,15 @@ public class Main implements ApplicationListener {
                 break;
             case "dead" :
                 if(gamestate==Gamestate.dead){return;}
+                gamestate = Gamestate.dead;
                 uiStage.addActor(new Deathscreen(this));
                 //Sound.playSound(Sound.pong_d);
-                gamestate = Gamestate.dead;
+                deathcount++;
                 break;
             case "respawn" :
                 Player.sethealth(Player.maxhealth, false);
                 Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
+                Level.projectiles.clear();
                 //-->entitys zurück an ihren spawn
                 //-->leben der Entitys zurück setzten und inactive machen
                 gamestate = Gamestate.playing;
@@ -312,6 +316,8 @@ public class Main implements ApplicationListener {
     }
 
     public Vector2 resolveCollision(Rectangle rectA, Rectangle rectB) {
+        if (!rectA.overlaps(rectB)){return new Vector2(0,0);}
+
         float overlapX = Math.min(rectA.x + rectA.width, rectB.x + rectB.width) - Math.max(rectA.x, rectB.x);
         float overlapY = Math.min(rectA.y + rectA.height, rectB.y + rectB.height) - Math.max(rectA.y, rectB.y);
 
@@ -322,7 +328,168 @@ public class Main implements ApplicationListener {
             return new Vector2(0, rectA.y < rectB.y ? -overlapY : overlapY); // Nach oben oder unten schieben
         }
     }
+    void resolveWallCollision(Entity enti)
+    {
+        if(!enti.collisionOn) {
+            return;
+        }
+        ArrayList <Rectangle> walllist = getcollidingWalls(enti);
+        for (int i = 0; i <walllist.size() ; i++)
+        {
+            enti.moveatAngle( resolveCollision(enti.hitbox,walllist.get(i))  );
+            enti.collides = true;
+            enti.movement.setLength(0);
+            ///break; // <--maybe wäre so besser
+        }
+    }
+    ArrayList <Rectangle> getcollidingWalls(TextureActor actor)
+    {
+        ArrayList <Rectangle> list = new ArrayList<>();
+        if(!actor.collisionOn) {
+            return list;
+        }
+        for (MyTile tile : loadedwalls) {
+            if(actor.hitbox.overlaps(tile.hitbox)) {
+                list.add(tile.hitbox);
+            }
+        }
+        return list;
+    }
 
+    void updateEntitys()
+    {
+        for (Testentity enti : currentlevel.testentitys)
+        {
+            if(Player.isattacking && enti.inradiusof(Player, 200) /*&& player.waffe.hitbox.collidesWith(enti.hitbox)*/)
+            {
+                if(!Player.gegnerhitliste.contains(enti)) {
+                    Player.gegnerhitliste.add(enti);
+                    if(enti.damageby(Player.weapon.damage)) {
+                        Level.deleteList.add(enti);
+                        continue;
+                    }
+                }
+            }
+
+            if(enti.hitbox.overlaps(Player.hitbox))
+            {
+                Vector2 vec= resolveCollision(enti.hitbox, Player.hitbox);
+                vec.setLength(vec.len()/1.7f);
+                enti.moveatAngle(vec);
+                enti.collides = true;
+                enti.movement.setLength(0);
+            }
+
+            resolveWallCollision(enti);
+
+            if(enti.hitbox.overlaps(Player.hitbox))
+            {
+                Vector2 vec= resolveCollision(Player.hitbox,enti.hitbox);
+                Player.moveatAngle(vec);
+            }
+
+
+        }
+
+
+        for (Gegner gegner : currentlevel.gegnerliste)
+        {
+            if(Player.isattacking && gegner.inradiusof(Player, 200) /*&& player.waffe.hitbox.collidesWith(gegner.hitbox)*/)
+            {
+                if(!Player.gegnerhitliste.contains(gegner)) {
+                    Player.gegnerhitliste.add(gegner);
+                    if(gegner.damageby(Player.weapon.damage)) {
+                        Level.deleteList.add(gegner);
+                        continue;
+                    }
+                }
+            }
+            /*if(gegner.update())
+            {
+                currentlevel.gegnerliste.remove(gegner);
+                continue
+            }*/
+            resolveWallCollision(gegner);
+        }
+
+        updateNpcs();
+        updateProjectiles();
+    }
+
+    void updateNpcs()
+    {
+        for (NPC npc : currentlevel.npcs)
+        {
+            if(Player.inradiusof(npc, 192) && Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+                dialougnpc = npc;
+                setState("dialouge");
+                break;
+            }
+        }
+    }
+
+
+    void updateProjectiles()
+    {
+
+        for (Projectile prc : currentlevel.projectiles) {
+
+            if(getcollidingWalls(prc).size()!=0)
+            {
+                prc.onHit();
+                continue;
+            }
+
+            if(Player.isattacking && Player.inradiusof(prc, 200) /*&& Player.waffe.hitbox.collidesWith(prc.hitbox)*/) {
+                prc.onHit();
+                //continue;
+            }
+        }
+
+
+    }
+
+
+
+    void checkplayercollision()
+    {
+        for (MyTile tile : currentlevel.teleporters)
+        {
+            if(Player.hitbox.overlaps(tile.hitbox))
+            {
+                setState("newlevel");
+                break;
+            }
+        }
+
+
+        if(Player.collisionOn) {
+            for (Projectile prc : currentlevel.projectiles)
+            {
+                if(Player.hitbox.overlaps(prc.hitbox))
+                {
+                    prc.onHit(Player);
+
+                }
+            }
+
+        }
+
+
+        if(Player.collisionOn)
+        {
+            resolveWallCollision(Player);
+
+            for (NPC npc : currentlevel.npcs)
+            {
+                if(npc.collisionOn && Player.hitbox.overlaps(npc.hitbox)) {
+                    Player.moveatAngle( resolveCollision(Player.hitbox,npc.hitbox));
+                }
+            }
+
+        }
+        //--------
+    }
 
 
     void showLevel(int level) {
@@ -354,6 +521,18 @@ public class Main implements ApplicationListener {
         //------
     }
 
+    void updatewalls()
+    {
+        loadedwalls.clear();
+        for (MyTile wall : currentlevel.walls)
+        {
+            if(/*inloadedworld(wall, 1.4)*/ true) {
+
+                loadedwalls.add(wall);
+            }
+        }
+
+    }
 
     @Override
     public void pause() {

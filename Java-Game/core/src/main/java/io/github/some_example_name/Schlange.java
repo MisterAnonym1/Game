@@ -23,19 +23,15 @@ class Schlange extends Gegner
     void sterben() {
 
         player.damageby(40);
-        destroy();
-
+        Level.deleteList.add(this);
     }
 
 
     public boolean update(float delta) {
         playerinview();
         if(curhealth <= 0) {
-            counter--;
-            if(counter <= 0) {
-                sterben();
+              Level.deleteList.add(this);
                 return true;
-            }
         }
         else {
             engagePlayer(delta);

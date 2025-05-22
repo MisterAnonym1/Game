@@ -30,15 +30,15 @@ class Revtext extends Actor {
     float charDelay=0.3f;
     float lineDelay=0.1f;
     boolean waitingforLine;
+    boolean centered;
     BitmapFont font;
     private GlyphLayout layout;
     Revtext(float centerx, float centery, float fontsize, float chardelay, String mainText)
     {
-        //super(centerx, centery, fontsize, "");
         font = new BitmapFont();
         font.getData().setScale(fontsize);
         layout = new GlyphLayout();
-
+        centered=true;
         charDelay=chardelay;
         maintext = mainText;
         showtext = "";
@@ -51,6 +51,21 @@ class Revtext extends Actor {
         //setBorderColor(256 * 256 * 256 + 256 * 256 + 256);
         //setBorderWid setAlpha(1);
 
+    }
+    Revtext(float leftx, float bottomy, float fontsize, String mainText)
+    {
+        font = new BitmapFont();
+        font.getData().setScale(fontsize);
+        layout = new GlyphLayout();
+        centered=false;
+        charDelay=0;
+        maintext = mainText;
+        showtext = mainText;
+        //counter=9999;
+        setPosition(leftx,bottomy);
+        linefinished=true;
+        lineDelay=2;
+        toFront();
     }
     @Override
     public void draw(Batch sbatch,float parentalpha) {
@@ -75,7 +90,8 @@ class Revtext extends Actor {
     void newText(String newtext)
     {
         reset();
-        center(newtext);
+        if(centered){
+        center(newtext);}
         maintext = newtext;
     }
     void setText(String text)
@@ -121,7 +137,8 @@ class Revtext extends Actor {
         showtext="";
         counter=0;
         nummer=0;
-        linefinished = false;
+        if(charDelay!=0){
+        linefinished = false;}
         waitingforLine=false;
     }
 

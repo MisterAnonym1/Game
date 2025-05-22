@@ -23,7 +23,7 @@ class Entity extends TextureActor
 {
     float maxhealth, curhealth;
     float maxspeed, acceleration, directionline=0;
-    boolean collisionOn, ismoving, isattacking;
+    boolean  ismoving, isattacking;
     //Rectangle hitbox;
     Vector2 movement;
     Vector2 additionalForce;
@@ -34,16 +34,16 @@ class Entity extends TextureActor
     float animationstateTime=0f, weight;
     EntityStatus status;
     Rectangle worldbounds;
+    boolean collides = false;
     Player player;
     Animation<TextureRegion> defaultAnimation;
     Animation<TextureRegion> walkAnimation;
-    public enum EntityStatus { inactiv, idle, engaging }
+    public enum EntityStatus { inactiv, idle, engaging,dead }
 
     Entity(float x, float y, TextureRegion tex, Player player)
     {
         super(tex);
         this.player=player;
-        collisionOn = true;
         additionalForce = new Vector2(0, 0);
         movement = new Vector2(0, 0);
         curhealth = 100;
@@ -76,7 +76,8 @@ class Entity extends TextureActor
         //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
-        drawHitbox(shape);
+        if(Main.debugging){
+        drawHitbox(shape);}
 
     }
     void centerAtActor(Entity other)
@@ -106,7 +107,7 @@ class Entity extends TextureActor
        sethealth(health,false);
     }
 
-    boolean damageby(int damage)
+    boolean damageby(float damage)
     {
 
         curhealth -= damage;
@@ -115,7 +116,9 @@ class Entity extends TextureActor
             return false;
         }
         if(curhealth <= 0) {
-            destroy();
+            //destroy();
+            status=EntityStatus.dead;
+            //Level.deleteList.add(this);
             return true;
         }
         return false;
@@ -280,7 +283,7 @@ class Entity extends TextureActor
 
 
 
-    public boolean inradiusof(Entity other, float radius)
+    public boolean inradiusof(TextureActor other, float radius)
     {
 
         if(getdistance(other) <= radius)

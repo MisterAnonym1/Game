@@ -39,7 +39,7 @@ public class Karltoffelboss extends Boss{
         }
     };
     public void sterben(){
-        destroy();
+        Level.deleteList.add(this);
     };
 
     @Override

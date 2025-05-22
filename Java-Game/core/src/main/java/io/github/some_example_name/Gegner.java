@@ -28,7 +28,6 @@ abstract class Gegner extends Entity
     MyTile targettile;
     Polygon lineofsight;
     boolean isatdestination = false;
-    boolean collides = false;
     int delay;
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     abstract boolean update(float delta);// soll acten zurückgeben ob gegner aus liste entfernt werden soll
@@ -62,10 +61,8 @@ abstract class Gegner extends Entity
     @Override
     public void drawHitbox(ShapeRenderer shape) {
         super.drawHitbox(shape);
-        shape.end();
-        shape.begin(ShapeRenderer.ShapeType.Line);
-        shape.scale(2,2,1);
-        shape.polygon(lineofsight.getVertices());
+        //shape.scale(2,2,1);
+        //shape.polygon(lineofsight.getVertices());
     }
 
     boolean playerinview()
@@ -196,11 +193,7 @@ abstract class Gegner extends Entity
         super.draw(batch, delta);
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-        Level.deleteList.add(this);
-    }
+
     @Override
     public void removeFromLevel() {
         Level.gegnerliste.remove(this);

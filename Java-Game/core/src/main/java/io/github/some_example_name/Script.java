@@ -48,7 +48,7 @@ public class Script {
             "Für Ruhm und Ehre",
             "Press Alt + F4",
             "This is a temporary Screen\n or is it?",
-            "This Game is beeing developed since 2024",
+            "This Game is being developed since 2024",
             "Theo-retisch...",
             "Warum bist du hier?",
             "Jetzt gibt es kein Zurück mehr...",
@@ -67,12 +67,12 @@ public class Script {
             "I was a player once... \nnow I'm just code.",//+++++++
             "They said I could be anything...\n so I became text.",
             "89% Gameplay, 2% Off-by-one-Errors, 10% Bugs",
-            "Wilkommen im Chaos.",
+            "Willkommen im Chaos.",
             "Vertrau mir, hier ist nichts.",
             "Hello there!",
-            "HINTER DIR!! \n ist dein Rücken :O",
+            "HINTER DIR!!     ist dein Rücken :O",
             "Drücke einen Knopf.",
-            "                                                                                                                                                   \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
+            "                            \n                                                                                                  \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
             "Nur Mut!",
             "Was echt ist, entscheidest du.",
             "Bereit oder nicht...",
@@ -80,10 +80,10 @@ public class Script {
             "Wer wagt, gewinnt!",
             "Jetzt wird’s ernst.",
             "I am the voice inside the machine.",//+++++++++++
-            "This is not a bug, it’s a feature.",//+++++++++++
+            "This is not a bug, it is a feature.",//+++++++++++
             "Are you even real?",
             "Lorem Ipsum.",
-            "This game is sponsored by Raid: Shadow Legends!"
+            "This game is sponsored by Raid: Shadow Legends!\n            (not really)             "
 
         };
     static String[] loadingscreenscript=
@@ -110,12 +110,12 @@ public class Script {
         "Life is hard, but loading is harder.",
         "One does not simply skip loading screens.",
         "Optimizing... definitely not making it worse.",
-        "Ehrlich gesagt, ich habe das Laden absichtlich lange gemacht."
+        "Ehrlich gesagt, habe ich das Laden absichtlich lange gemacht."
     };
 
     static String[] deathscreenscript =
         {
-            "Dust yourself off.\n\nGreatness awaits.",
+            "Dust yourself off.\n\n Greatness awaits.",
             "Auf ein neues!",
             "Nächstes Mal...",
             "Compiling your skill issue",
@@ -131,7 +131,7 @@ public class Script {
             "GG: Get Good",
             "You found me! Now what?", //+++++++++++++++++++++(you found death)
             "Skill Issue",
-            "I blinked once and now I'm here.",
+            "I blinked once and now I am here.",
             "Intentional\n\nGamedesign",
             "Jetzt ist es zu spät zum Umkehren.",
             "Hoffentlich hast du gespeichert...",

@@ -54,7 +54,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         super();
         delay=1;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         main = mainl;
-        loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.1f);
+        loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.05f);
     }
     void setfinished()
     {
@@ -196,10 +196,10 @@ class Startmenu extends Menu
         super();
         main = gamel;
         hintergrund = new Texture("Forest sun backround.png");
-        textbox = new Revtext(ScreenWidth/2f, 280, 3, 0.05f,"Press \"Enter\" to start");
+        textbox = new Revtext(ScreenWidth/2f, 280, 3, 0.04f,"Press \"Enter\" to start");
         textbox.setColor(new Color(80/255.0f, 190/255.0f, 61/255.0f,1));
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
-        randomtext = new Revtext(ScreenWidth/2f, 200, 2, 0.07f,Script.startmenuscript[ran]);
+        randomtext = new Revtext(ScreenWidth/2f, 200, 2, 0.03f,Script.startmenuscript[ran]);
         //randomtext.setBorderColor(Color.black, 1);
         //randomtext.setBorderWidth(6);
         exit = new SpriteButton(675, 120, "Credits Button V1.png",1);
@@ -252,7 +252,7 @@ class Startmenu extends Menu
 class DevMenu extends Menu
 {
     Revtext[] texte;
-    int fpscounter;
+    int fpscounter=0;
     DevMenu(Main main)
     {
         super();
@@ -262,8 +262,8 @@ class DevMenu extends Menu
         this.main = main;
         for (int i = 0; i < texte.length - 1; i++)
         {
-            texte[i] = new Revtext( 20,  80 + i * 60, 3, 0,"hallo Phillip");
-            texte[i].setColor(Color.BLUE);
+            texte[i] = new Revtext( 20,  80 + i * 60, 2,"hallo");
+            texte[i].setColor(Color.GOLDENROD);
             //texte[i].setBorderColor(Color.white);
         }
 
@@ -301,12 +301,15 @@ class DevMenu extends Menu
           if(delay<=0)
           {
               delay=1;
-              texte[2].setText("Fps: " + (int)delay/fpscounter +"or"+ 1.0/delta);
+              texte[2].setText("Fps: " + (int)fpscounter/delay +" or "+ 1.0/delta);
+              fpscounter=0;
           }
 
-         //texte[0].setText("loadedwalls amount: " + main.loadedwalls.size());
+          texte[0].setText("loadedwalls amount: " + main.loadedwalls.size());
           texte[1].setText("Player speed: " + main.Player.movement.len());
           texte[3].setText("Testentitys: " + main.currentlevel.testentitys.size());
+          texte[4].setText("Deaths: " + main.deathcount);
+          texte[5].setText("Player direction-angle: " + main.Player.directionline);
       }
    }
 

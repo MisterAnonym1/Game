@@ -19,12 +19,14 @@ class Player extends Entity
     boolean isymoving;
     boolean invincible = false;
     MeeleWeapon weapon;
-    int swingduration = 0;
-    String anistatus="";
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
     Animation<TextureRegion> walkAnimation;
-
+    Animation<TextureRegion> sideAttackAnimation;
+    Animation<TextureRegion> frontAttackAnimation;
+    Animation<TextureRegion> backAttackAnimation;
+    Animation<TextureRegion> defaultAnimation;
+    Animation<TextureRegion> currentAnimation; //Variable zum speichern der letzten abgespielten animation
     boolean isattacking;
     Player(float x, float y, float speed, int leben, Viewport view) {
 
@@ -38,13 +40,17 @@ class Player extends Entity
         curhealth = leben;
         maxhealth = leben;
         healthbar = new HealthBar(100, 400, maxhealth, 1, Main.uiStage.getViewport());
-        weapon=new Pipe(x,y,this);
+        weapon=new Pipe(this);
         //healthbar.setVisible(false);
         //setSize(200, 180);
         scale(1f);
         texture.flip(true,false);
-        walkAnimation= Animator.getAnimation("Se_Player_ja.jpg",3,2,1,5,0.2f);
+        walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.15f);
+        defaultAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,1,6,0.12f);
 
+        sideAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,13,18,0.08f);
+        frontAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,25,30,0.08f);
+        backAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,37,42,0.08f);
 
     }
 
@@ -52,7 +58,7 @@ class Player extends Entity
     void initializeHitbox() {
         hitboxOffsetX = 0;
         hitboxOffsetY = 0;
-        hitbox = new Rectangle(getX() +getWidth()/2, getY() +getHeight()/2, getWidth(), getHeight());
+        hitbox = new Rectangle(getX() +getWidth()/2, getY() +getHeight()/2, getWidth()/4f, getHeight()/3f);
 
     }
 
@@ -63,25 +69,28 @@ class Player extends Entity
         //shape.begin(ShapeRenderer.ShapeType.Filled);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         animationstateTime += delta; // Accumulate elapsed animation time
-        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
+        TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, true);
 
-        batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        batch.draw(currentFrame,getX()+ (ismirrored?getWidth():0),getY(),getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+
+        if(Main.debugging){
         batch.end();
         //shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
-        shape.setColor(1,1,1,0.6f);
-        weapon.setDebug(true);
-        weapon.drawDebug(shape);
+
         shape.end();
 
-        batch.begin();
-        weapon.draw(batch,parentAlpha);
+        batch.begin();}
+
+
+
         batch.end();
 
         healthbar.draw();
         batch.begin();
     }
 
+    @Override
     boolean damageby(float damage)
     {
         if(invincible) {
@@ -105,54 +114,23 @@ class Player extends Entity
         healthbar.healTo(health);
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-        weapon.destroy();
-    }
 
-    public void move(float dx, float dy)
+
+
+
+    public void playAnimation(Animation<TextureRegion> animation)
     {
-        super.moveBy(dx, dy);
-    }
-
-
-    /*public void playAnimationrepeat(int firstpic, int lastpic, int fps, boolean mirrored)
-    {
-        if(anistatus != firstpic + "" + lastpic + "" + mirrored + fps)
+        if(animation!=currentAnimation)
         {
-            if((mirrored && !ismirrored) || (!mirrored && ismirrored))
-            {
-
-                texture.flip(true,false);
-                if(ismirrored)
-                {
-                    ismirrored = false;
-                    swingduration = 0;
-
-                }
-                else
-                {
-                    ismirrored = true;
-                    swingduration = 0;
-
-                }
-            }
-            //waffe.rotateTo((ismirrored ? -20 : 20));
-
-            playAnimation(firstpic, lastpic, RepeatType.loop, fps);
-            anistatus = firstpic + " " + lastpic + "" + mirrored + fps;
-
+            animationstateTime=0;
+            currentAnimation=animation;
         }
-        else {
-            resumeAnimation();
-        }
-    }*/
+    }
+
     void flip(boolean shouldBeMirrored)
     {
         if(( ismirrored!=shouldBeMirrored))
-        {  texture.flip(true,false); ismirrored=true;
-            weapon.mirror();
+        {  texture.flip(true,false);
             ismirrored=shouldBeMirrored;
         }
     }
@@ -170,12 +148,12 @@ class Player extends Entity
         if(!weapon.hasActions())
         { isattacking = false;}
 
-            if(!isattacking&&Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                weapon.attack();
+        if(!isattacking&&Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+                weapon.attack(0.45f);
                 gegnerhitliste.clear();
                 isattacking = true;
 
-            }
+        }
 
 
         isxmoving = false;
@@ -184,72 +162,79 @@ class Player extends Entity
         Vector2 vecup = new Vector2(1, 0);
         Vector2 vecright = new Vector2(1, 0);
         //zwei Vectoren werden erschaffen um die Laufrichtung des Spielers zu definieren
+        if(!isattacking) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.UP)) || Gdx.input.isKeyPressed(Input.Keys.W)) {
 
-        if((Gdx.input.isKeyPressed(Input.Keys.UP))|| Gdx.input.isKeyPressed(Input.Keys.W))
-        {
+                vecup = vecup.rotateDeg(90);
+                isymoving = true;
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.DOWN)) || Gdx.input.isKeyPressed(Input.Keys.S)) {
 
-            vecup = vecup.rotateDeg(90);
-            isymoving = true;
-        }
-        else if((Gdx.input.isKeyPressed(Input.Keys.DOWN))|| Gdx.input.isKeyPressed(Input.Keys.S))
-        {
-
-            vecup = vecup.rotateDeg(-90);
-            isymoving = true;
-        }
-        if( Gdx.input.isKeyPressed(Input.Keys.LEFT)|| Gdx.input.isKeyPressed(Input.Keys.A))
-        {
-            vecright = vecright.rotateDeg(180);
-            isxmoving = true;
-        }
-        else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)|| Gdx.input.isKeyPressed(Input.Keys.D))
-        {
-            isxmoving = true;
-        }
-        if(isxmoving || isymoving) {
-            ismoving = true;
-
-        }
-
-        if(isxmoving && isymoving) {
-            vecup = vecup.add(vecright);
-        }
-        else if(isxmoving && !isymoving) {
-            vecup = vecright;
-        }
-
-        if(ismoving) {
-
-            if(vecup.angleDeg() > 180) {
-                flip(true);
-                //playAnimationrepeat(15, 17, (int) (3 + Math.round(maxspeed)), true);
+                vecup = vecup.rotateDeg(-90);
+                isymoving = true;
             }
-            else if(vecup.angleDeg() > 10 && vecup.angleDeg() < 180) {
+            if (Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.A)) {
+                vecright = vecright.rotateDeg(180);
+                isxmoving = true;
+            } else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.D)) {
+                isxmoving = true;
+            }
+            if (isxmoving || isymoving) {
+                ismoving = true;
+
+            }
+
+            if (isxmoving && isymoving) {
+                vecup = vecup.add(vecright);
+            } else if (isxmoving && !isymoving) {
+                vecup = vecright;
+            }
+
+            if (ismoving) {
+
+                playAnimation(walkAnimation);
+                if (Math.round(vecup.angleDeg())>95&&Math.round(vecup.angleDeg())<265) {
+                    flip(true);
+                }
+                else if(Math.round(vecup.angleDeg())>275||Math.round(vecup.angleDeg())<85)
+                {flip(false);}
+
+            }
+            else {
+                playAnimation(defaultAnimation);
+                /*if (Math.round(directionline)>95&&Math.round(vecup.angleDeg())<265) {
+                    flip(true);
+                }
+                else if(Math.round(directionline)>275||Math.round(vecup.angleDeg())<85)
+                {flip(false);}*/
+            }
+
+            vecup.setLength(maxspeed);
+            updatemovement(vecup,deltatime);
+        }
+
+        else{
+            ismoving=false;
+            if (Math.round(directionline) == 270) {
+                //flip(false);
+                playAnimation(frontAttackAnimation);
+
+            } else if ( Math.round(directionline) == 90) {
+                //flip(false);
+                playAnimation(backAttackAnimation);
+
+
+            } else if (directionline<85||directionline>275) {
                 flip(false);
+                playAnimation(sideAttackAnimation);
 
-                //playAnimationrepeat(12, 14, (int) (3 + Math.round(maxspeed)), false);
-            }
-            else if(Math.round(vecup.angleDeg()) == 0) {
-                flip(false);
-                //playAnimationrepeat(18, 20, (int) (3 + Math.round(maxspeed)), false);
-            }
-            else if(Math.round(vecup.angleDeg()) == 180) {
+            } else if (directionline>95&&directionline<265) {
                 flip(true);
-                //playAnimationrepeat(18, 20, (int) (3 + Math.round(maxspeed)), true);
+                playAnimation(sideAttackAnimation);
             }
         }
-        else {
-            //pauseAnimation();
-        }
 
-        vecup.setLength((float) (maxspeed));
-
-        updatemovement(vecup,deltatime);
-        if(!isattacking){  weapon.rotateTo((ismirrored ? 30 : -30)); }
-        else ismoving = false;
-        //weapon.moveTo(getCenterX() + (ismirrored ? -20-weapon.hitbox.width : 20), getCenterY()-40);
         //+stayinWorldbounds();
-        weapon.moveTo(getCenterX() + (ismirrored ? -20 : 20),getCenterY()-40);
         //damageby(8.0f*deltatime);
     }
+
 }

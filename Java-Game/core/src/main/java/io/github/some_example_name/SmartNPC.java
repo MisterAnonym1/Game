@@ -27,7 +27,7 @@ public class SmartNPC extends Gegner {
 
     @Override
     void sterben() {
-    destroy();
+        Level.deleteList.add(this);
     }
 
 }

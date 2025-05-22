@@ -15,6 +15,8 @@ Credits Button V1.png
 drop.png
 El_Karltoffel.png
 El_Karltoffel_Gescailt.png
+Explosions.png
+Fire.png
 Fireball.png
 Forest sun backround.png
 HappySheep_All.png
@@ -41,3 +43,4 @@ ui/font.fnt
 ui/uiskin.atlas
 ui/uiskin.json
 ui/uiskin.png
+Warrior_Blue.png
