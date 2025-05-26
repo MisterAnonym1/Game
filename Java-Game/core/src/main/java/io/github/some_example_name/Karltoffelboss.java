@@ -1,9 +1,11 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Karltoffelboss extends Boss{
+    HealthBar bossbar;
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
         acceleration = 100;
@@ -12,7 +14,7 @@ public class Karltoffelboss extends Boss{
         spawny = y;
         maxhealth = 1000;
         curhealth = 1000;
-
+        bossbar = new HealthBar(230, 500, maxhealth, 2f, 1f, Main.uiStage.getViewport());
         scale(0.3f);
 
     }
@@ -22,6 +24,12 @@ public class Karltoffelboss extends Boss{
         hitboxOffsetX = 320;
         hitboxOffsetY = 200;
         hitbox = new Rectangle(getCenterX(), getCenterY(), getWidth()/4, getHeight()/2);
+    }
+
+    @Override
+    public void draw(Batch batch, float delta) {
+        super.draw(batch, delta);
+        bossbar.draw();
     }
 
     @Override
@@ -41,6 +49,18 @@ public class Karltoffelboss extends Boss{
 
         return false;
     };
+
+    @Override
+    boolean damageby(float damage){
+        bossbar.takeDamage(damage);
+        curhealth-=damage;
+        if(curhealth <= 0) {
+            return true;
+        } else{
+            return false;
+        }
+    }
+
     public void engagePlayer(float delta){
         attackdelay+=delta;
 

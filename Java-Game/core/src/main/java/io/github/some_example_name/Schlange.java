@@ -59,7 +59,7 @@ class Schlange extends Gegner
         }
         else
         {
-            this.dashattack(delta);
+            //this.dashattack(delta);
             if(playerinview()) { //läuft direkt gerade zum Spieler
                 counter = 0;
                 movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
