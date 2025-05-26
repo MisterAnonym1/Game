@@ -280,7 +280,7 @@ abstract class Gegner extends Entity
 
     };
     public void dashattack (float delta) {
-        if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
+        //if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
             acceleration = 600;
             maxspeed = 600;
             counter = 0;
@@ -288,7 +288,7 @@ abstract class Gegner extends Entity
             ismoving = true;
             updatemovement(movement, delta);
             player.damageby(30);
-        }
+        //}
     };
 }
 
