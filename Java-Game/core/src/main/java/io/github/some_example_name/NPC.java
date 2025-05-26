@@ -2,12 +2,14 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import java.awt.*;
 
 public class NPC extends Entity
 {
@@ -18,24 +20,29 @@ public class NPC extends Entity
     int scriptIndex;
     int maxline;
     int line;
-    boolean statementfinished;
+    boolean statementfinished,inradius;
     boolean inConversation=false;
     Viewport viewport;
+    Animation<Texture> bubble;
     NPC(float x, float y, String filepath, String fileBackround, int scriptindex,Main log)
     {
         super(x, y, filepath,log.Player);
         //addAction(Actions.delay(1));
         backroundfilepath=fileBackround;
-        viewport=log.viewport;
-        text = new Revtext(400, 200, 3,0.1f, "\n");
+        viewport=Main.uiStage.getViewport();
+        text = new Revtext(512, 120, 3,0.04f, "Diese Zeile sollte nicht sichtbar sein");
         this.scriptIndex = scriptindex;
         line = 0;
         maxline = Script.npcscript[scriptIndex][0].length;;
         hitboxOffsetX = 25;
         hitboxOffsetY = 35;
-        hitboxalpha=0.5f;
 
-        //hitbox.setAlpha(1); //Aus kommentieren um die Hitbox sichtbar zu mahcen. Achtung macht dei Hitbox durchlässig wenn auskommentiert.
+
+        Array<Texture> frames = new Array<>();
+        for (int i = 1; i <= 4; i++) {
+            frames.add(new Texture(Gdx.files.internal("assets/Spech_Bubble/" + i + ".png")));
+        }
+        bubble=new Animation<>(0.4f, frames);
     }
     NPC(float x, float y, String filepath, String fileBackround, int scriptindex,float scale,Main log)
     {
@@ -46,12 +53,25 @@ public class NPC extends Entity
     {
         this(x,y,data.filepath,data.fileBackround,data.scriptindex,log);
         scale(data.scale);
+        hitboxOffsetX= data.offsetx;
+        hitboxOffsetY=data.offsety;
+        if(data.width!=0){
+        hitbox = new Rectangle(getX() - data.offsetx, getY() - data.offsety, data.width, data.height);}
     }
 
     @Override
     public void draw(Batch batch, float delta)
     {
         super.draw(batch, delta);
+
+        if(inradius)
+        {
+            animationstateTime+=delta;
+            //batch.setColor(0.7f,0.7f,0.7f,1);
+            batch.draw(bubble.getKeyFrame(animationstateTime,true),hitbox.x+hitbox.width-20,hitbox.y+hitbox.height-40,40,44);
+        }
+
+
     }
 
     @Override
@@ -59,14 +79,16 @@ public class NPC extends Entity
         Level.npcs.remove(this);
     }
 
-    public void drawInConversation(SpriteBatch batch)
+    public void drawInConversation(Batch batch)
     {
+        batch.begin();
+        batch.setColor(1,1,1,1);
         if(inConversation){
-            batch.draw(backround, viewport.getScreenX(), viewport.getScreenY(), viewport.getWorldWidth(), viewport.getWorldHeight());
-            batch.draw(texture,viewport.getScreenX()+viewport.getScreenWidth()/2.0f-hitbox.getWidth()/1f, viewport.getScreenY()+viewport.getScreenHeight()/2.0f-hitbox.getHeight()/1.0f,getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
-            System.out.println("lol");
+            batch.draw(backround, 0,0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(texture,1024/2.0f-hitbox.getWidth(), 0+576/2.0f-hitbox.getHeight(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
             text.draw(batch,1);
         }
+        batch.end();
     }
 
     public void act(float delta)
@@ -137,13 +159,18 @@ class NpcData
 {
     String filepath, fileBackround;
     int scriptindex;
-    float scale;
-    NpcData( String filepath, String fileBackround, int scriptindex,float scale)
+    float scale, offsetx,offsety,width, height;
+    NpcData(String filepath, String fileBackround, int scriptindex, float scale, float xoffset, float yoffset, float width, float height)
     {
        this.filepath=filepath;
        this.fileBackround= fileBackround;
        this.scriptindex=scriptindex;
        this.scale=scale;
+    }
+    NpcData(String filepath, String fileBackround, int scriptindex, float scale)
+    {
+        this(filepath,fileBackround,scriptindex,scale,0,0,100,100);
+
     }
 }
 
@@ -163,13 +190,6 @@ class NpcData
         //hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
     }
 
-    @Override void nextline()
-    {
-        if(line < maxline)
-        {
-            text.newText(Script.npcscript[scriptIndex][1][line]);
-        }
-    }
 
     void interact(){
         //inConversation = true;

@@ -54,7 +54,7 @@ public class Script {
             "Jetzt gibt es kein Zurück mehr...",
             "Enter the Void",
             "Reality not included",
-            "Now with 10% more bugs!!",//+++++
+            "Now with 10% more bugs!!",///+++++
             "Für Bedeutungslosigkeit  und Wahnsinn!",
             "Möge der Irrsinn uns leiten!", //++++++
             "Are ya ready son?",
@@ -64,7 +64,8 @@ public class Script {
             "Vorsicht, epic moments ahead!",
             "Du bist bereit... oder?",
             "Help! I am trapped in a screen-message factory :\\",
-            "I was a player once... \nnow I'm just code.",//+++++++
+            "I was a player once... \nnow I'm just code.",///+++++++
+            "Das hättest du nicht sehen sollen...",///+++++
             "They said I could be anything...\n so I became text.",
             "89% Gameplay, 2% Off-by-one-Errors, 10% Bugs",
             "Willkommen im Chaos.",
@@ -72,7 +73,7 @@ public class Script {
             "Hello there!",
             "HINTER DIR!!     ist dein Rücken :O",
             "Drücke einen Knopf.",
-            "                            \n                                                                                                  \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
+            "                       \n                                                                                                  \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
             "Nur Mut!",
             "Was echt ist, entscheidest du.",
             "Bereit oder nicht...",
@@ -80,7 +81,7 @@ public class Script {
             "Wer wagt, gewinnt!",
             "Jetzt wird’s ernst.",
             "I am the voice inside the machine.",//+++++++++++
-            "This is not a bug, it is a feature.",//+++++++++++
+            "This is not a bug, it is a feature.",///+++++++++++
             "Are you even real?",
             "Lorem Ipsum.",
             "This game is sponsored by Raid: Shadow Legends!\n            (not really)             "

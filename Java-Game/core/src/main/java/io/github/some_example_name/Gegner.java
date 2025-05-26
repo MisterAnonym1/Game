@@ -29,10 +29,12 @@ abstract class Gegner extends Entity
     Polygon lineofsight;
     boolean isatdestination = false;
     int delay;
+    AttackStatus attackStatus= AttackStatus.inactiv;
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     abstract boolean update(float delta);// soll acten zurückgeben ob gegner aus liste entfernt werden soll
     abstract void sterben();
     Animation<TextureRegion> explosionAnimation;
+    public enum AttackStatus { inactiv, dash, strike,exploding }
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -271,11 +273,11 @@ abstract class Gegner extends Entity
         }
     };
     public void fireballattack(){
-        if(getdistance(player)<= 100) {
+
             Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
             vec.setLength(this.getHeight()/2);
             Level.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
-        }
+
     };
     public void dashattack (float delta) {
         if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler

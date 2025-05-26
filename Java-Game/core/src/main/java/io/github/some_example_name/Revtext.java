@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import java.awt.*;
 
@@ -42,7 +43,7 @@ class Revtext extends Actor {
         charDelay=chardelay;
         maintext = mainText;
         showtext = "";
-
+        setColor(1,1,1,1);
         lineDelay=(0.1f-chardelay)*mainText.length()+0.2f;
         setCenter(centerx,centery);
         linefinished = false;
@@ -62,6 +63,7 @@ class Revtext extends Actor {
         maintext = mainText;
         showtext = mainText;
         //counter=9999;
+        setColor(1,1,1,1);
         setPosition(leftx,bottomy);
         linefinished=true;
         lineDelay=2;
@@ -69,8 +71,14 @@ class Revtext extends Actor {
     }
     @Override
     public void draw(Batch sbatch,float parentalpha) {
+        float x= centerX;
+        float y= centerY;
+        sbatch.setTransformMatrix(new Matrix4().translate(x, y, 0).rotate(0, 0, 1, getRotation()).translate(-x, -y, 0));
         font.setColor(getColor().r,getColor().g,getColor().b,parentalpha);
         font.draw(sbatch, showtext, getX(), getY());
+        //sbatch.setTransformMatrix(Main.uiStage.getViewport().getCamera().combined);
+        sbatch.setTransformMatrix(new Matrix4());
+
 
     }
 
@@ -93,6 +101,7 @@ class Revtext extends Actor {
         if(centered){
         center(newtext);}
         maintext = newtext;
+        linefinished=false;
     }
     void setText(String text)
     {
@@ -102,6 +111,7 @@ class Revtext extends Actor {
     }
     public void act(float delta)
     {
+        super.act(delta);
        counter+=delta;
         if(!linefinished&&!waitingforLine&&counter >= nummer*charDelay && nummer < maintext.length())
         {
@@ -126,7 +136,8 @@ class Revtext extends Actor {
     {
         layout.setText(font, text);
         setX(centerX- layout.width / 2.0f);// Zentriere den Text horizontal
-        setY(centerY-layout.height / 2.0f);
+        //setY(centerY-layout.height / 2.0f);
+        setY(centerY);
     }
 
     public void setMaintext(String maintext) {

@@ -1,10 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -20,15 +17,15 @@ public class Matrix {
     Matrix(Viewport port)
     {
         float charDelay=6f;
-        float fontsize=0.7f;
+        float fontsize=0.9f;
 
-        texts.add(new VerticalRevtext(0,500,fontsize,string,charDelay));
+        texts.add(new VerticalRevtext(0,576,fontsize,string,charDelay));
         layout = texts.get(0).layout;
 
-        for(int i=1; i<port.getWorldWidth()/(layout.width*1.1);i++)
+        for(int i=1; i<port.getWorldWidth()/(layout.width*1);i++)
         {
             mixString();
-            texts.add(new VerticalRevtext(i*layout.width*1.1f,500,fontsize,string,charDelay));
+            texts.add(new VerticalRevtext(i*layout.width*1.1f,576,fontsize,string,charDelay));
             texts.get(texts.size()-1).setNummer(MathUtils.random(0,string.length()));
             //texts.get(texts.size()-1).setNummer(i);
             texts.get(texts.size()-1).counter+=Math.random()*charDelay;
@@ -48,7 +45,7 @@ public class Matrix {
 
 
     }
-    public void actAndDraw( SpriteBatch batch, float delta) {
+    public void actAndDraw( Batch batch, float delta) {
         //String str="";
         for (VerticalRevtext rev:texts)
         {
@@ -94,7 +91,8 @@ class VerticalRevtext extends Sprite
         //setBorderWid setAlpha(1);
 
     }
-    void draw(SpriteBatch sbatch)
+    @Override
+    public void draw(Batch sbatch)
     {
         float factor= counter%charDelay;
         factor= factor/charDelay; //diese Variable zeigt von 0 bis 1 wie lange bis der nächste Buchstabe auftaucht

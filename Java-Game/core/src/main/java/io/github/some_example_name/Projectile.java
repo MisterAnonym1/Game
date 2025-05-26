@@ -14,16 +14,15 @@ class PartikelSprite extends TextureActor
 
     PartikelSprite(float x, float y, String filepath, float vanishInSecs)
     {
-
         super(filepath);
-       centerAt(x,y);
+        setPosition(x,y);
 
         delay =  vanishInSecs;
     }
     PartikelSprite(float x,float y,String filepath ,float vanishInSecs,float xTexture,float yTexture,float width,float heigth)
     {
         super(filepath, xTexture, yTexture, width, heigth);
-       centerAt(x,y);
+       setPosition(x,y);
 
         delay =  vanishInSecs;
     }
@@ -82,7 +81,6 @@ class Projectile extends PartikelSprite
         moveBy(movement.x*delta, movement.y*delta);
         reducemovement(delta);
 
-
     }
 
     void onHit()
@@ -107,7 +105,7 @@ class FireBall extends Projectile
     {
         super(x,y,"Fireball.png",vel,20);
         movement.setLength(400);
-        scale(0.7f);
+        scale(0.5f);
     }
     @Override
     void reducemovement(float delta)
@@ -121,7 +119,7 @@ class FireBall extends Projectile
         batch.setColor(getColor().r,getColor().g,getColor().b,1);
         if(hasActions()){
         animationstateTime += delta; // Accumulate elapsed animation time
-        TextureRegion currentFrame = explosion.getKeyFrame(animationstateTime, true);
+        TextureRegion currentFrame = explosion.getKeyFrame(animationstateTime, false);
         batch.draw(currentFrame,getCenterX()-getWidth()*2,getCenterY()-getHeight()*2,getOriginX(),getOriginY(),getWidth()*4,getHeight()*4,getScaleX(),getScaleY(),getRotation());}
         else{super.draw(batch,delta);}
 
@@ -131,16 +129,9 @@ class FireBall extends Projectile
     void onHit(Entity enti) {
         FireBall fireBall = this;
         movement.setLength(0);
-        addAction(Actions.delay(0.2f));
-        addAction(Actions.after(new Action() {
-            @Override
-            public boolean act(float delta) {
-                enti.damageby(damage);
-                return true;
-            }
-        }));
-
-        addAction(Actions.after(Actions.delay(0.3f)) );
+        collisionOn=false;
+        enti.damageby(damage);
+        addAction(Actions.after(Actions.delay(0.5f)) );
         addAction(Actions.after(new Action() {
             @Override
             public boolean act(float delta) {
@@ -149,8 +140,6 @@ class FireBall extends Projectile
             }
         }));
 
-        /// Explosions animation
-        //super.onHit(enti);
 
     }
 
@@ -159,6 +148,5 @@ class FireBall extends Projectile
         hitboxOffsetX=0;
         hitboxOffsetY=0;
         hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/1.7f, getHeight()/1.7f);
-
     }
 }

@@ -1,9 +1,10 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 public class Karltoffelboss extends Boss{
-    Karltoffelboss(float x, float y, Main logic, String filepath){
+    Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
         acceleration = 100;
         maxspeed = 100;
@@ -11,11 +12,23 @@ public class Karltoffelboss extends Boss{
         spawny = y;
         maxhealth = 1000;
         curhealth = 1000;
-        hitboxOffsetX = 25;
-        hitboxOffsetY = 35;
+
         scale(0.3f);
 
     }
+
+    @Override
+    void initializeHitbox() {
+        hitboxOffsetX = 320;
+        hitboxOffsetY = 200;
+        hitbox = new Rectangle(getCenterX(), getCenterY(), getWidth()/4, getHeight()/2);
+    }
+
+    @Override
+    protected void positionChanged() {
+        super.positionChanged();
+    }
+
     public boolean update(float delta){
         playerinview();
         if(curhealth <= 0) {
@@ -35,7 +48,8 @@ public class Karltoffelboss extends Boss{
         {
             //line of sight
             attackdelay=0;
-            fireballattack();
+            if(getdistance(player)<= 500) {
+            fireballattack();}
         }
     };
     public void sterben(){

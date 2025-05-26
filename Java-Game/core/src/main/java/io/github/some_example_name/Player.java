@@ -27,7 +27,9 @@ class Player extends Entity
     Animation<TextureRegion> backAttackAnimation;
     Animation<TextureRegion> defaultAnimation;
     Animation<TextureRegion> currentAnimation; //Variable zum speichern der letzten abgespielten animation
+    Animation<TextureRegion> deadAnimation;
     boolean isattacking;
+    Viewport viewport;
     Player(float x, float y, float speed, int leben, Viewport view) {
 
 
@@ -35,22 +37,25 @@ class Player extends Entity
         toBack();
         player=this;
         weight = 0.5f;
+        viewport=view;
         maxspeed = speed;
         acceleration = speed;
         curhealth = leben;
         maxhealth = leben;
-        healthbar = new HealthBar(100, 400, maxhealth, 1, Main.uiStage.getViewport());
+        healthbar = new HealthBar(20, 520, maxhealth, 2f, 1f,Main.uiStage.getViewport());
         weapon=new Pipe(this);
         //healthbar.setVisible(false);
         //setSize(200, 180);
         scale(1f);
+
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.15f);
         defaultAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,1,6,0.12f);
 
         sideAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,13,18,0.08f);
         frontAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,25,30,0.08f);
-        backAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,37,42,0.08f);
+        backAttackAnimation=Animator.getAnimation("Warrior_Blue.png", 6,8,37,42,0.08f);
+        deadAnimation=Animator.getAnimation("Dead.png", 7,2,1,14,0.082f);
 
     }
 
@@ -64,9 +69,8 @@ class Player extends Entity
 
 
     public void draw(Batch batch,ShapeRenderer shape,float delta, float parentAlpha) {
-        //super.draw(batch, parentAlpha);
+        if(status==EntityStatus.dead){playAnimation(deadAnimation);}
 
-        //shape.begin(ShapeRenderer.ShapeType.Filled);
         batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
         animationstateTime += delta; // Accumulate elapsed animation time
         TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, true);
@@ -88,6 +92,18 @@ class Player extends Entity
 
         healthbar.draw();
         batch.begin();
+    }
+
+    @Override
+    public void drawHitbox(ShapeRenderer shape) {
+        super.drawHitbox(shape);
+        Vector2 worldPosition = viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+        shape.line(new Vector2(getCenterX(),getCenterY()), worldPosition);
+        Vector2 direction= new Vector2(100,0);
+        direction.rotateDeg(directionline);
+        shape.line(new Vector2(getCenterX(),getCenterY()),new Vector2(getCenterX()+direction.x,getCenterY()+direction.y) );
+
+
     }
 
     @Override
@@ -148,7 +164,7 @@ class Player extends Entity
         if(!weapon.hasActions())
         { isattacking = false;}
 
-        if(!isattacking&&Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
+        if(!isattacking/*&&Gdx.input.isKeyPressed(Input.Keys.SPACE)*/&&Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
                 weapon.attack(0.45f);
                 gegnerhitliste.clear();
                 isattacking = true;

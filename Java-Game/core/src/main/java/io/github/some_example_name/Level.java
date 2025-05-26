@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -136,13 +137,9 @@ class Level {
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-        Gdx.gl.glLineWidth(5);
+        Gdx.gl.glLineWidth(4);
         drawShadows(shape);
-        if(Main.debugging)
-        {
 
-            drawHitboxes(shape);
-        }
         batch.begin();
 
         for (MyTile tile : walls) {
@@ -160,6 +157,17 @@ class Level {
         for (NPC npc : npcs) {
             npc.draw(batch,delta);
         }
+        batch.end();
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glLineWidth(4);
+        if(Main.debugging)
+        {
+
+            drawHitboxes(shape);
+        }
+        batch.begin();
 
 
         //items.draw
@@ -188,6 +196,7 @@ class Level {
         for (NPC npc : npcs) {
             npc.drawHitbox(shape);
         }
+        shape.setColor(Color.RED);
         logic.Player.drawHitbox(shape);
         shape.end();
     }
@@ -220,7 +229,6 @@ class Level {
 
             // Gehe von links her alle Spalten durch:
             for (int column = 0; column < row.length(); column++) {
-
                 // Zeichen, das die aktuelle Kachel repräsentiert:
                 char tilechar = row.charAt(column);
 
@@ -261,6 +269,11 @@ class Level {
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
                         break;
+                    case 'k' :
+                        gegnerliste.add(new Karltoffelboss(MyTile.columnToX(column), MyTile.rowToY(line),logic));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
+                        rownotwalls[line]++;
+                        break;
                     case 'i' :
                   /*ItemType type= Item.getrandomtype();
                   itemlist.add(new Item(column * 128, line * 128, Item.getInType(type),type ));
@@ -290,9 +303,6 @@ class Level {
                         gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(line) ));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
-                        break;
-                    case 'k' :
-                        //notWallsTiles.add(new MyTile(column, line, SpriteLibrary.Hamster, 2));
                         break;
                     case 'g' :
                         gegnerliste.add(new Schlange(logic, MyTile.columnToX(column), MyTile.rowToY(line)));

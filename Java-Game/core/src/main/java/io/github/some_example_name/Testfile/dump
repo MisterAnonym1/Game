@@ -1,20 +1,40 @@
  Intersector.overlapConvexPolygons(polyA, polyB, mtv);
 
- Um Text in LibGDX zu vergrößern, gibt es mehrere Ansätze:
+
+
+
+### **1. Sprites in einen Ordner speichern**
+Platziere alle **Sprites in einem Ordner**, zum Beispiel:
+/assets/sprites/
+  ├── hero_1.png
+  ├── hero_2.png
+  ├── hero_3.png
+Falls du eine **geordnete Animation** willst, benenne die Dateien konsistent (`hero_1`, `hero_2`, `hero_3`).
+
+
+//### **2. Lade die Sprites in ein `TextureAtlas`**
+//Falls du bereits ein `spritesheet.atlas` hast, lade ihn:
+TextureAtlas atlas = new TextureAtlas(Gdx.files.internal("spritesheet.atlas"));
+
+//Falls du **einzelne Dateien aus dem Ordner direkt laden willst**, verwende stattdessen:
+Array<TextureRegion> frames = new Array<>();
+for (int i = 1; i <= 3; i++) {
+    frames.add(new TextureRegion(new Texture(Gdx.files.internal("assets/sprites/hero_" + i + ".png"))));
+}
+
+//### **3. Erstelle die Animation**
+//Sobald du die **Sprites geladen hast**, erstelle eine Animation:
+Animation<TextureRegion> heroAnimation = new Animation<>(0.1f, frames);
+
+//Falls du die Animation **aus einem Atlas** machst:
+Animation<TextureRegion> heroAnimation = new Animation<>(0.1f, atlas.findRegions("hero"));
+
+
+
+
+Um Text in LibGDX zu vergrößern, gibt es mehrere Ansätze:
 
  BitmapFont-Skalierung
- Für einfache Skalierung kann die setScale-Methode von BitmapFont verwendet werden:
-
- java
- BitmapFont font = new BitmapFont();
- font.getData().setScale(2.0f); // Verdoppelt die Schriftgröße
- batch.begin();
- font.draw(batch, "Vergrößerter Text", x, y);
- batch.end();
-
- Nachteil: Skalierung kann zu unscharfer Darstellung führen
-
- .
 
  Scene2D-Label mit Skalierung
  Für UI-Elemente bietet sich Label mit integrierter Skalierung an:
@@ -42,9 +62,6 @@
 
  .
 
- Hinweis zur HiDPI-Unterstützung
- Bei hochauflösenden Displays kann die VM-Option -Dsun.java2d.uiScale=2 die Skalierung verbessern
- . Für LibGDX-spezifische Lösungen sollten Viewport-Einstellungen (z.B. ExtendViewport) geprüft werden.
 
 
 

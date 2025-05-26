@@ -8,13 +8,14 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -47,12 +48,14 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 {
     Animation<TextureRegion> loading;
     boolean finished_loading = false;
-
-
     LoadingScreen(Main mainl)
     {
+
         super();
-        delay=1;// Mindest-Zeit die der Ladebildschirm zu sehen ist
+        int ran = MathUtils.random(0, Script.loadingscreenscript.length - 1);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 2, 0.01f,Script.loadingscreenscript[ran]);
+        textbox.setColor(new Color(0.1f, 0.1f, 0.8f,1));
+        delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         main = mainl;
         loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.05f);
     }
@@ -64,9 +67,10 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     @Override
     public void draw(Batch batch, float alpha) {
         ScreenUtils.clear(Color.WHITE);
+        textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion currentFrame = loading.getKeyFrame(animationstateTime, true);
-        batch.draw(currentFrame,ScreenWidth/2f-200,ScreenHeight/2f-150,getOriginX(),getOriginY(),400,300,getScaleX(),getScaleY(),getRotation());
+        batch.draw(currentFrame,getX()+ ScreenWidth/2f-200, getY()+ ScreenHeight/2f-80,getOriginX(),getOriginY(),400,300,getScaleX(),getScaleY(),getRotation());
 
     }
 
@@ -84,6 +88,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     @Override
     public void act(float delta) {
         super.act(delta);
+        textbox.act(delta);
         if(delay > 0) {
             delay-=delta;
         }
@@ -100,7 +105,12 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     Deathscreen(Main main) { //erschafft den Screen;
         super();
         int ran = MathUtils.random(0, Script.deathscreenscript.length - 1);
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.8f, 3, 0.06f,Script.deathscreenscript[ran]);
+        String message=Script.deathscreenscript[ran];
+        if(main.predeterminedDeathmessage.length()>0){
+            message=main.predeterminedDeathmessage;
+            main.predeterminedDeathmessage="";
+        }
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.8f, 3, 0.06f,message);
         textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
         delay=1;
         this.main=main;
@@ -162,6 +172,8 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         shape.end();
 
         batch.begin();
+        batch.setColor(1,1,1,getColor().a);
+        batch.draw(main.Player.deadAnimation.getKeyFrame(0.81f),centerX-153,centerY-118,300,300);
         textbox.draw(batch,getColor().a);
         knopf.draw(batch,getColor().a);
 
@@ -184,24 +196,145 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     }
 
 }
+class NewLevelScreen extends Menu {
+    AdvancedTextButton jaknopf;
+    AdvancedTextButton skillknopf;
+    Revtext secondtext;
+    NewLevelScreen(Main main) {
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3, 0.06f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
+        secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3.2f, 0.06f,"");
+        textbox.setColor(Color.WHITE);
+        secondtext.setColor(new Color(0, 0f, 0,1));
+        this.main=main;
+        jaknopf = new AdvancedTextButton(" JA ",ScreenWidth/2f-80, 130, 3,Color.SKY,Color.WHITE );
+        jaknopf.getLabel().setFontScale(2f); // 1.5x größer
+        jaknopf.setOnUp(()->this.destroy());
+        Main.uiStage.addActor(jaknopf);
+
+        skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+80, 130, 3,Color.SKY,Color.WHITE );
+        skillknopf.getLabel().setFontScale(2f); // 1.5x größer
+        skillknopf.setOnUp(()-> System.out.println("Skills are coming soon"));
+        Main.uiStage.addActor(skillknopf);
+         delay=0;
+
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        //if(knopf.getColor().a>=0.85f){
+        //ScreenUtils.clear(new Color(40/255.0f, 30/255.0f, 30/255.0f,textbox.getColor().a));}
+        delay+=Gdx.graphics.getDeltaTime();
+        batch.end();
+        ShapeRenderer shape = new ShapeRenderer();
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glLineWidth(14);
+        shape.setProjectionMatrix(batch.getProjectionMatrix());
+
+
+        // Sinus-Funktion für weichen Farbverlauf
+        //float n = Math.abs((float) Math.sin(delay * Math.PI / 10) );
+        float n = Math.abs((float) Math.sin(delay * Math.PI / 5));
+
+        float  speed = 0.3f; // Geschwindigkeit der Farbrotation
+        float angle = Math.abs(delay) * speed; // Drehwinkel für sanfte Farbverschiebung
+
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        // Farben rotieren durch zyklische Sinus- und Kosinusfunktionen
+        Color topLeft = new Color(0.3f + Math.abs((float) Math.sin(angle)) * 0.4f, 0f, 0.6f + Math.abs((float) Math.cos(angle + Math.PI / 2)) * 0.4f, 1);
+        Color topRight = new Color(0.2f + Math.abs((float) Math.sin(angle + Math.PI / 2)) * 0.5f, 0f, 0.8f + Math.abs((float) Math.cos(angle + Math.PI)) * 0.2f, 1);
+        Color bottomLeft = new Color(0.4f + Math.abs((float) Math.sin(angle + Math.PI)) * 0.3f, 0f, 0.7f + Math.abs((float) Math.cos(angle + 3 * Math.PI / 2)) * 0.3f, 1);
+        Color bottomRight = new Color(0.1f + Math.abs((float) Math.sin(angle + 3 * Math.PI / 2)) * 0.6f, 0f, 0.9f + Math.abs((float) Math.cos(angle + 2 * Math.PI)) * 0.1f, 1);
+
+        shape.rect(0, 0, ScreenWidth, ScreenHeight, topLeft, topRight, bottomLeft, bottomRight);
+
+
+        Color topLeft2 = new Color((51 + (n * 204f)) / 255f, 0f, (102 + (n * 153 / 10)) / 255f, 0.5f);
+        Color topRight2 = new Color((153 - (n * 153f)) / 255f, 0f, (204 - (n * 102 / 10)) / 255f, 0.5f);
+        Color bottomLeft2 = new Color((102 - (n * 102f)) / 255f, 0f, (255 - (n * 51 / 10)) / 255f, 0.5f);
+        Color bottomRight2 = new Color((204 - (n * 204f)) / 255f, 0f, (51 + (n * 204 / 10)) / 255f, 0.5f);
+
+        shape.rect(0, 0, ScreenWidth, ScreenHeight, topLeft2, topRight2, bottomLeft2, bottomRight2);
+
+
+
+        // Zeichne das Rechteck mit Farbinterpolation
+
+
+
+        //shape.rect(0,0,ScreenWidth,ScreenHeight,new Color((102 - ((n * 102) / 10)) / 255f, 0f, 204f/255f,1),new Color(n * 102 / 10/255f, 0f, 204f/255f,1),new Color((102-(n*102/10))/255f, 0f, 204f/255f,1),new Color(n * 102 / 10/255f, 0f, 204f/255f,1));
+        //shape.rect(0, 0, ScreenWidth, ScreenHeight, color1, color2, color3, color4);
+        /*float wave = Math.abs((float) Math.sin(delay * Math.PI / 4));
+        Color dynamicColor = new Color(0.2f + wave * 0.6f, 0.0f, 0.4f + wave * 0.5f, 1);
+        shape.setColor(dynamicColor);
+        shape.rect(0, 0, ScreenWidth, ScreenHeight);*/
+        for (int x = 0; x < ScreenWidth; x += 50) {
+            for (int y = 0; y < ScreenHeight; y += 50) {
+                float pulse = Math.abs((float) Math.cos((x + y + Math.abs(delay)) * 0.05));
+                Color gridColor = new Color(0.3f + pulse * 0.5f, 0.0f, 0.5f + pulse * 5f, 1f);
+                shape.setColor(gridColor);
+                shape.circle(x, y, 20);
+            }
+        }
+
+
+        shape.end();
+
+
+
+        batch.begin();
+        textbox.draw(batch,1);
+        secondtext.draw(batch,1);
+        jaknopf.draw(batch,1);
+        skillknopf.draw(batch,1);
+
+    }
+    void destroy(){
+        main.setState("newlevel");
+        jaknopf.remove();
+        skillknopf.remove();
+        remove();
+    }
+
+    @Override
+    public void act(float delta)
+    {
+        super.act(delta);
+        if(Gdx.input.isKeyPressed(Input.Keys.ENTER)||Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        {destroy();}
+        textbox.act(delta);
+        secondtext.act(delta);
+        skillknopf.act(delta);
+        jaknopf.act(delta);
+    }
+
+}
 
 
 class Startmenu extends Menu
 {
-    Texture hintergrund;
+    TextureRegion hintergrund;
     SpriteButton exit;//quit game
     Revtext randomtext;
+    boolean inmatrix;
+    Matrix matrix;
     Startmenu(Main gamel)
     {
         super();
         main = gamel;
-        hintergrund = new Texture("Forest sun backround.png");
-        textbox = new Revtext(ScreenWidth/2f, 280, 3, 0.04f,"Press \"Enter\" to start");
-        textbox.setColor(new Color(80/255.0f, 190/255.0f, 61/255.0f,1));
+        setPosition(0,0);
+        hintergrund = new TextureRegion(new Texture("Forest sun backround.png"));
+        textbox = new Revtext(ScreenWidth/2f, 400, 3, 0.04f,"Press \"Enter\" to start");
+        textbox.setColor(Color.SKY);
+
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
-        randomtext = new Revtext(ScreenWidth/2f, 200, 2, 0.03f,Script.startmenuscript[ran]);
+        String message=Script.startmenuscript[ran];
+        //message="Now with 10% more bugs!!";
+        randomtext = new Revtext(ScreenWidth/2f, 320, 2, 0.03f,message);
+        checkmessage(message);
         //randomtext.setBorderColor(Color.black, 1);
         //randomtext.setBorderWidth(6);
+
         exit = new SpriteButton(675, 120, "Credits Button V1.png",1);
         exit.setOnUp( ()->System.exit(187));
         Main.uiStage.addActor(exit);
@@ -211,7 +344,8 @@ class Startmenu extends Menu
     @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.setColor(1,1,1,1);
-        batch.draw(hintergrund, 0, 0, 1024,576);
+        if(inmatrix){matrix.actAndDraw(batch,Gdx.graphics.getDeltaTime());}
+        batch.draw(hintergrund, getX(), getY(),0,ScreenHeight, 1024,576,1,1,getRotation());
         textbox.draw(batch,1);
         randomtext.draw(batch,1);
         exit.draw(batch,1);
@@ -219,14 +353,48 @@ class Startmenu extends Menu
 
 
     public void destroy() {
-      hintergrund.dispose();
+      hintergrund.getTexture().dispose();
       remove();
       exit.remove();
     }
+    void checkmessage(String mes)
+    {
+        switch (mes)
+        {
+            case "I was a player once... \nnow I'm just code." :
 
+            case "Das hättest du nicht sehen sollen..." :
+                inmatrix=true;
+                matrix= new Matrix(main.viewport); SequenceAction sequence = new SequenceAction(
+                    Actions.rotateBy(-42,0.5F,Interpolation.elastic),
+                    Actions.rotateBy(18,0.9f,Interpolation.circleIn),
+                    Actions.moveBy(0, -150, 0.5f, Interpolation.linear), // Langsam starten
+                    Actions.moveBy(0, -200, 0.4f, Interpolation.pow2),  // Schneller
+                    Actions.moveBy(0, -250, 0.3f, Interpolation.exp5)   );
+                addAction(sequence);
+                break;
+            case "This is not a bug, it is a feature.":
+                randomtext.rotateBy(-30);
+                break;
+            case "Now with 10% more bugs!!":
+                SequenceAction rotatesequence = new SequenceAction(
+                    Actions.rotateBy(50,  1.3f, Interpolation.bounceIn),
+                    Actions.rotateBy(-20,  0.6f, Interpolation.pow2),
+                    Actions.rotateBy(-70, 0.4f, Interpolation.exp5),
+                    Actions.rotateBy(+33, 1.1f, Interpolation.elastic),
+                    Actions.rotateBy(-23, 0.7f, Interpolation.circleOut)
+                );
+                // Wiederhole die Sequenz unendlich
+                randomtext.addAction( Actions.forever(new SequenceAction(rotatesequence,Actions.rotateBy(+30, 2f, Interpolation.bounceOut),Actions.delay(0.5f))   ));
+                //randomtext.addAction( Actions.forever(new SequenceAction(rotatesequence)));
+                break;
+
+        }
+    }
     @Override
     public void act(float delta)
     {
+        super.act(delta);
         if(Gdx.input.isKeyPressed(Input.Keys.X)) {
             main.setState("DevMode");
             this.destroy();
@@ -256,17 +424,22 @@ class DevMenu extends Menu
     DevMenu(Main main)
     {
         super();
-        texte = new Revtext[8];
+        texte = new Revtext[12];
         setOffscreen();
         delay=1;
         this.main = main;
-        for (int i = 0; i < texte.length - 1; i++)
+        for (int i = 0; i < texte.length; i++)
         {
-            texte[i] = new Revtext( 20,  80 + i * 60, 2,"hallo");
+            texte[i] = new Revtext( 20,  30 + i * 27, 1.5f,"hallo");
             texte[i].setColor(Color.GOLDENROD);
             //texte[i].setBorderColor(Color.white);
         }
-
+        texte[0].setColor(Color.YELLOW);
+        texte[1].setColor(Color.RED);
+        texte[5].setColor(Color.RED);
+        texte[7].setColor(Color.RED);
+        texte[6].setColor(Color.WHITE);
+        texte[8].setColor(Color.WHITE);
     }
     void setOnscreen()
     {
@@ -281,7 +454,7 @@ class DevMenu extends Menu
     @Override
     public void draw(Batch batch, float parentAlpha) {
         if(!onscreen){return;};
-      for (int i = 0; i < texte.length - 1; i++)
+      for (int i = 0; i < texte.length; i++)
         {
             if(texte[i]!= null){ texte[i].draw(batch,parentAlpha);}
 
@@ -310,6 +483,12 @@ class DevMenu extends Menu
           texte[3].setText("Testentitys: " + main.currentlevel.testentitys.size());
           texte[4].setText("Deaths: " + main.deathcount);
           texte[5].setText("Player direction-angle: " + main.Player.directionline);
+          Vector2 cursorposition= main.viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
+          texte[6].setText("Cursor Coordinates: " + Math.round(cursorposition.x)+"X " + Math.round(cursorposition.y)+"Y "   );
+          texte[7].setText("line to cursor length: " + new Vector2(cursorposition.x-main.Player.getCenterX(),cursorposition.y-main.Player.getCenterY()).len());
+          texte[8].setText("Cursor Screen Coordinates: (" + Math.round(Gdx.input.getX())+"|" + Math.round( Gdx.input.getY())+")"   );
+          texte[9].setText("Gamestate: " +main.gamestate);
+
       }
    }
 

@@ -4,12 +4,12 @@ public class LevelList { //Hier werden alle Level gespeichert
     static String[][] levels =
             {
 
-                    {
+                    {//Level muss mindestens 9*9 sein wegen der Camera
                             "#####################",
                             "##@               d##",
                             "##      ttt        ##",
                             "##           ggggg ##",
-                            "##           g   g ##",
+                            "##        k   g   g ##",
                             "##           ggggg ##",
                             "##                 ##",
                             "##      m d        ##",
@@ -25,7 +25,8 @@ public class LevelList { //Hier werden alle Level gespeichert
                             "   @      # ##    ###g##              ##",
                             "    n     # #   #     #               ##",
                             "#       g # # # #### ##               ##",
-                            "# ttt       ###       #               ##",
+                            "# ttt       #      #                  ##",
+                            "#           ######   #               ##",
                             "########################################"
                     },
 
@@ -60,8 +61,17 @@ public class LevelList { //Hier werden alle Level gespeichert
                             "#                                                                  #",
                             "# @                  n             gggggggggggg                    #",
                             "#                                                                  #",
-                            "##############################                                     #",
-                            "##############################                                     #",
+                            "#                                                                  #",
+                            "#                                                                  #",
+                            "#                                k             d                    #",
+                            "#          n                                                       #",
+                            "#                                                                  #",
+                            "#                                                                  #",
+                            "#                                                                  #",
+                            "#                    n             gggggggggggg                    #",
+                            "#                                                                  #",
+                            "#                                                                  #",
+                            "#                                                                  #",
                             "##############################                                     #",
                             "####################################################################"
                     }
@@ -70,20 +80,20 @@ public class LevelList { //Hier werden alle Level gespeichert
 
     static NpcData[][] NPCDATA = {
         {///Level 1
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f)
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510)
         },
         {///Level 2
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
 
         },
         {///Level 3
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
-            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
+            new NpcData("Al Assad.png", "own Watertile 2.png", 0, 0.3f,0,0,200,510),
 
 
         }

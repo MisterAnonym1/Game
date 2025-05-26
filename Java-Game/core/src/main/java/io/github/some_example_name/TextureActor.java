@@ -21,7 +21,7 @@ public class TextureActor extends Actor
     boolean collisionOn=true;
     TextureActor(String filepath)
     {
-        super();;
+        super();
         texture= new TextureRegion(new Texture(filepath));
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
@@ -37,7 +37,6 @@ public class TextureActor extends Actor
         setHeight(texture.getRegionHeight());
         initializeHitbox();
         //setOrigin(getCenterX(), getCenterY());
-        //setOrigin(hitbox.getX()+hitbox.getWidth(), hitbox.getY()+hitbox.getHeight());
 
     }
     TextureActor(String filepath ,float xTexture,float yTexture,float width,float heigth)
@@ -62,6 +61,8 @@ public class TextureActor extends Actor
     {
         //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
+        //shape.point(getCenterX(),getCenterY(),1);
+        shape.circle(getCenterX(),getCenterY(),5);
 
     }
     void initializeHitbox()
@@ -127,11 +128,10 @@ public class TextureActor extends Actor
     {
         setPosition(other.getCenterX()-getWidth()/2, other.getCenterY()-getHeight()/2);
     }
-    void centerAt(float x, float y)
+    /*void centerAt(float x, float y)
     {
-        setPosition(x-getWidth()/2, y-getHeight()/2);
-    }
-
+        setPosition(hitbox.x-hitbox.getWidth()/2, hitbox.y-hitbox.getHeight()/2);
+    }*/
 
 
     public void destroy()

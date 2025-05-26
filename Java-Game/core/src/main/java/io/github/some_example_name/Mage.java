@@ -43,9 +43,6 @@ class Mage extends Gegner
 
 
     public void attack() {
-
-
-        attackdelay = 30;
         Vector2 attackvec1=new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
 
         if(player.ismoving) {
@@ -58,10 +55,10 @@ class Mage extends Gegner
             //attackvec=new Vector2(-getCenterX() + player.getCenterX()+player.movement.x*15, -getCenterY() + player.getCenterY()+player.movement.y*15);
         }
 
+        attackvec1.setLength(this.getHeight()/2);
 
 
-
-        Projectile expose = new FireBall(getCenterX(), getCenterY(),  attackvec1);
+        Projectile expose = new FireBall(getCenterX(),getCenterY(),  attackvec1);
         //expose.scale(1);
         expose.setdamage(20);
         logic.currentlevel.projectiles.add(expose);
@@ -81,8 +78,9 @@ class Mage extends Gegner
             //läuft direkt gerade zum Spieler
             counter = 0;
             if(inradiusof(player, 400))
-            { attackdelay--;
+            { attackdelay-=delta;
                 if(attackdelay <= 0) {
+                    attackdelay=1;
                     attack();
                 }
 

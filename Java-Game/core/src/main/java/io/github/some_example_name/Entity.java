@@ -19,6 +19,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 
+
 class Entity extends TextureActor
 {
     float maxhealth, curhealth;
@@ -29,7 +30,6 @@ class Entity extends TextureActor
     Vector2 additionalForce;
     //TextureRegion texture;
     //float hitboxOffsetX=0, hitboxOffsetY=0;
-    static float hitboxalpha = 0.6f;
     boolean ismirrored;
     float animationstateTime=0f, weight;
     EntityStatus status;
@@ -61,6 +61,7 @@ class Entity extends TextureActor
 
 
     public void draw(Batch batch, float delta) {
+        batch.setColor(1,1,1,1);
         animationstateTime += delta;
         if (defaultAnimation==null){super.draw(batch, 1);}
         else {
@@ -452,10 +453,10 @@ class HealthBar extends Sprite {
     float maxLaenge;
     float currentHealth;
     Viewport viewport;
-    HealthBar(float xPos, float yPos, float maxhealth, float size, Viewport view) {
-        h1 = new Rectangle(xPos, yPos, 296f, 48f);
-        h3 = new Rectangle(xPos + 5f, yPos + 6f, 286f, 38f);
-        h2 = new Rectangle(xPos + 5f, yPos + 6f, 286f, 38f);
+    HealthBar(float xPos, float yPos, float maxhealth, float xscale,float yscale, Viewport view) {
+        h1 = new Rectangle(xPos, yPos, 296f*xscale, 50f*yscale);
+        h3 = new Rectangle(xPos + 5f*xscale, yPos + 6f*yscale, 286f*xscale, 38f*yscale);
+        h2 = new Rectangle(xPos + 5f*xscale, yPos + 6f*yscale, 286f*xscale, 38f*yscale);
        viewport=view;
 
        /* h1.setFillColor(new Color(80, 74, 74))

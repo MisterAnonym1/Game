@@ -12,6 +12,7 @@ badlogic.jpg
 battle-of-the-dragons-8037.mp3
 bucket.png
 Credits Button V1.png
+Dead.png
 drop.png
 El_Karltoffel.png
 El_Karltoffel_Gescailt.png
@@ -28,12 +29,22 @@ own Watertile 2.png
 Ph.Boden 3.png
 Ph.Boden_Tile_1.png
 Ph.Boden_Tile_2.png
+Pointers/01.png
+Pointers/02.png
+Pointers/03.png
+Pointers/04.png
+Pointers/05.png
+Pointers/06.png
 red_arrow_PNG60.png
 sand.png
 sand2.png
 Seatile_.png
 Se_Player_ja.jpg
 slime_move.png
+Spech_Bubble/1.png
+Spech_Bubble/2.png
+Spech_Bubble/3.png
+Spech_Bubble/4.png
 steel-weapons.png
 Test Karte 2.tmx
 ui/font-list.fnt

@@ -23,7 +23,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import java.util.ArrayList;
 
-enum Gamestate { startmenu, pausemenu, playing, dead, dialouge, loading }
+enum Gamestate { startmenu, paused, playing, dead, dialouge, loading }
 public class Main implements ApplicationListener {
     ArrayList<MyTile> loadedwalls = new ArrayList<>();
     ShapeRenderer shape;
@@ -32,6 +32,7 @@ public class Main implements ApplicationListener {
     Matrix matrix;
     Music music;
     //TiledMap map;
+    String predeterminedDeathmessage= "you died of dumb";
     static Stage uiStage;
    // private OrthogonalTiledMapRenderer renderer;
     OrthographicCamera ocam;
@@ -181,18 +182,16 @@ public class Main implements ApplicationListener {
          updateEntitys();
          checkplayercollision();
           //ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
-          if( new Vector2( ocam.position.x - Player.getCenterX(),ocam.position.y - Player.getCenterY()).len()>=30 )
+          /*if( new Vector2( ocam.position.x - Player.getCenterX(),ocam.position.y - Player.getCenterY()).len()>=99999 )
           {
               ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
           }
           else
-          {
-              ocam.position.x = Player.getCenterX();
-              ocam.position.y = Player.getCenterY();
+          {*/
+          ocam.position.x=MathUtils.clamp(Player.getCenterX(), 0+517, currentlevel.getLength()*64-517);
+          ocam.position.y=MathUtils.clamp(Player.getCenterY(), (-currentlevel.getHeight()+1)*64+288,64-288 );
 
-          }
-
-         if(Player.curhealth <= 0) {
+          if(Player.curhealth <= 0) {
             setState("dead");
          }
 
@@ -238,7 +237,7 @@ public class Main implements ApplicationListener {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        if(gamestate != Gamestate.startmenu&&gamestate != Gamestate.loading)
+        if(gamestate == Gamestate.playing||gamestate ==Gamestate.dead)
         {
         currentlevel.draw(spriteBatch,shape,delta);
             //dialougnpc.draw(spriteBatch,delta);
@@ -246,10 +245,15 @@ public class Main implements ApplicationListener {
             // El_Karltoffelboss.draw(spriteBatch,delta);
         Player.draw(spriteBatch,shape, delta,1.0f);
         }
+        spriteBatch.end();
 
         uiStage.draw();
+        if(gamestate==Gamestate.dialouge)
+        {
+            dialougnpc.act(delta);
+            dialougnpc.drawInConversation(uiStage.getBatch());
+        }
 
-        spriteBatch.end();
 
         //------
     }
@@ -283,13 +287,15 @@ public class Main implements ApplicationListener {
                 showLevel(this.levelnummer);
                 gamestate=Gamestate.playing;
                 break;
-            case "pause" :
-
-                gamestate = Gamestate.pausemenu;
+            case "paused" :
+                gamestate = Gamestate.paused;
                 break;
             case "dead" :
-                if(gamestate==Gamestate.dead){return;}
+                if(gamestate==Gamestate.dead){
+                    return;
+                }
                 gamestate = Gamestate.dead;
+                Player.status= Entity.EntityStatus.dead;
                 uiStage.addActor(new Deathscreen(this));
                 //Sound.playSound(Sound.pong_d);
                 deathcount++;
@@ -297,6 +303,7 @@ public class Main implements ApplicationListener {
             case "respawn" :
                 Player.sethealth(Player.maxhealth, false);
                 Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
+                Player.status= Entity.EntityStatus.idle;
                 Level.projectiles.clear();
                 //-->entitys zurück an ihren spawn
                 //-->leben der Entitys zurück setzten und inactive machen
@@ -420,11 +427,14 @@ public class Main implements ApplicationListener {
     {
         for (NPC npc : currentlevel.npcs)
         {
-            if(Player.inradiusof(npc, 192) && Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            if(Player.inradiusof(npc, 182)) {
+                npc.inradius=true;
+                if(Gdx.input.isKeyJustPressed(Input.Keys.E))
+                {
                 dialougnpc = npc;
                 setState("dialouge");
-                break;
-            }
+                break;}
+            }else{npc.inradius=false;}
         }
     }
 
@@ -433,16 +443,26 @@ public class Main implements ApplicationListener {
     {
 
         for (Projectile prc : currentlevel.projectiles) {
-
-            if(getcollidingWalls(prc).size()!=0)
+            if(prc.collisionOn)
             {
-                prc.onHit();
-                continue;
-            }
+                if(Player.collisionOn) {
+                        if(Player.hitbox.overlaps(prc.hitbox))
+                        {
+                            prc.onHit(Player);
 
-            if(Player.isattacking && Player.inradiusof(prc, 200) /*&& Player.waffe.hitbox.collidesWith(prc.hitbox)*/) {
+                        }
+                }
+
+                if(getcollidingWalls(prc).size()!=0)
+                {
+                    prc.onHit();
+                    continue;
+                }
+
+                if(Player.isattacking && Player.inradiusof(prc, 200) /*&& Player.waffe.hitbox.collidesWith(prc.hitbox)*/) {
                 prc.onHit();
                 //continue;
+            }
             }
         }
 
@@ -457,22 +477,10 @@ public class Main implements ApplicationListener {
         {
             if(Player.hitbox.overlaps(tile.hitbox))
             {
-                setState("newlevel");
+                setState("paused");
+                uiStage.addActor(new NewLevelScreen(this));
                 break;
             }
-        }
-
-
-        if(Player.collisionOn) {
-            for (Projectile prc : currentlevel.projectiles)
-            {
-                if(Player.hitbox.overlaps(prc.hitbox))
-                {
-                    prc.onHit(Player);
-
-                }
-            }
-
         }
 
 
@@ -510,7 +518,7 @@ public class Main implements ApplicationListener {
         if(Player != null) {
 
             //player.bringToFront();
-            Player.setWorldbounds(0, 0, 3189, currentlevel.getHeight());
+            ///+xPlayer.setWorldbounds(0, currentlevel.getLength(), 0, currentlevel.getHeight());
             Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
         }
 
@@ -537,6 +545,7 @@ public class Main implements ApplicationListener {
     @Override
     public void pause() {
         System.out.println("Game paused");
+        setState("paused");
     }
 
     @Override
