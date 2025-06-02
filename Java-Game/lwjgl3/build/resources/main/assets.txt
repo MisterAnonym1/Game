@@ -47,10 +47,10 @@ sand2.png
 Seatile_.png
 Se_Player_ja.jpg
 slime_move.png
-speech_bubble/1.png
-speech_bubble/2.png
-speech_bubble/3.png
-speech_bubble/4.png
+speech-bubble/speech1.png
+speech-bubble/speech2.png
+speech-bubble/speech3.png
+speech-bubble/speech4.png
 steel-weapons.png
 Test Karte 2.tmx
 ui/font-list.fnt

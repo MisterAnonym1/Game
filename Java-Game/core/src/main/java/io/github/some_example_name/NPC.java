@@ -40,7 +40,7 @@ public class NPC extends Entity
 
         Array<Texture> frames = new Array<>();
         for (int i = 1; i <= 4; i++) {
-            frames.add(new Texture(Gdx.files.internal("assets/speech_bubble/" + i + ".png")));
+            frames.add(new Texture(Gdx.files.internal("assets/speech-bubble/speech" + i + ".png")));
         }
         bubble=new Animation<>(0.4f, frames);
     }
