@@ -158,8 +158,10 @@ class Player extends Entity
         if(gegnerhitliste.contains(enti)){return false;}
 
          Vector2 line =new Vector2(enti.getHitboxCenterX() - getHitboxCenterX(), enti.getHitboxCenterY() - getHitboxCenterY());
-        if(line.angleDeg()>directionline+60||line.angleDeg()<directionline-60){return false;}
-        if(player.currentAnimation==player.sideAttackAnimation){line.setLength(90);}else{line.setLength(72);}
+        if(line.len()>90+enti.getWidth()/2){return false;}
+        //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}
+        if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
+        if(player.currentAnimation==player.sideAttackAnimation){line.setLength(90+enti.getWidth()/2);}else{line.setLength(72+enti.getWidth()/2);}
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),enti.hitbox)){return false;}
         System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
         gegnerhitliste.add(enti);

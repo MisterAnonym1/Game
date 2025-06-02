@@ -17,6 +17,18 @@ public class LibgdxHelperClass {
             Intersector.intersectSegments(x1, y1, x2, y2, rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + rect.height,null));
 
     }
+    public static boolean isAngleOutOfBounds(Vector2 vector, float referenceAngle, float vary) {
+        float vectorAngle = vector.angleDeg(); // Winkel des Vektors in Grad
+        float lowerBound = (referenceAngle - vary + 360) % 360;
+        float upperBound = (referenceAngle + vary) % 360;
+
+        // Prüfe, ob der Winkel außerhalb des erlaubten Bereichs liegt
+        if (lowerBound > upperBound) {
+            return vectorAngle < lowerBound && vectorAngle > upperBound;
+        } else {
+            return vectorAngle < lowerBound || vectorAngle > upperBound;
+        }
+    }
 
 }
 
