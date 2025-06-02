@@ -8,6 +8,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-freetype:1.12.1" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx:1.12.1" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1" level="project" />
   </component>

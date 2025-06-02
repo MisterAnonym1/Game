@@ -7,6 +7,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Java-Game.core.main" />
+    <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-freetype:1.12.1" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx:1.12.1" level="project" />
     <orderEntry type="library" name="Gradle: com.badlogicgames.gdx:gdx-jnigen-loader:2.3.1" level="project" />
   </component>
