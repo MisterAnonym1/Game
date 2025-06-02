@@ -163,7 +163,7 @@ class Player extends Entity
         if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
         if(player.currentAnimation==player.sideAttackAnimation){line.setLength(90+enti.getWidth()/2);}else{line.setLength(72+enti.getWidth()/2);}
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),enti.hitbox)){return false;}
-        System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
+        //System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
         gegnerhitliste.add(enti);
         if(enti.damageby(weapon.damage)) {
             Level.deleteList.add(enti);
