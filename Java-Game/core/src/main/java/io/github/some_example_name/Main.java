@@ -462,10 +462,13 @@ public class Main implements ApplicationListener {
                     continue;
                 }
 
-                if(Player.isattacking && Player.inradiusof(prc, 200) /*&& Player.waffe.hitbox.collidesWith(prc.hitbox)*/) {
-                prc.onHit();
-                //continue;
-            }
+                if(Player.isattacking)
+                {
+                    if(Player.handleAttack(prc,false)) {
+                        prc.onHit();
+                    }
+
+                }
             }
         }
 

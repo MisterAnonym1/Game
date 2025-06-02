@@ -172,6 +172,20 @@ class Player extends Entity
         return false;
 
     }
+    boolean handleAttack(TextureActor actor, boolean nix)
+    {
+        if(gegnerhitliste.contains(actor)){return false;}
+
+        Vector2 line =new Vector2(actor.getHitboxCenterX() - getHitboxCenterX(), actor.getHitboxCenterY() - getHitboxCenterY());
+        if(line.len()>90+actor.getWidth()/2){return false;}
+        //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}
+        if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
+        if(player.currentAnimation==player.sideAttackAnimation){line.setLength(90+actor.getWidth()/2);}else{line.setLength(72+actor.getWidth()/2);}
+        if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),actor.hitbox)){return false;}
+        //System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
+        return true;
+
+    }
     /*boolean handleAttack(Entity enti)
     {
         if(gegnerhitliste.contains(enti)){return false;}
