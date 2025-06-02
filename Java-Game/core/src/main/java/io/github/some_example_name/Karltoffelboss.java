@@ -29,17 +29,10 @@ public class Karltoffelboss extends Boss{
         super.positionChanged();
     }
 
-    public boolean update(float delta){
+    public void act(float delta){
+        super.act(delta);
         playerinview();
-        if(curhealth <= 0) {
-
-                sterben();
-                return true;
-        }
-
-            engagePlayer(delta);
-
-        return false;
+        engagePlayer(delta);
     };
     public void engagePlayer(float delta){
         attackdelay+=delta;
@@ -49,7 +42,9 @@ public class Karltoffelboss extends Boss{
             //line of sight
             attackdelay=0;
             if(getdistance(player)<= 500) {
-            fireballattack();}
+            //fireballattack();
+                fireballringattack(45,(float)Math.random()*22.5f);
+            }
         }
     };
     public void sterben(){

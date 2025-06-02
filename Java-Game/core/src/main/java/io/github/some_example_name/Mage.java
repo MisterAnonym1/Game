@@ -15,7 +15,7 @@ class Mage extends Gegner
         curhealth = 100;
         hitboxOffsetX = 30;
         hitboxOffsetY = 5;
-        setSize(50,50);
+        //setSize(50,50);
         //hitbox = new Rectangle(getCenterX() - hitboxOffsetX, getCenterY() - hitboxOffsetY, 50, 35);
         //hitbox.setAlpha(0);
     }
@@ -25,19 +25,17 @@ class Mage extends Gegner
     }
 
 
-    public boolean update(float delta) {
-
+    public void act(float delta) {
+     super.act(delta);
         if(curhealth <= 0) {
             counter--;
             if(counter <= 0) {
                 sterben();
-                return true;
             }
         }
         else {
             engagePlayer(delta);
         }
-        return false;
     }
 
 

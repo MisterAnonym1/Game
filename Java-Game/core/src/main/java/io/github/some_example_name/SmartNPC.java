@@ -13,10 +13,7 @@ public class SmartNPC extends Gegner {
         defaultAnimation= new Animation<TextureRegion>(0.3f,texture.split(texture.getRegionWidth() / 8, texture.getRegionWidth() / 2)[0]);
     }
 
-    @Override
-    boolean update(float delta) {
-        return false;
-    }
+
 
 
 

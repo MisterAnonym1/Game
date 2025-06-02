@@ -564,7 +564,8 @@ class SpriteButton extends Button
     public void onMouseLeave()
     {
         setColor(1f,1f,1f,1);
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        //Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        Main.setToDefaultCursor();
         if(isPressed){onMouseEnter();}
         isPressed = false;
 
@@ -649,7 +650,8 @@ class SpriteButton extends Button
 
     public void onMouseLeave() {
         setColor(1f, 1f, 1f, 1);
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        //Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        Main.setToDefaultCursor();
         if (isPressed) onMouseEnter();
         isPressed = false;
     }

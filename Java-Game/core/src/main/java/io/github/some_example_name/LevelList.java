@@ -3,13 +3,23 @@ package io.github.some_example_name;
 public class LevelList { //Hier werden alle Level gespeichert
     static String[][] levels =
             {
-
+                {
+                    "########################################",
+                    "#d                                    ##",
+                    "  t  t  n #                           ##",
+                    "   @                                  ##",
+                    "    n            =                    ##",
+                    "#       g                             ##",
+                    "# ttt                                 ##",
+                    "#                                     ##",
+                    "########################################"
+                },
                     {//Level muss mindestens 9*9 sein wegen der Camera
                             "#####################",
                             "##@               d##",
                             "##      ttt        ##",
                             "##           ggggg ##",
-                            "##        k   g   g ##",
+                            "##            g   g ##",
                             "##           ggggg ##",
                             "##                 ##",
                             "##      m d        ##",

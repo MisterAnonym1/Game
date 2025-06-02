@@ -4,7 +4,6 @@
 .idea/modules.xml
 .idea/vcs.xml
 .idea/workspace.xml
-AdvancedTextButton.java
 Al Assad.png
 Amble-Regular-26.fnt
 background.png
@@ -13,12 +12,18 @@ battle-of-the-dragons-8037.mp3
 bucket.png
 Credits Button V1.png
 Dead.png
+debug_dummy.png
 drop.png
 El_Karltoffel.png
 El_Karltoffel_Gescailt.png
 Explosions.png
 Fire.png
 Fireball.png
+Fireball00/FB001.png
+Fireball00/FB002.png
+Fireball00/FB003.png
+Fireball00/FB004.png
+Fireball00/FB005.png
 Forest sun backround.png
 HappySheep_All.png
 libgdx.png
@@ -35,16 +40,17 @@ Pointers/03.png
 Pointers/04.png
 Pointers/05.png
 Pointers/06.png
+Pointers/Pointer.png
 red_arrow_PNG60.png
 sand.png
 sand2.png
 Seatile_.png
 Se_Player_ja.jpg
 slime_move.png
-Spech_Bubble/1.png
-Spech_Bubble/2.png
-Spech_Bubble/3.png
-Spech_Bubble/4.png
+speech_bubble/1.png
+speech_bubble/2.png
+speech_bubble/3.png
+speech_bubble/4.png
 steel-weapons.png
 Test Karte 2.tmx
 ui/font-list.fnt

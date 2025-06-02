@@ -205,15 +205,18 @@ class Entity extends TextureActor
     void updatemovement(Vector2 direction,float deltatime)
     {
 
-        reduceSpeed(1,1);
-        direction.setLength(acceleration);
+        /*reduceSpeed(1,1);
+        //direction.setLength(acceleration);
         if(ismoving) {
             movement = movement.add(direction);
         }
-            movement.setLength( (float) Math.min(movement.len(), maxspeed));
+        else{movement.setLength(0);}*/
+        movement=direction;
         if(ismoving) {
 
-            movement = direction;
+            //movement = direction;
+            movement.setLength( (float) Math.min(movement.len(), maxspeed));
+
             if(movement.len()>0)
             {
                directionline=movement.angleDeg();
@@ -223,8 +226,6 @@ class Entity extends TextureActor
         {
             reduceSpeed(1,1);
         }
-
-
 
         moveatdirection(deltatime);
 
