@@ -40,7 +40,7 @@ public class NPC extends Entity
 
         Array<Texture> frames = new Array<>();
         for (int i = 1; i <= 4; i++) {
-            //frames.add(new Texture(Gdx.files.internal("assets/Spech_Bubble/" + i + ".png")));
+            frames.add(new Texture(Gdx.files.internal("assets/speech_bubble/" + i + ".png")));
         }
         bubble=new Animation<>(0.4f, frames);
     }
@@ -68,7 +68,7 @@ public class NPC extends Entity
         {
             animationstateTime+=delta;
             //batch.setColor(0.7f,0.7f,0.7f,1);
-            //batch.draw(bubble.getKeyFrame(animationstateTime,true),hitbox.x+hitbox.width-20,hitbox.y+hitbox.height-40,40,44);
+            batch.draw(bubble.getKeyFrame(animationstateTime,true),hitbox.x+hitbox.width-20,hitbox.y+hitbox.height-40,40,44);
         }
 
 

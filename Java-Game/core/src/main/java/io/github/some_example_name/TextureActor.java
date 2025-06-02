@@ -79,6 +79,14 @@ public class TextureActor extends Actor
         return getY()+getHeight()/2;
     }
 
+    public float getHitboxCenterX()
+    {
+        return hitbox.x+hitbox.width/2;
+    }
+    public float getHitboxCenterY()
+    {
+        return hitbox.y+hitbox.height/2;
+    }
     @Override
     public void setPosition(float x, float y) {
         super.setPosition(x+hitboxOffsetX+(-getWidth()+hitbox.getWidth())/2, y+hitboxOffsetY+(-getHeight()+hitbox.getHeight())/2);

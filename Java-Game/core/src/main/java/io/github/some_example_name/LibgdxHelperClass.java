@@ -8,6 +8,29 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.*;
 public class LibgdxHelperClass {
 }
+ class MathHelper
+{
+    static  boolean isLineIntersectingRectangle(float x1, float y1, float x2, float y2, Rectangle rect) {
+        return (Intersector.intersectSegments(x1, y1, x2, y2, rect.x, rect.y, rect.x + rect.width, rect.y,null) ||
+            Intersector.intersectSegments(x1, y1, x2, y2, rect.x, rect.y, rect.x, rect.y + rect.height,null) ||
+            Intersector.intersectSegments(x1, y1, x2, y2, rect.x, rect.y + rect.height, rect.x + rect.width, rect.y + rect.height,null) ||
+            Intersector.intersectSegments(x1, y1, x2, y2, rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + rect.height,null));
+
+    }
+    public static boolean isAngleOutOfBounds(Vector2 vector, float referenceAngle, float vary) {
+        float vectorAngle = vector.angleDeg(); // Winkel des Vektors in Grad
+        float lowerBound = (referenceAngle - vary + 360) % 360;
+        float upperBound = (referenceAngle + vary) % 360;
+
+        // Prüfe, ob der Winkel außerhalb des erlaubten Bereichs liegt
+        if (lowerBound > upperBound) {
+            return vectorAngle < lowerBound && vectorAngle > upperBound;
+        } else {
+            return vectorAngle < lowerBound || vectorAngle > upperBound;
+        }
+    }
+
+}
 
  class Animator{
 

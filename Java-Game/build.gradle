@@ -11,9 +11,9 @@ buildscript {
   dependencies {
     /*implementation project(':core')
     api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-
     implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 */
+
   }
 }
 

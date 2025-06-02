@@ -273,6 +273,10 @@ class Level {
                         gegnerliste.add(new Karltoffelboss(MyTile.columnToX(column), MyTile.rowToY(line),logic));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
+                    case '=' :
+                        gegnerliste.add(new Dummy(MyTile.columnToX(column), MyTile.rowToY(line),logic));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
+                        rownotwalls[line]++;
                         break;
                     case 'i' :
                   /*ItemType type= Item.getrandomtype();

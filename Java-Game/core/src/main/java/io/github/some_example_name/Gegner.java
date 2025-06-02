@@ -31,7 +31,7 @@ abstract class Gegner extends Entity
     int delay;
     AttackStatus attackStatus= AttackStatus.inactiv;
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
-    abstract boolean update(float delta);// soll acten zurückgeben ob gegner aus liste entfernt werden soll
+    // soll acten zurückgeben ob gegner aus liste entfernt werden soll
     abstract void sterben();
     Animation<TextureRegion> explosionAnimation;
     public enum AttackStatus { inactiv, dash, strike,exploding }
@@ -52,8 +52,8 @@ abstract class Gegner extends Entity
         maxhealth = 100;
         curhealth = 100;
         this.player = logic.Player;
-        hitboxOffsetX = 30;
-        hitboxOffsetY = 5;
+        hitboxOffsetX = 0;
+        hitboxOffsetY =0;
 
         float[] vertices = {hitbox.getX(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),1,hitbox.getY(),1,hitbox.getY()+ getHeight()};
         lineofsight = new Polygon(vertices );
@@ -221,11 +221,7 @@ abstract class Gegner extends Entity
 
     }
 
-    @Override
-    public void act(float delta) {
-        super.act(delta);
-        update(delta);
-    }
+
 
 
 
@@ -280,16 +276,33 @@ abstract class Gegner extends Entity
 
     };
     public void dashattack (float delta) {
-        //if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
+        if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
             acceleration = 600;
             maxspeed = 600;
             counter = 0;
             movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
             ismoving = true;
-            updatemovement(movement, delta);
-            player.damageby(30);
-        //}
-    };
+            //player.damageby(30);
+        }
+    }
+
+    void fireballringattack(float angle) //
+    {
+        fireballringattack(angle,0);
+    }
+    void fireballringattack(float angle,float angleoffset) //
+    {
+        Vector2 vec= new Vector2(hitbox.width/3f,0);
+        vec.rotateDeg(angleoffset);
+        for(int i=0; i<=360-angle;i+=angle)
+        {
+            Level.projectiles.add( new FireBall(getHitboxCenterX()+vec.x,getHitboxCenterY()+vec.y,new Vector2(vec.x,vec.y)));
+            vec.rotateDeg(angle);
+        }
+    }
+
+
+
 }
 
 

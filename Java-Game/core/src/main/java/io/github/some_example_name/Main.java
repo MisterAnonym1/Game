@@ -4,10 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -32,6 +29,7 @@ public class Main implements ApplicationListener {
     Matrix matrix;
     Music music;
     //TiledMap map;
+    static Cursor bettercursor;
     String predeterminedDeathmessage= "you died of dumb";
     static Stage uiStage;
    // private OrthogonalTiledMapRenderer renderer;
@@ -61,13 +59,19 @@ public class Main implements ApplicationListener {
         dropTexture = new Texture("drop.png");
         music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
         skin= new Skin(Gdx.files.internal("ui/uiskin.json"));
-
-
         uiStage=new Stage(new FitViewport(1024,576));
+
+        Pixmap pixmap = new Pixmap(Gdx.files.internal("Pointers/Pointer.png"));
+        // Set hotspot to the middle of it (0,0 would be the top-left corner)
+        int xHotspot = 4, yHotspot = 4;
+        bettercursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
+        pixmap.dispose(); // We don't need the pixmap anymore
+       setToDefaultCursor();
 
 
         touchPos = new Vector2();
         ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
+
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
         //renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         music.setLooping(true);
@@ -75,9 +79,9 @@ public class Main implements ApplicationListener {
         music.play();
         revtext = new Revtext(400,250,1,0.1f,"Hallo das ist ein Revtext");
         matrix= new Matrix(viewport);
-        //dialougnpc= new NPC(500,200,"bucket.png","own Watertile 2.png",0,this);
+
         shape.setAutoShapeType(true);
-        //El_Karltoffelboss = new KARLTOFFEL_BOSS(0,0,this, "El_Karlotoffel" );
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
@@ -290,6 +294,9 @@ public class Main implements ApplicationListener {
             case "paused" :
                 gamestate = Gamestate.paused;
                 break;
+            case "resume" :
+                gamestate = Gamestate.playing;
+                break;
             case "dead" :
                 if(gamestate==Gamestate.dead){
                     return;
@@ -367,15 +374,12 @@ public class Main implements ApplicationListener {
     {
         for (Testentity enti : currentlevel.testentitys)
         {
-            if(Player.isattacking && enti.inradiusof(Player, 200) /*&& player.waffe.hitbox.collidesWith(enti.hitbox)*/)
+            if(Player.isattacking)
             {
-                if(!Player.gegnerhitliste.contains(enti)) {
-                    Player.gegnerhitliste.add(enti);
-                    if(enti.damageby(Player.weapon.damage)) {
-                        Level.deleteList.add(enti);
+                    if(Player.handleAttack(enti)) {
                         continue;
                     }
-                }
+
             }
 
             if(enti.hitbox.overlaps(Player.hitbox))
@@ -401,16 +405,15 @@ public class Main implements ApplicationListener {
 
         for (Gegner gegner : currentlevel.gegnerliste)
         {
-            if(Player.isattacking && gegner.inradiusof(Player, 200) /*&& player.waffe.hitbox.collidesWith(gegner.hitbox)*/)
-            {
-                if(!Player.gegnerhitliste.contains(gegner)) {
-                    Player.gegnerhitliste.add(gegner);
-                    if(gegner.damageby(Player.weapon.damage)) {
-                        Level.deleteList.add(gegner);
+
+                if(Player.isattacking)
+                {
+                    if(Player.handleAttack(gegner)) {
                         continue;
                     }
+
                 }
-            }
+
             /*if(gegner.update())
             {
                 currentlevel.gegnerliste.remove(gegner);
@@ -550,11 +553,15 @@ public class Main implements ApplicationListener {
 
     @Override
     public void resume() {
-
+        setState("resume");
     }
 
     @Override
     public void dispose() {
 
+    }
+    public static void setToDefaultCursor()
+    {
+        Gdx.graphics.setCursor(bettercursor);
     }
 }

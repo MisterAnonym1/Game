@@ -37,6 +37,7 @@ class Revtext extends Actor {
     Revtext(float centerx, float centery, float fontsize, float chardelay, String mainText)
     {
         font = new BitmapFont();
+        //font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         font.getData().setScale(fontsize);
         layout = new GlyphLayout();
         centered=true;
