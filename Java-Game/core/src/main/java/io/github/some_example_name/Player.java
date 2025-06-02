@@ -45,7 +45,7 @@ class Player extends Entity
         acceleration = speed;
         curhealth = leben;
         maxhealth = leben;
-        healthbar = new HealthBar(20, 520, maxhealth, 2f, 1f,Main.uiStage.getViewport());
+        healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
         weapon=new Pipe(this);
         //healthbar.setVisible(false);
         //setSize(200, 180);
