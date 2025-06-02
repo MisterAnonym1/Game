@@ -20,6 +20,7 @@ abstract class Gegner extends Entity
     Level curlevel;
     int counter = 0;
     float attackdelay = 0;
+    float attackdelay2 = 0;
     Player player;
     Main logic;
     ArrayList<MyTile> queue = new ArrayList<>();
@@ -276,14 +277,16 @@ abstract class Gegner extends Entity
 
     };
     public void dashattack (float delta) {
-        if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
-            acceleration = 600;
-            maxspeed = 600;
+         //läuft direkt gerade zum Spieler
+            acceleration = 6000;
+            maxspeed = 6000;
             counter = 0;
-            movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
+            movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
             ismoving = true;
-            //player.damageby(30);
-        }
+            updatemovement(movement, delta);
+            if(getdistance(player) <= 100) {
+                player.damageby(30);
+            }
     }
 
     void fireballringattack(float angle) //
