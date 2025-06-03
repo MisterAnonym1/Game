@@ -1,5 +1,6 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -18,7 +19,7 @@ abstract class Gegner extends Entity
     float spawnx;
     float spawny;
     Level curlevel;
-    int counter = 0;
+    float pathCountdown= 0;
     float attackdelay = 0;
     Player player;
     Main logic;
@@ -94,12 +95,10 @@ abstract class Gegner extends Entity
         return true;
     }
 
-    void checkPathToPlayer(float delta)
+    void goDirectlyToPlayer(float delta)
     {
-        counter = 0;
         if(playerinview()) {
 
-            movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
             ismoving = true;
             updatemovement(movement,delta);
         }
@@ -109,28 +108,26 @@ abstract class Gegner extends Entity
     {
         if(goalfields.size() <= 0)
         {
-            checkPathToPlayer(delta);
+            goDirectlyToPlayer(delta);
             return;
         }
-        movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
         if(movement.len() <= maxspeed / 2) {
-            //goalfields.get(0).tint(Color.white);
-            counter--;
+            goalfields.get(0).setColor(Color.WHITE);
 
             goalfields.remove(0);
 
             if(goalfields.size() <= 0)
             {
-                checkPathToPlayer(delta);
+                goDirectlyToPlayer(delta);
                 return;
             }
             else {
-                movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
+                movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), goalfields.get(0).getCenterY() - getCenterY());
             }
         }
-      /*if(logic.DevMenu.onscreen) {
-         goalfields.get(0).tint(Color.blue);
-      }*/
+      if(Main.debugging) {
+         goalfields.get(0).setColor(Color.RED);
+      }
         ismoving = true;
         updatemovement(movement, delta);
     }
@@ -167,7 +164,7 @@ abstract class Gegner extends Entity
         else {
 
             goalfields.clear();
-            currenttile = target;
+            target.setColor(Color.RED);
             while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
             {
 
@@ -205,12 +202,12 @@ abstract class Gegner extends Entity
     {
         for (MyTile tile : visitedfields)
         {
-            //tile.tint(Color.white);
+            tile.setColor(Color.WHITE);
         }
         visitedfields.clear();
-        movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
+        movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
         if(movement.len() >= mindistance && movement.len() <= maxdistance) {
-            setPath(curlevel.getnotwallTile(Math.round(getCenterX() / 129.2f), Math.round(getCenterY() / 129.2f)), curlevel.getnotwallTile(Math.round(player.getCenterX() / 129.2f), Math.round(player.getCenterY() / 129.2f)), movement);
+            setPath(curlevel.getnotwallTile(getCenterX() , getCenterY() ), curlevel.getnotwallTile(player.getCenterX(), player.getCenterY()), movement);
 
           }
         for (MyTile tile : visitedfields)
@@ -279,7 +276,6 @@ abstract class Gegner extends Entity
         if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
             acceleration = 600;
             maxspeed = 600;
-            counter = 0;
             movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
             ismoving = true;
             //player.damageby(30);

@@ -28,10 +28,7 @@ class Mage extends Gegner
     public void act(float delta) {
      super.act(delta);
         if(curhealth <= 0) {
-            counter--;
-            if(counter <= 0) {
-                sterben();
-            }
+            Level.deleteList.add(this);
         }
         else {
             engagePlayer(delta);
@@ -68,13 +65,13 @@ class Mage extends Gegner
     public void engagePlayer(float delta)
 
     {
-        //counter--;
+        attackdelay-=delta;
         if(!inradiusof(player, 1600)) {
             return;
         }
-        if(counter <= 0 && playerinview()) {
+        if(attackdelay <= 0 && playerinview()) {
             //läuft direkt gerade zum Spieler
-            counter = 0;
+            attackdelay = 0;
             if(inradiusof(player, 400))
             { attackdelay-=delta;
                 if(attackdelay <= 0) {

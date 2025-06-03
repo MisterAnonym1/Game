@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -84,7 +85,8 @@ class Player extends Entity
         batch.end();
         //shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
-
+            shape.setColor(Color.RED);
+           drawHitbox(shape);
         shape.end();
 
         batch.begin();}

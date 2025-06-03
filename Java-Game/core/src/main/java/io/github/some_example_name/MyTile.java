@@ -50,6 +50,12 @@ import com.badlogic.gdx.math.Rectangle;
         public static int rowToY(int row) {
             return -64 * row;
         }
+        public static int xToColumn(float x) {
+            return (int) x/64;
+        }
+        public static int yToRow(float y) {
+            return (int) (y/-64)+1;
+        }
 
         void drawHitbox(ShapeRenderer shape)
         {
@@ -58,6 +64,8 @@ import com.badlogic.gdx.math.Rectangle;
 
         @Override
         public void draw(Batch batch, float delta) {
+            //batch.setColor(getColor());
+            batch.setColor(getColor().r,getColor().g,getColor().b,1);
             super.draw(batch, 1);
         }
 

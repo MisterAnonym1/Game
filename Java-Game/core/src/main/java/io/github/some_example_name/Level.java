@@ -157,6 +157,7 @@ class Level {
         for (NPC npc : npcs) {
             npc.draw(batch,delta);
         }
+
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -196,8 +197,7 @@ class Level {
         for (NPC npc : npcs) {
             npc.drawHitbox(shape);
         }
-        shape.setColor(Color.RED);
-        logic.Player.drawHitbox(shape);
+
         shape.end();
     }
     void drawShadows(ShapeRenderer shape)
@@ -251,6 +251,7 @@ class Level {
                             { newtileNotwall(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
                             else
                             { notWallsTiles.add(new MyTile(column, line, "Ph.Boden_Tile_1.png", false));
+                                rownotwalls[line]++;
 
 
                             }
@@ -358,7 +359,10 @@ class Level {
         return null;
 
     }
-    public MyTile getnotwallTile(int column, int row) {
+    public MyTile getnotwallTile(float x, float y) {
+            int column=MyTile.xToColumn(x);
+            int row= MyTile.yToRow(y);
+
         if(row < 0 || column < 0) {
             return null;
         }
