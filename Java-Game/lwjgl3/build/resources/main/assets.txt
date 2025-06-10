@@ -52,7 +52,9 @@ speech-bubble/speech2.png
 speech-bubble/speech3.png
 speech-bubble/speech4.png
 steel-weapons.png
+teleporter V3.png
 Test Karte 2.tmx
+TPall2.png
 ui/font-list.fnt
 ui/font-subtitle.fnt
 ui/font-window.fnt

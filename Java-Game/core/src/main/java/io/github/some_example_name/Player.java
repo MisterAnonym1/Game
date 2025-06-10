@@ -70,12 +70,19 @@ class Player extends Entity
         hitbox = new Rectangle(getX() +getWidth()/2, getY() +getHeight()/2, getWidth()/4f, getHeight()/3f);
 
     }
-
+    void normalise()
+    {
+        clearActions();
+        setColor(1,1,1,1);
+        setScale(1);
+        setRotation(0);
+        animationstateTime=0;
+    }
 
     public void draw(Batch batch,ShapeRenderer shape,float delta, float parentAlpha) {
         if(status==EntityStatus.dead){playAnimation(deadAnimation);}
 
-        batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
+        batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha*getColor().a);
         animationstateTime += delta; // Accumulate elapsed animation time
         TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, status==EntityStatus.dead? false:true);
 

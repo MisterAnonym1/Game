@@ -198,20 +198,27 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 }
 class NewLevelScreen extends Menu {
     AdvancedTextButton jaknopf;
+    AdvancedTextButton neinknopf;
     AdvancedTextButton skillknopf;
     Revtext secondtext;
     NewLevelScreen(Main main) {
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3, 0.06f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3, 0.03f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
         secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3.2f, 0.06f,"");
         textbox.setColor(Color.WHITE);
         secondtext.setColor(new Color(0, 0f, 0,1));
         this.main=main;
-        jaknopf = new AdvancedTextButton(" JA ",ScreenWidth/2f-80, 130, 3,Color.SKY,Color.WHITE );
+
+        jaknopf = new AdvancedTextButton(" JA ",ScreenWidth/2f-150, 130, 3,Color.SKY,Color.WHITE );
         jaknopf.getLabel().setFontScale(2f); // 1.5x größer
-        jaknopf.setOnUp(()->this.destroy());
+        jaknopf.setOnUp(()->this.destroy("newlevel"));
         Main.uiStage.addActor(jaknopf);
 
-        skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+80, 130, 3,Color.SKY,Color.WHITE );
+        neinknopf = new AdvancedTextButton("Nein",ScreenWidth/2f, 130, 3,Color.SKY,Color.WHITE );
+        neinknopf.getLabel().setFontScale(2f); // 1.5x größer
+        neinknopf.setOnUp(()->this.destroy("resume"));
+        Main.uiStage.addActor(neinknopf);
+
+        skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+150, 130, 3,Color.SKY,Color.WHITE );
         skillknopf.getLabel().setFontScale(2f); // 1.5x größer
         skillknopf.setOnUp(()-> System.out.println("Skills are coming soon"));
         Main.uiStage.addActor(skillknopf);
@@ -286,12 +293,14 @@ class NewLevelScreen extends Menu {
         textbox.draw(batch,1);
         secondtext.draw(batch,1);
         jaknopf.draw(batch,1);
+        neinknopf.draw(batch,1);
         skillknopf.draw(batch,1);
 
     }
-    void destroy(){
-        main.setState("newlevel");
+    void destroy(String state){
+        main.setState(state);
         jaknopf.remove();
+        neinknopf.remove();
         skillknopf.remove();
         remove();
     }
@@ -301,11 +310,14 @@ class NewLevelScreen extends Menu {
     {
         super.act(delta);
         if(Gdx.input.isKeyPressed(Input.Keys.ENTER)||Gdx.input.isKeyPressed(Input.Keys.SPACE))
-        {destroy();}
+        {destroy("newlevel");}
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+        {destroy("resume");}
         textbox.act(delta);
         secondtext.act(delta);
         skillknopf.act(delta);
         jaknopf.act(delta);
+        neinknopf.act(delta);
     }
 
 }
@@ -365,7 +377,8 @@ class Startmenu extends Menu
 
             case "Das hättest du nicht sehen sollen..." :
                 inmatrix=true;
-                matrix= new Matrix(main.viewport); SequenceAction sequence = new SequenceAction(
+                matrix= new Matrix(main.viewport);
+                SequenceAction sequence = new SequenceAction(
                     Actions.rotateBy(-42,0.5F,Interpolation.elastic),
                     Actions.rotateBy(18,0.9f,Interpolation.circleIn),
                     Actions.moveBy(0, -150, 0.5f, Interpolation.linear), // Langsam starten

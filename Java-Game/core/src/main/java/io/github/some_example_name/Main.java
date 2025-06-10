@@ -26,7 +26,6 @@ public class Main implements ApplicationListener {
     ShapeRenderer shape;
     Texture dropTexture;
     Revtext revtext;
-    Matrix matrix;
     Music music;
     //TiledMap map;
     static Cursor bettercursor;
@@ -36,6 +35,7 @@ public class Main implements ApplicationListener {
     OrthographicCamera ocam;
     SpriteBatch spriteBatch;
     Level currentlevel;
+    DataCenter dataCenter;
     int levelnummer;
     FitViewport viewport;
     static Skin skin;
@@ -78,8 +78,7 @@ public class Main implements ApplicationListener {
         music.setVolume(.1f); // .2f ist das selbe wie 0.2f
         music.play();
         revtext = new Revtext(400,250,1,0.1f,"Hallo das ist ein Revtext");
-        matrix= new Matrix(viewport);
-
+        dataCenter=new DataCenter(this);
         shape.setAutoShapeType(true);
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -281,6 +280,7 @@ public class Main implements ApplicationListener {
                 Player.setWorldbounds(-0,800,0,500);
                 levelnummer = -1;
             case "newlevel" : //triggert den Modus um eine neues Level zu laden
+                Player.normalise();
                 gamestate = Gamestate.loading;
                 uiStage.addActor(new LoadingScreen(this));
                 //Player.healthbar.setVisible(false);
@@ -295,12 +295,14 @@ public class Main implements ApplicationListener {
                 gamestate = Gamestate.paused;
                 break;
             case "resume" :
+                Player.normalise();
                 gamestate = Gamestate.playing;
                 break;
             case "dead" :
                 if(gamestate==Gamestate.dead){
                     return;
                 }
+                Player.normalise();
                 gamestate = Gamestate.dead;
                 Player.status= Entity.EntityStatus.dead;
                 uiStage.addActor(new Deathscreen(this));
@@ -310,6 +312,7 @@ public class Main implements ApplicationListener {
             case "respawn" :
                 Player.sethealth(Player.maxhealth, false);
                 Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
+                Player.normalise();
                 Player.status= Entity.EntityStatus.idle;
                 Level.projectiles.clear();
                 //-->entitys zurück an ihren spawn
@@ -342,12 +345,15 @@ public class Main implements ApplicationListener {
             return new Vector2(0, rectA.y < rectB.y ? -overlapY : overlapY); // Nach oben oder unten schieben
         }
     }
+    public Vector2 resolveCollision(Rectangle rectA, Polygon pol) {
+        return MathHelper.getCollisionResolutionVector(rectA, pol);
+    }
     void resolveWallCollision(Entity enti)
     {
         if(!enti.collisionOn) {
             return;
         }
-        ArrayList <Rectangle> walllist = getcollidingWalls(enti);
+        ArrayList <Polygon> walllist = getcollidingWalls(enti);
         for (int i = 0; i <walllist.size() ; i++)
         {
             enti.moveatAngle( resolveCollision(enti.hitbox,walllist.get(i))  );
@@ -356,14 +362,14 @@ public class Main implements ApplicationListener {
             ///break; // <--maybe wäre so besser
         }
     }
-    ArrayList <Rectangle> getcollidingWalls(TextureActor actor)
+    ArrayList <Polygon> getcollidingWalls(TextureActor actor)
     {
-        ArrayList <Rectangle> list = new ArrayList<>();
+        ArrayList <Polygon> list = new ArrayList<>();
         if(!actor.collisionOn) {
             return list;
         }
         for (MyTile tile : loadedwalls) {
-            if(actor.hitbox.overlaps(tile.hitbox)) {
+            if(MathHelper.overlaps(actor.hitbox,tile.hitbox)) {
                 list.add(tile.hitbox);
             }
         }
@@ -479,13 +485,31 @@ public class Main implements ApplicationListener {
 
     void checkplayercollision()
     {
-        for (MyTile tile : currentlevel.teleporters)
+        if(!dataCenter.areEnemysRemaining())
         {
-            if(Player.hitbox.overlaps(tile.hitbox))
+
+
+            for (Teleporter tile : currentlevel.teleporters)
             {
-                setState("paused");
-                uiStage.addActor(new NewLevelScreen(this));
-                break;
+                if(tile.state== Teleporter.TelState.inactiv)
+                {
+                   tile.activate();
+                }
+                if(tile.state== Teleporter.TelState.activ)
+                {
+                 if(Player.getdistance(tile)<30)
+                    {
+                     tile.onStand();
+                    }
+                }
+                if(tile.state== Teleporter.TelState.onstand)
+                {
+                    if(Player.getdistance(tile)>30)
+                    {
+                        tile.activate();
+                        break;
+                    }
+                }
             }
         }
 
@@ -514,7 +538,7 @@ public class Main implements ApplicationListener {
 
         currentlevel = new Level(LevelList.levels[level],this);
         currentlevel.load();
-
+        dataCenter.level=currentlevel;
 
       /*if(devmenu.onscreen) {
          devmenu.setOffscreen();

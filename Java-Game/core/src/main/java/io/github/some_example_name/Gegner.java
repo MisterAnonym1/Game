@@ -112,9 +112,9 @@ abstract class Gegner extends Entity
             return;
         }
         if(movement.len() <= maxspeed / 2) {
-            goalfields.get(0).setColor(Color.WHITE);
+            //goalfields.get(0).setColor(Color.WHITE);
 
-            goalfields.remove(0);
+            goalfields.remove(0).setColor(Color.WHITE);
 
             if(goalfields.size() <= 0)
             {
@@ -164,7 +164,7 @@ abstract class Gegner extends Entity
         else {
 
             goalfields.clear();
-            target.setColor(Color.RED);
+            target.setColor(Color.PURPLE);
             while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
             {
 
@@ -202,12 +202,12 @@ abstract class Gegner extends Entity
     {
         for (MyTile tile : visitedfields)
         {
-            tile.setColor(Color.WHITE);
+            //tile.setColor(Color.WHITE);
         }
         visitedfields.clear();
         movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
         if(movement.len() >= mindistance && movement.len() <= maxdistance) {
-            setPath(curlevel.getnotwallTile(getCenterX() , getCenterY() ), curlevel.getnotwallTile(player.getCenterX(), player.getCenterY()), movement);
+            setPath(curlevel.getnotwallTile( getCenterX(),getCenterY() ), curlevel.getnotwallTile(player.getCenterX(), player.getCenterY()), movement);
 
           }
         for (MyTile tile : visitedfields)
@@ -252,6 +252,10 @@ abstract class Gegner extends Entity
         }
         return neighbors;
 
+    }
+    public int getSignature()
+    {
+        return 0;
     }
     public void simpleattack (){
         if (getdistance(player)<= 20) {

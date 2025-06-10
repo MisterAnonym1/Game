@@ -94,8 +94,8 @@ public class TextureActor extends Actor
 
     public float getdistance(TextureActor other)
     {
-        float disx = other.getCenterX() - getCenterX();
-        float disy = other.getCenterY() - getCenterY();
+        float disx = other.getHitboxCenterX() - getHitboxCenterX();
+        float disy = other.getHitboxCenterY() - getHitboxCenterY();
         return Vector2.len(disx, disy);
        // return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
 

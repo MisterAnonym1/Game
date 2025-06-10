@@ -142,6 +142,7 @@ public class Script {
             "Die Steuerung kämpft gegen dich.",
             "Statistik sagt: 100% verloren.",
             "Respawn advised!",
+            "Du könntest gesüder sein",
             "Was that part of the plan?",
             "That was... unfortunate.",
             "Speed alone won’t save you!",

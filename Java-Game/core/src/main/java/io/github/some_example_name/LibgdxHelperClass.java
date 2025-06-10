@@ -8,7 +8,7 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.*;
 public class LibgdxHelperClass {
 }
- class MathHelper
+ class MathHelper//eigene Klasse von mir zum regeln von sachen
 {
     static  boolean isLineIntersectingRectangle(float x1, float y1, float x2, float y2, Rectangle rect) {
         return (Intersector.intersectSegments(x1, y1, x2, y2, rect.x, rect.y, rect.x + rect.width, rect.y,null) ||
@@ -17,6 +17,35 @@ public class LibgdxHelperClass {
             Intersector.intersectSegments(x1, y1, x2, y2, rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + rect.height,null));
 
     }
+    public static Polygon recToPolygon(Rectangle rect) {
+        float[] vertices = {
+            rect.x, rect.y,                        // Ecke unten links
+            rect.x + rect.width, rect.y,           // Ecke unten rechts
+            rect.x + rect.width, rect.y + rect.height, // Ecke oben rechts
+            rect.x, rect.y + rect.height           // Ecke oben links
+        };
+        return new Polygon(vertices);
+    }
+
+    public static boolean overlaps(Rectangle rec,Polygon polygon){
+        Polygon rectPoly = recToPolygon(rec);
+        return Intersector.overlapConvexPolygons(rectPoly, polygon);
+    }
+
+    public static Vector2 getCollisionResolutionVector(Rectangle rec, Polygon polygon) {
+        Polygon rectPoly = recToPolygon(rec);
+        Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
+
+        if (Intersector.overlapConvexPolygons(rectPoly, polygon, mtv)) {
+            return mtv.normal.scl(mtv.depth); // Berechnet den tatsächlichen Korrektur-Vektor
+        }
+
+        return new Vector2(0, 0); // Falls keine Kollision vorliegt
+    }
+
+
+
+
     public static boolean isAngleOutOfBounds(Vector2 vector, float referenceAngle, float vary) {
         float vectorAngle = vector.angleDeg(); // Winkel des Vektors in Grad
         float lowerBound = (referenceAngle - vary + 360) % 360;
@@ -86,7 +115,6 @@ public class LibgdxHelperClass {
          }
          Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
 
-         SpriteBatch spriteBatch;
 
 
          // Use the split utility method to create a 2D array of TextureRegions. This is

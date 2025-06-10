@@ -46,6 +46,11 @@ public class Dummy extends Gegner
     }
 
     @Override
+    public int getSignature() {
+        return 99;
+    }
+
+    @Override
     boolean damageby(float damage) {
         damageText.setText(""+damage);
         damageText.setScale(1);
