@@ -485,7 +485,7 @@ public class Main implements ApplicationListener {
 
     void checkplayercollision()
     {
-        if(!dataCenter.areEnemysRemaining())
+        if(!dataCenter.areEnemysRemaining()||DevMode==true)
         {
 
 

@@ -112,7 +112,6 @@ abstract class Gegner extends Entity
             goDirectlyToPlayer(delta);
             return;
         }
-        movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
         if(movement.len() <= maxspeed / 2) {
             //goalfields.get(0).setColor(Color.WHITE);
 
@@ -282,7 +281,6 @@ abstract class Gegner extends Entity
         if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
             acceleration = 600;
             maxspeed = 600;
-            counter = 0;
             movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
             ismoving = true;
             //player.damageby(30);
