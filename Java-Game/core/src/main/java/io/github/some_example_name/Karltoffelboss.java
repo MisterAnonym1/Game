@@ -29,7 +29,9 @@ public class Karltoffelboss extends Boss{
     @Override
     public void draw(Batch batch, float delta) {
         super.draw(batch, delta);
+        batch.end();
         bossbar.draw();
+        batch.begin();
     }
 
     @Override
@@ -56,8 +58,8 @@ public class Karltoffelboss extends Boss{
 
     public void engagePlayer(float delta){
         attackdelay+=delta;
-
-        if (attackdelay>=2)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
+        attackdelay2+=delta;
+        if (attackdelay>=200)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
         {
             //line of sight
             attackdelay=0;
@@ -65,6 +67,10 @@ public class Karltoffelboss extends Boss{
             //fireballattack();
                 fireballringattack(45,(float)Math.random()*22.5f);
             }
+        }
+        if (getdistance(player) <= 250 & attackdelay2 >= 2){
+            dashattack(delta);
+            attackdelay2 = 0;
         }
     };
     public void sterben(){
