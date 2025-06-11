@@ -24,12 +24,11 @@ class Player extends Entity
     MeeleWeapon weapon;
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
-    Animation<TextureRegion> walkAnimation;
+    //Animation<TextureRegion> walkAnimation;
     Animation<TextureRegion> sideAttackAnimation;
     Animation<TextureRegion> frontAttackAnimation;
     Animation<TextureRegion> backAttackAnimation;
-    Animation<TextureRegion> defaultAnimation;
-    Animation<TextureRegion> currentAnimation; //Variable zum speichern der letzten abgespielten animation
+    //Animation<TextureRegion> defaultAnimation;
     Animation<TextureRegion> deadAnimation;
     boolean isattacking;
     Viewport viewport;
@@ -146,14 +145,7 @@ class Player extends Entity
 
 
 
-    public void playAnimation(Animation<TextureRegion> animation)
-    {
-        if(animation!=currentAnimation)
-        {
-            animationstateTime=0;
-            currentAnimation=animation;
-        }
-    }
+
 
     void flip(boolean shouldBeMirrored)
     {

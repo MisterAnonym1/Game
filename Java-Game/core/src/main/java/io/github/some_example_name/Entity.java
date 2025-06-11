@@ -38,6 +38,7 @@ class Entity extends TextureActor
     Player player;
     Animation<TextureRegion> defaultAnimation;
     Animation<TextureRegion> walkAnimation;
+    Animation<TextureRegion> currentAnimation; //Variable zum speichern der letzten abgespielten animation
     public enum EntityStatus { inactiv, idle, engaging,dead }
 
     Entity(float x, float y, TextureRegion tex, Player player)
@@ -49,7 +50,6 @@ class Entity extends TextureActor
         curhealth = 100;
         weight = 1;
         status = EntityStatus.inactiv;
-
         setPosition(x,y);
     }
     Entity(float x, float y, String filepath,Player player)
@@ -61,11 +61,11 @@ class Entity extends TextureActor
 
 
     public void draw(Batch batch, float delta) {
-        batch.setColor(1,1,1,1);
+        batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
         animationstateTime += delta;
-        if (defaultAnimation==null){super.draw(batch, 1);}
+        if (currentAnimation==null){super.draw(batch, 1);}
         else {
-            TextureRegion currentFrame = defaultAnimation.getKeyFrame(animationstateTime, true);
+            TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, true);
             batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
         }
 
@@ -78,9 +78,20 @@ class Entity extends TextureActor
 
         shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
         if(Main.debugging){
-        drawHitbox(shape);}
+        //drawHitbox(shape);
+        }
 
     }
+
+    public void playAnimation(Animation<TextureRegion> animation)
+    {
+        if(animation!=currentAnimation)
+        {
+            animationstateTime=0;
+            currentAnimation=animation;
+        }
+    }
+
     void centerAtActor(Entity other)
     {
        setPosition(other.getX()+other.hitbox.width/2-getWidth()/2,other.getY()+other.hitbox.height/2-getHeight()/2);

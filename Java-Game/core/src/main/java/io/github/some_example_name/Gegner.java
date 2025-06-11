@@ -34,7 +34,6 @@ abstract class Gegner extends Entity
     AttackStatus attackStatus= AttackStatus.inactiv;
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     // soll acten zurückgeben ob gegner aus liste entfernt werden soll
-    abstract void sterben();
     Animation<TextureRegion> explosionAnimation;
     public enum AttackStatus { inactiv, dash, strike,exploding }
 
@@ -57,41 +56,61 @@ abstract class Gegner extends Entity
         hitboxOffsetX = 0;
         hitboxOffsetY =0;
 
-        float[] vertices = {hitbox.getX(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),1,hitbox.getY(),1,hitbox.getY()+ getHeight()};
+
+    }
+
+    @Override
+    protected void positionChanged() {
+        super.positionChanged();
+
+    }
+
+    @Override
+    void initializeHitbox() {
+        super.initializeHitbox();
+
+    }
+
+    @Override
+    protected void scaleChanged() {
+        super.scaleChanged();
+        float[] vertices = {0, 0, 0, 0+ hitbox.getHeight(),100,0+ hitbox.getHeight(),100,0};
+        lineofsight.setVertices(vertices);
+        lineofsight.setOrigin(hitbox.getWidth()/2.0f, hitbox.getHeight()/2.0f);
+    }
+
+
+
+    @Override
+    void initializeOtherThings() {
+        float[] vertices = {0, 0, 0, 0+ hitbox.getHeight()/2,100,0+ hitbox.getHeight()/2,100,0};
         lineofsight = new Polygon(vertices );
-        lineofsight.setOrigin(hitbox.getX()+hitbox.getWidth()/2.0f, hitbox.getY()+ hitbox.getHeight()/2.0f);
+        lineofsight.setOrigin(hitbox.getWidth(), hitbox.getHeight());
+        lineofsight.setPosition(hitbox.x,hitbox.y);
     }
 
     @Override
     public void drawHitbox(ShapeRenderer shape) {
         super.drawHitbox(shape);
-        //shape.scale(2,2,1);
-        //shape.polygon(lineofsight.getVertices());
+        shape.setColor(0.8f,0.2f,1,1);
+        shape.polygon(lineofsight.getTransformedVertices());
+        shape.setColor(0,0f,1,1);
     }
 
     boolean playerinview()
-    {   Vector2 vec = new Vector2(player.getCenterX() - getCenterX(), player.getCenterY() - getCenterY());
-        float[] vertices = {hitbox.getX(), hitbox.getY()+ hitbox.getHeight(), hitbox.getX(), hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY()+ hitbox.getHeight()};
+    {   Vector2 vec = getDistanceVector(player);
+        float[] vertices = {0, 0, 0, 0+ hitbox.getHeight(),vec.len(),0+ hitbox.getHeight(),vec.len(),0};
         lineofsight.setVertices(vertices);
+        lineofsight.setOrigin(hitbox.getWidth()/2.0f, hitbox.getHeight()/2.0f);
+        lineofsight.setPosition(hitbox.x,hitbox.y);
         lineofsight.setRotation(vec.angleDeg());
-        //float[] vertices = {(hitbox.getX()- lineofsight.getOriginX())*cos - sin * hitbox.getY(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),vec.len(),hitbox.getY(),vec.len(),hitbox.getY()+ getHeight()};
-        //+lineofsight.setPosition(hitbox.getX()+hitbox.getWidth()/2, hitbox.getY()+hitbox.getWidth()/2);
 
-
-        /*if(logic.DevMenu.onscreen) {
-            lineofsight.setAlpha(0.5);
-        }
-        else {
-            lineofsight.setAlpha(0);
-        }*/
-
-        /*+for (MyTile tile : logic.loadedwalls) {
-            if(lineofsight.collidesWith(tile.hitbox))
+        for (MyTile tile : logic.loadedwalls) {
+            if(Intersector.overlapConvexPolygons(lineofsight, tile.hitbox))
             {
-                //lineofsight.destroy();
                 return false;
             }
-        }*/
+        }
 
         return true;
     }
@@ -109,17 +128,17 @@ abstract class Gegner extends Entity
     {
         if(goalfields.size() <= 0)
         {
-            goDirectlyToPlayer(delta);
+            pathCountdown=0;
             return;
         }
-        if(movement.len() <= maxspeed / 2) {
+        if(movement.len() <= (maxspeed / 2)+1) {
             //goalfields.get(0).setColor(Color.WHITE);
 
             goalfields.remove(0).setColor(Color.WHITE);
 
             if(goalfields.size() <= 0)
             {
-                goDirectlyToPlayer(delta);
+                pathCountdown=0;
                 return;
             }
             else {
@@ -136,8 +155,17 @@ abstract class Gegner extends Entity
 
     void setPath(MyTile start, MyTile target, Vector2 vec)
     {
+
+        if(Main.debugging){
+            for(MyTile tile: visitedfields)
+            {
+                tile.setColor(Color.WHITE);
+            }
+            if(target!=null) target.setColor(Color.WHITE);
+        }
+        visitedfields.clear();
         queue.clear();
-        if(start == null) {
+        if(start.obstructed) {
             while (true) {
                 goalfields.clear();
                 return;
@@ -174,7 +202,12 @@ abstract class Gegner extends Entity
 
             }
 
-            //followPath();
+
+        }
+        for (MyTile tile : visitedfields)
+        {
+            tile.visited = false;
+            tile.previoustile = null;
         }
     }
 
@@ -201,21 +234,14 @@ abstract class Gegner extends Entity
 
     void locateplayer(float mindistance, float maxdistance)
     {
-        for (MyTile tile : visitedfields)
-        {
-            //tile.setColor(Color.WHITE);
-        }
-        visitedfields.clear();
+
+
         movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
         if(movement.len() >= mindistance && movement.len() <= maxdistance) {
             setPath(curlevel.getnotwallTile( getCenterX(),getCenterY() ), curlevel.getnotwallTile(player.getCenterX(), player.getCenterY()), movement);
 
           }
-        for (MyTile tile : visitedfields)
-        {
-            tile.visited = false;
-            tile.previoustile = null;
-        }
+
 
     }
 
@@ -227,25 +253,25 @@ abstract class Gegner extends Entity
     {
         ArrayList<MyTile> neighbors = new ArrayList<>();
 
-        if(feld.southNeighbour != null && !feld.southNeighbour.visited) {
+        if(feld.southNeighbour!=null && !feld.southNeighbour.obstructed && !feld.southNeighbour.visited) {
             neighbors.add(feld.southNeighbour);
             feld.southNeighbour.visited = true;
             visitedfields.add(feld.southNeighbour);
             feld.southNeighbour.previoustile = feld;
         }
-        if(feld.eastNeighbour != null && !feld.eastNeighbour.visited) {
+        if(feld.eastNeighbour!=null && !feld.eastNeighbour.obstructed && !feld.eastNeighbour.visited) {
             neighbors.add(feld.eastNeighbour);
             feld.eastNeighbour.visited = true;
             visitedfields.add(feld.eastNeighbour);
             feld.eastNeighbour.previoustile = feld;
         }
-        if(feld.northNeighbour != null && !feld.northNeighbour.visited) {
+        if(feld.northNeighbour!=null && !feld.northNeighbour.obstructed && !feld.northNeighbour.visited) {
             neighbors.add(feld.northNeighbour);
             feld.northNeighbour.visited = true;
             visitedfields.add(feld.northNeighbour);
             feld.northNeighbour.previoustile = feld;
         }
-        if(feld.westNeighbour != null && !feld.westNeighbour.visited) {
+        if(feld.westNeighbour!=null && !feld.westNeighbour.obstructed && !feld.westNeighbour.visited) {
             neighbors.add(feld.westNeighbour);
             feld.westNeighbour.visited = true;
             visitedfields.add(feld.westNeighbour);

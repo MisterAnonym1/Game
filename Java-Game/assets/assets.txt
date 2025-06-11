@@ -10,6 +10,8 @@ background.png
 badlogic.jpg
 battle-of-the-dragons-8037.mp3
 bucket.png
+Carrot-sheet.png
+Carrot_Idle.png
 Credits Button V1.png
 Dead.png
 debug_dummy.png

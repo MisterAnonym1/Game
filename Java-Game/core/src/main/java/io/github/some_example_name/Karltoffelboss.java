@@ -41,7 +41,6 @@ public class Karltoffelboss extends Boss{
 
     public void act(float delta){
         super.act(delta);
-        playerinview();
         engagePlayer(delta);
     };
 
@@ -59,7 +58,7 @@ public class Karltoffelboss extends Boss{
     public void engagePlayer(float delta){
         attackdelay+=delta;
         attackdelay2+=delta;
-        if (attackdelay>=200)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
+        if (attackdelay>=3)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
         {
             //line of sight
             attackdelay=0;

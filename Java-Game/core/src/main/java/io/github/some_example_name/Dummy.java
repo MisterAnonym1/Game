@@ -40,10 +40,6 @@ public class Dummy extends Gegner
             drawHitbox(shape);}
     }
 
-    @Override
-    void sterben() {
-        Level.deleteList.add(this);
-    }
 
     @Override
     public int getSignature() {

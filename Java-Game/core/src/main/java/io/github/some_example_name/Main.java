@@ -295,7 +295,8 @@ public class Main implements ApplicationListener {
                 gamestate = Gamestate.paused;
                 break;
             case "resume" :
-                Player.normalise();
+                if(Player!=null){
+                Player.normalise();}
                 gamestate = Gamestate.playing;
                 break;
             case "dead" :
