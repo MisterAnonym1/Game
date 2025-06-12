@@ -78,6 +78,15 @@ class Player extends Entity
         animationstateTime=0;
     }
 
+    float getfootDistance(float x, float y)
+    {
+        return new Vector2(x - getHitboxCenterX(), y - hitbox.y).len();
+    }
+    float getfootDistance(TextureActor other)
+    {
+        return new Vector2(other.getHitboxCenterX() - getHitboxCenterX(), other.getHitboxCenterY() - hitbox.y).len();
+    }
+
     public void draw(Batch batch,ShapeRenderer shape,float delta, float parentAlpha) {
         if(status==EntityStatus.dead){playAnimation(deadAnimation);}
 
@@ -107,13 +116,12 @@ class Player extends Entity
 
     @Override
     public void drawHitbox(ShapeRenderer shape) {
-        super.drawHitbox(shape);
         Vector2 worldPosition = attackline.add(new Vector2(getCenterX(),getCenterY()));
         shape.line(new Vector2(getCenterX(),getCenterY()), worldPosition);
         Vector2 direction= new Vector2(100,0);
         direction.rotateDeg(directionline);
         shape.line(new Vector2(getCenterX(),getCenterY()),new Vector2(getCenterX()+direction.x,getCenterY()+direction.y) );
-
+        super.drawHitbox(shape);
 
     }
 

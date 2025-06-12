@@ -16,8 +16,7 @@ import java.util.ArrayList;
 
 abstract class Gegner extends Entity
 {
-    float spawnx;
-    float spawny;
+
     Level curlevel;
     float pathCountdown= 0;
     float attackdelay = 0;
@@ -29,9 +28,9 @@ abstract class Gegner extends Entity
     ArrayList<MyTile> visitedfields = new ArrayList<>();
     MyTile targettile;
     Polygon lineofsight;
-    boolean isatdestination = false;
-    int delay;
     AttackStatus attackStatus= AttackStatus.inactiv;
+    Vector2 directiontoTile = new Vector2(0,0);
+    boolean inview = false;
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     // soll acten zurückgeben ob gegner aus liste entfernt werden soll
     Animation<TextureRegion> explosionAnimation;
@@ -46,8 +45,6 @@ abstract class Gegner extends Entity
         super(x, y, texture, logic.Player);
         acceleration = 100;
         maxspeed = 100;
-        spawnx = x;
-        spawny = y;
         curlevel = logic.currentlevel;
         this.logic = logic;
         maxhealth = 100;
@@ -59,17 +56,7 @@ abstract class Gegner extends Entity
 
     }
 
-    @Override
-    protected void positionChanged() {
-        super.positionChanged();
 
-    }
-
-    @Override
-    void initializeHitbox() {
-        super.initializeHitbox();
-
-    }
 
     @Override
     protected void scaleChanged() {
@@ -79,6 +66,18 @@ abstract class Gegner extends Entity
         lineofsight.setOrigin(hitbox.getWidth()/2.0f, hitbox.getHeight()/2.0f);
     }
 
+void reset()
+    {
+        super.reset();
+        pathCountdown = 0;
+        attackdelay = 0;
+        attackdelay2 = 0;
+        goalfields.clear();
+        visitedfields.clear();
+        queue.clear();
+        targettile = null;
+        attackStatus = AttackStatus.inactiv;
+    }
 
 
     @Override
@@ -92,13 +91,31 @@ abstract class Gegner extends Entity
     @Override
     public void drawHitbox(ShapeRenderer shape) {
         super.drawHitbox(shape);
-        shape.setColor(0.8f,0.2f,1,1);
+        if(inview)
+        {
+            shape.setColor(0.8f,0.2f,1,1);
+        }
+        else
+        {
+            if(targettile!=null) {
+                shape.setColor(Color.PURPLE);
+                shape.rect(targettile.getCenterX()-16+hitbox.height*getScaleY()/2, targettile.getCenterY()-16+hitbox.height*getScaleY()/2, 32-hitbox.height*getScaleY(), 32-hitbox.height*getScaleY());
+            }
+            if(goalfields.size() > 0)
+            {
+            shape.setColor(Color.BLUE);
+                shape.rect(goalfields.get(0).getCenterX()-16+hitbox.height*getScaleY()/2, goalfields.get(0).getCenterY()-16+hitbox.height*getScaleY()/2, 32-hitbox.height*getScaleY(), 32-hitbox.height*getScaleY());
+            }
+            shape.setColor(Color.BROWN);
+        }
+
         shape.polygon(lineofsight.getTransformedVertices());
-        shape.setColor(0,0f,1,1);
+        shape.setColor(Color.BLUE);
     }
 
     boolean playerinview()
     {   Vector2 vec = getDistanceVector(player);
+        //movement=vec;
         float[] vertices = {0, 0, 0, 0+ hitbox.getHeight(),vec.len(),0+ hitbox.getHeight(),vec.len(),0};
         lineofsight.setVertices(vertices);
         lineofsight.setOrigin(hitbox.getWidth()/2.0f, hitbox.getHeight()/2.0f);
@@ -108,69 +125,56 @@ abstract class Gegner extends Entity
         for (MyTile tile : logic.loadedwalls) {
             if(Intersector.overlapConvexPolygons(lineofsight, tile.hitbox))
             {
+                inview=false;
                 return false;
             }
         }
-
+        inview=true;
         return true;
     }
 
     void goDirectlyToPlayer(float delta)
     {
-        if(playerinview()) {
-
             ismoving = true;
+            movement=getDistanceVector(player);
             updatemovement(movement,delta);
-        }
     }
 
     void followPath(float delta)
     {
         if(goalfields.size() <= 0)
         {
-            pathCountdown=0;
+            pathCountdown=Math.min(pathCountdown,.3f);
             return;
         }
-        if(movement.len() <= (maxspeed / 2)+1) {
-            //goalfields.get(0).setColor(Color.WHITE);
+        directiontoTile= new Vector2(goalfields.get(0).getCenterX() - getCenterX(), goalfields.get(0).getCenterY() - getCenterY());
+        if(directiontoTile.len() <= targettile.getWidth()/2-hitbox.height*getScaleY()/2 || directiontoTile.len() >= 200){
 
-            goalfields.remove(0).setColor(Color.WHITE);
+            goalfields.remove(0);
 
-            if(goalfields.size() <= 0)
+            if(goalfields.size() <= 0) //keine Felder mehr zum Folgen
             {
-                pathCountdown=0;
+                pathCountdown=0;// neuen Pfad berechnen
                 return;
             }
-            else {
-                movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), goalfields.get(0).getCenterY() - getCenterY());
-            }
         }
-      if(Main.debugging) {
-         goalfields.get(0).setColor(Color.RED);
-      }
         ismoving = true;
-        updatemovement(movement, delta);
+        updatemovement(directiontoTile, delta);
     }
 
 
     void setPath(MyTile start, MyTile target, Vector2 vec)
     {
 
-        if(Main.debugging){
-            for(MyTile tile: visitedfields)
-            {
-                tile.setColor(Color.WHITE);
-            }
-            if(target!=null) target.setColor(Color.WHITE);
-        }
         visitedfields.clear();
         queue.clear();
-        if(start.obstructed) {
-            while (true) {
-                goalfields.clear();
-                return;
-            }
+        if(start==null|| target==null|| start.obstructed|| target.obstructed) {
+            goalfields.clear();
+            deactivate();
+            return;
         }
+
+        targettile=target;
         MyTile currenttile = start;
         currenttile.visited = true;
         currenttile.previoustile = null;
@@ -193,7 +197,6 @@ abstract class Gegner extends Entity
         else {
 
             goalfields.clear();
-            target.setColor(Color.PURPLE);
             while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
             {
 
@@ -201,8 +204,6 @@ abstract class Gegner extends Entity
                 currenttile = currenttile.previoustile;
 
             }
-
-
         }
         for (MyTile tile : visitedfields)
         {

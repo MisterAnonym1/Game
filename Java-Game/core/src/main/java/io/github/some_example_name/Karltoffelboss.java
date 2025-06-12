@@ -58,7 +58,7 @@ public class Karltoffelboss extends Boss{
     public void engagePlayer(float delta){
         attackdelay+=delta;
         attackdelay2+=delta;
-        if (attackdelay>=3)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
+        if (attackdelay>=1)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
         {
             //line of sight
             attackdelay=0;
@@ -71,14 +71,6 @@ public class Karltoffelboss extends Boss{
             dashattack(delta);
             attackdelay2 = 0;
         }
-    };
-    public void sterben(){
-        Level.deleteList.add(this);
-    };
-
-    @Override
-    public void dashattack(float delta) {
-        super.dashattack(delta);
     }
 
 }

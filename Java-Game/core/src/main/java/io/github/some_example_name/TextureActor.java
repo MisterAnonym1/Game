@@ -64,12 +64,13 @@ public class TextureActor extends Actor
         super.drawDebug(shape);
         shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
 
-
         shape.circle(getHitboxCenterX(),getHitboxCenterY(),5);//Hitboxcenter
 
         shape.setColor(0.5f,1,0.5f,1);//green= coordinates
         shape.circle(getX(),getY(),4);
-        shape.setColor(0.5f,0.5f,1f,1);//blue=Hitboxcenter
+
+        shape.setColor(0f, 0.2f, 1f, 1  );//blue=Hitboxcenter
+
         //shape.setColor(0.5f,0.5f,1f,1);//blue=origin
         //shape.circle(getX()+getOriginX(),getY()+getOriginY(),5);
 

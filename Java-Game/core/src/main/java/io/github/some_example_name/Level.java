@@ -279,8 +279,7 @@ class Level {
             case '#':
                 return new MyTile(column, row, "own Watertile 2.png", true);
             case '@':
-                xcoplayer = MyTile.columnToX(column);
-                ycoplayer = MyTile.rowToY(row);
+                setPlayerPosition(MyTile.columnToX(column),MyTile.rowToY(row));
                 return new MyTile(column, row, "Ph.Boden_Tile_1.png", false);
             case 'n' :
                 npcs.add(new NPC(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
@@ -299,6 +298,9 @@ class Level {
                 break;
             case '$' :
                 break;
+            case 'c' :
+                gegnerliste.add(new Carrot( MyTile.columnToX(column), MyTile.rowToY(row),logic));
+                break;
             case 'm' :
                 gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(row) ));
                 break;
@@ -310,6 +312,47 @@ class Level {
         }
         return getdefaultTile(column,row) ;
     }
+
+
+    void reload() {
+        destroy();
+        load();
+    }
+    void resetObjects()//resets Entities and Player
+    {
+        for (Testentity testi : testentitys) {
+            testi.reset();
+        }
+        for (Gegner gegner : gegnerliste) {
+            gegner.reset();
+        }
+
+        for (NPC npc : npcs) {
+            npc.reset();
+        }
+        for (Teleporter teleporter : teleporters) {
+            teleporter.deactivate();
+        }
+        for (Projectile projec : projectiles) {
+            projec.destroy();
+        }
+        projectiles.clear();
+        for (TextureActor actor : deleteList) {
+            actor.removeFromLevel();
+            actor.destroy();
+        }
+        deleteList.clear();
+        logic.Player.reset();
+        logic.Player.normalise();
+    }
+
+    void setPlayerPosition(float x, float y) {
+        xcoplayer = x;
+        ycoplayer = y;
+        logic.Player.spawnx =x;
+        logic.Player.spawny =y;
+    }
+
 
     private void setTileNeighbors() {
         for (int row = 0; row < tiles.length; row++) {

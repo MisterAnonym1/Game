@@ -34,9 +34,13 @@ public class Testentity extends Entity {
         hitboxOffsetY=10;
         walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.2f);
         direction = new Vector2(0, 0);
-        targetpos = new Position(spawnx , spawny );
-        gotopoint(targetpos.x, targetpos.y);
-        //rotateBy(40);
+        setrandompoint(spawnx, spawny, 140f);
+    }
+
+    void reset() {
+        super.reset();
+        setrandompoint(spawnx, spawny, 140f);
+        delay = 0;
     }
 
     @Override

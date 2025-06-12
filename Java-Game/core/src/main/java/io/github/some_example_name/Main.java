@@ -311,13 +311,13 @@ public class Main implements ApplicationListener {
                 deathcount++;
                 break;
             case "respawn" :
-                Player.sethealth(Player.maxhealth, false);
-                Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
-                Player.normalise();
-                Player.status= Entity.EntityStatus.idle;
-                Level.projectiles.clear();
-                //-->entitys zurück an ihren spawn
-                //-->leben der Entitys zurück setzten und inactive machen
+                if(gamestate!=Gamestate.dead){
+                    System.out.println("respawn called but not dead");
+                    return;
+                }
+                currentlevel.resetObjects();
+                //_/entitys zurück an ihren spawn
+                //_/leben der Entitys zurück setzten und inactive machen
                 gamestate = Gamestate.playing;
                 break;
             case "returntogame" :
@@ -498,14 +498,14 @@ public class Main implements ApplicationListener {
                 }
                 if(tile.state== Teleporter.TelState.activ)
                 {
-                 if(Player.getdistance(tile)<30)
+                 if(Player.getfootDistance(tile)<15)
                     {
                      tile.onStand();
                     }
                 }
                 if(tile.state== Teleporter.TelState.onstand)
                 {
-                    if(Player.getdistance(tile)>30)
+                    if(Player.getfootDistance(tile)>15)
                     {
                         tile.activate();
                         break;

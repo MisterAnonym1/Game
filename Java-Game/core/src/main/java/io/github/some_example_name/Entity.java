@@ -25,11 +25,10 @@ class Entity extends TextureActor
     float maxhealth, curhealth;
     float maxspeed, acceleration, directionline=0;
     boolean  ismoving, isattacking;
-    //Rectangle hitbox;
     Vector2 movement;
     Vector2 additionalForce;
-    //TextureRegion texture;
-    //float hitboxOffsetX=0, hitboxOffsetY=0;
+    float spawnx;
+    float spawny;
     boolean ismirrored;
     float animationstateTime=0f, weight;
     EntityStatus status;
@@ -44,6 +43,8 @@ class Entity extends TextureActor
     Entity(float x, float y, TextureRegion tex, Player player)
     {
         super(tex);
+        spawnx = x;
+        spawny = y;
         this.player=player;
         additionalForce = new Vector2(0, 0);
         movement = new Vector2(0, 0);
@@ -57,7 +58,20 @@ class Entity extends TextureActor
          this(x,y,new TextureRegion(new Texture(filepath)), player);
     }
 
-
+void reset()
+    {
+        setPosition(spawnx,spawny);
+        sethealth(maxhealth,true);
+        collisionOn=true;
+        additionalForce.set(0,0);
+        status = EntityStatus.inactiv;
+        animationstateTime=0;
+        currentAnimation=defaultAnimation;
+        ismirrored=false;
+        clearActions();
+        //super.act(999);
+        setColor(1,1,1,1);
+    }
 
 
     public void draw(Batch batch, float delta) {
@@ -113,7 +127,7 @@ class Entity extends TextureActor
             curhealth = health;
         }
     }
-    void sethealth(int health)
+    void sethealth(float health)
     //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
     {
        sethealth(health,false);
@@ -226,7 +240,7 @@ class Entity extends TextureActor
         if(ismoving) {
 
             //movement = direction;
-            movement.setLength( (float) Math.min(movement.len(), maxspeed));
+            movement.setLength(maxspeed);
 
             if(movement.len()>0)
             {
@@ -246,7 +260,6 @@ class Entity extends TextureActor
     void applyForce(Vector2 force)
     {
         force.setLength(force.len() / weight);
-
         additionalForce = additionalForce.add(force);
     }
 
@@ -260,6 +273,8 @@ class Entity extends TextureActor
     void moveatdirection(float delta)
     {
         moveBy((movement.x+additionalForce.x)*delta, (movement.y+additionalForce.y)*delta);
+        //additionalForce.scl(Math.max(0, 1f - delta));
+        additionalForce.clamp(0,additionalForce.len()-delta/**weight*/);
     }
     void moveReverse(Vector2 move, int speed)
     {
