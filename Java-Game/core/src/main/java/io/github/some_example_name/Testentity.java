@@ -6,50 +6,55 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Testentity extends Entity {
+public class Testentity extends Gegner {
     Vector2 direction;
-    int spawnx=0;
-    int spawny=0;
-    float delay=0;
-    Main logic;
-
-    Position targetpos;
+    TextureRegion sheet;
+    Vector2 targetpos;
+    boolean abandonedTarget;
     Testentity(float x, float y,  Main log) {
-        super(x, y, new TextureRegion(new Texture("slime_move.png"),1,1,80,72),log.Player);
+        super(x, y,log, new TextureRegion(new Texture("slime_move.png"),1,1,80,72));
         acceleration = 100;
         maxspeed = 100;
         setSize(200,200);
-        spawnx = (int)x;
-        spawny = (int)y;
-        logic = log;
-
+        sethealth(100,true);
+        spawnx = x;
+        spawny = y;
+        inview=true;
         scale(1f);
-        hitboxOffsetX=10;
-        hitboxOffsetY=10;
+        hitboxOffsetX=0;
+        hitboxOffsetY=0;
+        sheet=new TextureRegion(new Texture("HappySheep_All.png"));
         walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.2f);
+        defaultAnimation= new Animation<>(0.1f,sheet.split(sheet.getRegionWidth() / 8, sheet.getRegionHeight() / 2)[0]);
         direction = new Vector2(0, 0);
+        moveBy(1,1);
         setrandompoint(spawnx, spawny, 140f);
     }
 
     void reset() {
         super.reset();
         setrandompoint(spawnx, spawny, 140f);
-        delay = 0;
     }
 
     @Override
     public void draw(Batch batch,float delta) {
-        //super.draw(batch, parentAlpha);
+        batch.setColor(getColor());
+        if(movement.angleDeg()>90&&movement.angleDeg()<270)
+        {
+            ismirrored=true;
+        }
+        else{ismirrored=false;}
         animationstateTime += delta; // Accumulate elapsed animation time
-        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
+        TextureRegion currentFrame = defaultAnimation.getKeyFrame(animationstateTime, true);
+        batch.draw(currentFrame,getX()+ (ismirrored?getWidth():0),getY(),getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
 
-        batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
 
 
@@ -66,52 +71,57 @@ public class Testentity extends Entity {
 
     void setrandompoint(float centerx, float centery, float radius)
     {
-        delay =  MathUtils.random() * 1.0f + 2.6f;
-        boolean collides;
-        while (true) {
-            float angle = MathUtils.random(0,360);
-            float length = MathUtils.random((float) (radius * 0.1), radius);
+        abandonedTarget=false;
+        float angle;
+        float length;
+        for (int i = 0; i < 16; i++) {
+
+
+            angle = MathUtils.random(0,360);
+            length = MathUtils.random( 0, radius+getdistance(centerx,centery));
             float x = (float) (length * Math.cos(angle * Math.PI / 180));
             float y = (float) ( length * Math.sin((angle * Math.PI) / 180));
-            Vector2 pos = new Vector2(x,y);
             collides = false;
-            targetpos = new Position(Math.round(centerx + pos.x), Math.round(centery + pos.y));
-            //new Rectangle(targetpos.x, targetpos.y, 20, 20).setAlpha(1);
-            Vector2 vec = new Vector2(targetpos.x - getCenterX(), targetpos.y - getCenterY());
-            ///Rectangle line2 = new Rectangle(getCenterX(), getCenterY() - getHeight() / 2, vec.len(), Math.max(getWidth(), getHeight()));
-
-            //line2.setOrigin(getCenterX(), getCenterY());
-
-            //line2.rotate(vec.getAngleDeg());
-
-         /*for (MyTile tile : logic.loadedwalls) {
-            if(line2.collidesWith(tile.hitbox))
+            targetpos = new Vector2(centerx + x, centery + y);
+            Vector2 vec = getDistanceVector(targetpos.x,targetpos.y);
+            if(vec.len()<=hitbox.getWidth()*1.5f)
             {
-               collides = true;
-               break;
+                collides=true;
+                continue;
             }
-         }*/
-            //line2.destroy();
+
+            float[] vertices = {hitbox.width/2, (hitbox.height-hitbox.width)/2, hitbox.width/2, (hitbox.height+hitbox.width)/2,vec.len(),0+ hitbox.getWidth(),vec.len(),0};
+            lineofsight.setVertices(vertices);
+            lineofsight.setOrigin(hitbox.getWidth()/2.0f, hitbox.getHeight()/2.0f);
+            lineofsight.setPosition(hitbox.x,hitbox.y);
+            lineofsight.setRotation(vec.angleDeg());
+
+            for (MyTile tile : logic.loadedwalls) {
+                if(Intersector.overlapConvexPolygons(lineofsight, tile.hitbox))
+                {
+                    collides=true;
+                    break;
+                }
+            }
+
             if(!collides) {
                 return;
             }
 
         }
-
-
+        abandonedTarget=true;
+        pathCountdown=0.4f;
 
     }
     void gotopoint(float x, float y)
     {
-        direction = new Vector2(x - getCenterX(), y-getCenterY());
+        direction = new Vector2(x - getHitboxCenterX(), y-getHitboxCenterY());
 
     }
     boolean isatdestination() {
-        if(collides || (Math.abs(Math.round(getCenterX()) - targetpos.x) < 10 && Math.abs(Math.round(getCenterY()) - targetpos.y) < 10))
+        if( (Math.abs(getHitboxCenterX() - targetpos.x) < hitbox.getWidth()+3 && Math.abs(getHitboxCenterY() - targetpos.y) < hitbox.getWidth()+3))
         {
-            collides = false;
             return true;
-            //gotopoint(targetpos.x, targetpos.y);
 
         }
         return false;
@@ -122,15 +132,26 @@ public class Testentity extends Entity {
     public void act(float delta)
     {
         super.act(delta);
+        ismoving=false;
+        if(collides&&!abandonedTarget)
+        {
+            pathCountdown*=0.3f;
+            abandonedTarget=true;
+
+        }
         if(isatdestination())
         {
-            delay-=delta;
-            if(delay <= 0) {
-                while (isatdestination())
-                {
-                    setrandompoint(spawnx, spawny, 140f);
-                }
+            abandonedTarget=true;
+        }
+        if(abandonedTarget)
+        {
 
+            pathCountdown-=delta;
+            if(pathCountdown <= 0) {
+
+                    pathCountdown =  MathUtils.random() * 4.0f + 1.5f;
+                    setrandompoint(spawnx, spawny, 140f);
+                    collides=false;
             }
         }
         else {
@@ -138,22 +159,12 @@ public class Testentity extends Entity {
             //checknewpos();
             gotopoint(targetpos.x, targetpos.y);
             ismoving = true;
-            updatemovement(direction,delta);
+
         }
+        updatemovement(direction,delta);
     }
 
 
 
 }
 
-
- class Position {
-    int x;
-    int y;
-    Position(int x, int y)
-    {
-        this.x=x;
-        this.y=y;
-
-    }
-}

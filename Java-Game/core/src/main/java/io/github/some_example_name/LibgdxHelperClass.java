@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.Array;
+
 public class LibgdxHelperClass {
 }
  class MathHelper//eigene Klasse von mir zum regeln von sachen
@@ -37,7 +39,7 @@ public class LibgdxHelperClass {
         Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
 
         if (Intersector.overlapConvexPolygons(rectPoly, polygon, mtv)) {
-            return mtv.normal.scl(mtv.depth); // Berechnet den tatsächlichen Korrektur-Vektor
+            return mtv.normal.scl(mtv.depth+0.0001f);// Berechnet den tatsächlichen Korrektur-Vektor
         }
 
         return new Vector2(0, 0); // Falls keine Kollision vorliegt
@@ -83,20 +85,26 @@ public class LibgdxHelperClass {
         TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / sheet_cols, walkSheet.getHeight() / sheet_rows);
 
         // Place the regions into a 1D array in the correct order, starting from the top
-        // left, going across first. The Animation constructor requires a 1D array.
+        // left, going across first. The Animatio n constructor requires a 1D array.
         TextureRegion[] walkFrames = new TextureRegion[Math.min(sheet_cols * sheet_rows,frames)];
-        int index = 0;
-        for (int i = (int) Math.ceil((float)firstFrameisOne1/sheet_cols)-1; i <= Math.ceil((float)lastFrame/sheet_cols)-1; i++) {
+        //int index = 0;
+        for (int i = firstFrameisOne1; i <=lastFrame ; i++) {
+            int h=(int)Math.floor((float)(i-1)/sheet_cols);
+            int j= ((i-1)%sheet_cols);
+            walkFrames[i-firstFrameisOne1]=tmp[h][j];
+        }
+        /*loop:for (int i = (int) Math.ceil((float)firstFrameisOne1/sheet_cols)-1; i <= Math.ceil((float)lastFrame/sheet_cols)-1; i++) {
             for (int j = 0; j < sheet_cols; j++) {
                 walkFrames[index++] = tmp[i][j];
 
                 if (index >= frames) {
                     //System.out.println("\nfirst " + index);
-                    break;
+                    break loop;
                 }
 
             }
-        }
+
+        }*/
 
 
         // Initialize the Animation with the frame interval and array of frames
@@ -141,7 +149,20 @@ public class LibgdxHelperClass {
 
      }
 
-
+    /**
+         * Verbindet zwei Animationen zu einer einzigen Animation, indem die Frames der zweiten Animation
+         * an die der ersten angehängt werden.
+         */
+        public static Animation<TextureRegion> connectAnimations(Animation<TextureRegion> anim1, Animation<TextureRegion> anim2, float frameDuration) {
+            Array<TextureRegion> frames = new Array<>();
+            for (TextureRegion frame : anim1.getKeyFrames()) {
+                frames.add(frame);
+            }
+            for (TextureRegion frame : anim2.getKeyFrames()) {
+                frames.add(frame);
+            }
+            return new Animation<>(frameDuration, frames, Animation.PlayMode.NORMAL);
+        }
 
 
 

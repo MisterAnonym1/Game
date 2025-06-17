@@ -47,8 +47,7 @@ class Player extends Entity
         maxhealth = leben;
         healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
         weapon=new Pipe(this);
-        //healthbar.setVisible(false);
-        //setSize(200, 180);
+        Main.uiStage.addActor(healthbar);
         scale(1f);
 
         texture.flip(true,false);
@@ -105,13 +104,6 @@ class Player extends Entity
         shape.end();
 
         batch.begin();}
-
-
-
-        batch.end();
-
-        healthbar.draw();
-        batch.begin();
     }
 
     @Override
@@ -131,6 +123,7 @@ class Player extends Entity
         if(invincible) {
             return false;
         }
+        damageEffect();
         curhealth -= damage;
         healthbar.takeDamage(damage);
         if(curhealth > maxhealth) {
@@ -138,8 +131,6 @@ class Player extends Entity
         }
         if(curhealth <= 0) {
             return true;
-        }
-        if(damage >= 25) {
         }
         return false;
     }
@@ -174,13 +165,15 @@ class Player extends Entity
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),enti.hitbox)){return false;}
         //System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
         gegnerhitliste.add(enti);
+        knockbackFromPlayer(enti,200);
         if(enti.damageby(weapon.damage)) {
-            Level.deleteList.add(enti);
+           enti.onDeath();
             return true;
         }
         return false;
 
     }
+
     boolean handleAttack(TextureActor actor, boolean nix)
     {
         if(gegnerhitliste.contains(actor)){return false;}
@@ -195,24 +188,27 @@ class Player extends Entity
         return true;
 
     }
-    /*boolean handleAttack(Entity enti)
-    {
-        if(gegnerhitliste.contains(enti)){return false;}
 
-        Vector2 line =new Vector2(enti.getCenterX() - getCenterX(), enti.getCenterY() - getCenterY());
-        if(line.len()>72){return false;}
-        if(line.len()>20&&(line.angleDeg()>directionline+60||line.angleDeg()<directionline-60)){return false;}
-        gegnerhitliste.add(enti);
-        if(enti.damageby(weapon.damage)) {
-            Level.deleteList.add(enti);
-            return true;
-        }
-        return false;
-
-    }*/
+    void knockbackFromPlayer(Entity enti, float strength/*100 is medium*/) {
+        /*Vector2 knockback = getDistanceVector(enti);
+        knockback.setLength(strength);
+        enti.applyForce(knockback);*/
+        applyknockbackOn(enti,strength);
+    }
 
     @Override
+    void moveatdirection(float delta) {
+        additionalForce.clamp(0,additionalForce.len()-delta*(350)/**weight*/);
+        if(additionalForce.len()<100){additionalForce.setLength(0);}
+        if(additionalForce.x!=0||additionalForce.y!=0){
+            moveBy((additionalForce.x)*delta, (additionalForce.y)*delta);}
+        else
+        {
+            moveBy((movement.x)*delta, (movement.y)*delta);
+        }
+    }
 
+    @Override
     public void act(float deltatime)
     {
         super.act(deltatime);

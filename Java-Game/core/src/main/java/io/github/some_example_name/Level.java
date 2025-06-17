@@ -299,7 +299,9 @@ class Level {
             case '$' :
                 break;
             case 'c' :
-                gegnerliste.add(new Carrot( MyTile.columnToX(column), MyTile.rowToY(row),logic));
+                for (int i = 0; i < 1; i++) {
+                    gegnerliste.add(new Carrot( MyTile.columnToX(column), MyTile.rowToY(row),logic));
+                }
                 break;
             case 'm' :
                 gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(row) ));

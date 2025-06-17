@@ -15,7 +15,10 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 
@@ -49,6 +52,7 @@ class Entity extends TextureActor
         additionalForce = new Vector2(0, 0);
         movement = new Vector2(0, 0);
         curhealth = 100;
+        maxhealth=100;
         weight = 1;
         status = EntityStatus.inactiv;
         setPosition(x,y);
@@ -77,24 +81,23 @@ void reset()
     public void draw(Batch batch, float delta) {
         batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
         animationstateTime += delta;
-        if (currentAnimation==null){super.draw(batch, 1);}
+        if(movement.angleDeg()>90&&movement.angleDeg()<270)
+        {
+            ismirrored=false;
+        }
+        else{ismirrored=true;}
+        if (currentAnimation==null){batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY(),getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        }
         else {
             TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, true);
-            batch.draw(currentFrame, getX(), getY(), getOriginX(), getOriginY(), getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
+            batch.draw(currentFrame,getX()+ (ismirrored?getWidth():0),getY(),getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
         }
 
     }
 
     public void drawShadow(ShapeRenderer shape)
     {
-        //Gdx.gl.glEnable(GL20.GL_BLEND);
-        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
-
         shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
-        if(Main.debugging){
-        //drawHitbox(shape);
-        }
-
     }
 
     public void playAnimation(Animation<TextureRegion> animation)
@@ -135,8 +138,8 @@ void reset()
 
     boolean damageby(float damage)
     {
-
         curhealth -= damage;
+        damageEffect();
         if(curhealth > maxhealth) {
             curhealth = maxhealth;
             return false;
@@ -150,6 +153,29 @@ void reset()
         return false;
 
     }
+
+    void damageEffect() {
+        // This method can be used to create a visual effect when the enemy is damaged.
+        final Color originalColor = /*getColor().cpy()*/ Color.WHITE;
+        setColor(1, 0.4f, 0.4f, 1);
+        addAction(new SequenceAction(
+            Actions.delay(0.2f),
+            new Action() {
+                @Override
+                public boolean act(float delta) {
+                    setColor(originalColor);
+                    return true;
+                }
+            }
+        ));
+
+
+    }
+    void onDeath()
+    {
+        Level.deleteList.add(this);
+    }
+
 
     void setWorldbounds(Rectangle rec)
     {
@@ -229,17 +255,9 @@ void reset()
 
     void updatemovement(Vector2 direction,float deltatime)
     {
-
-        /*reduceSpeed(1,1);
-        //direction.setLength(acceleration);
-        if(ismoving) {
-            movement = movement.add(direction);
-        }
-        else{movement.setLength(0);}*/
         movement=direction;
         if(ismoving) {
 
-            //movement = direction;
             movement.setLength(maxspeed);
 
             if(movement.len()>0)
@@ -262,6 +280,11 @@ void reset()
         force.setLength(force.len() / weight);
         additionalForce = additionalForce.add(force);
     }
+    void setAdditionalForce(Vector2 force)
+    {
+        force.setLength(force.len() / weight);
+        additionalForce = force;
+    }
 
 
     float easeOutCubic(float x)
@@ -272,9 +295,14 @@ void reset()
 
     void moveatdirection(float delta)
     {
-        moveBy((movement.x+additionalForce.x)*delta, (movement.y+additionalForce.y)*delta);
-        //additionalForce.scl(Math.max(0, 1f - delta));
-        additionalForce.clamp(0,additionalForce.len()-delta/**weight*/);
+        additionalForce.clamp(0,additionalForce.len()-delta*(200)/**weight*/);
+        if(additionalForce.len()<100){additionalForce.setLength(0);}
+        if(additionalForce.x!=0||additionalForce.y!=0){
+        moveBy((additionalForce.x)*delta, (additionalForce.y)*delta);}
+        else
+        {
+            moveBy((movement.x)*delta, (movement.y)*delta);
+        }
     }
     void moveReverse(Vector2 move, int speed)
     {
@@ -286,7 +314,7 @@ void reset()
     void reduceSpeed(float haftreibungsKoeffizient,float delta)//Haftreibungs koeffinzient zwischen 0 und 1
     {
 
-        movement.setLength( movement.x * (1 - haftreibungsKoeffizient*delta));
+        movement.setLength( movement.len() * (1 - haftreibungsKoeffizient*delta));
     }
 
     public void moveatAngle(float length, float angle)
@@ -330,40 +358,21 @@ void reset()
         return false;
     }
 
-    /*public float getCenterX()
-    {
-        return getX()+getWidth()/2;
-    }
-    public float getCenterY()
-    {
-        return getY()+getHeight()/2;
-    }*/
 
-    /*public float getdistance(Entity other)
-    {
-        float distancex = other.getCenterX() - getCenterX();
-        float distancey = other.getCenterY() - getCenterY();
-        return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
-        //Überprüft ob etwas in einem gewissen Radius von diesem Entity ist
-    }
-    public float getdistance(Sprite other)
+
+
+    /*public float getdistance(Sprite other)
     {
         float distancex = other.getX() - getX();
         float distancey = other.getY() - getY();
         return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
         //Überprüft ob etwas in einem gewissen Radius von diesem Entity ist
-    }
-    public float getdistance(float x, float y)
-    {
-        float distancex = x - getCenterX();
-        float distancey = y - getCenterY();
-        return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
-        //Überprüft ob etwas in einem gewissen Radius von diesen Koordinaten ist
     }*/
-
-    boolean outofsight()
-    {
-        return false;
+    void applyknockbackOn(Entity enti, float strength/*100 is medium*/) {
+        Vector2 knockback = getDistanceVector(enti);
+        knockback.setLength(strength);
+        //enti.applyForce(knockback);
+        enti.setAdditionalForce(knockback);
     }
 
     boolean isactiv()
@@ -382,19 +391,6 @@ void reset()
     }
 
 
-    /*void destroy()
-    {
-
-        texture.getTexture().dispose();
-        if ( getStage()!=null){
-            clear();
-
-
-        }
-        remove();
-
-
-    }*/
 
     void activate()
     {
@@ -408,7 +404,7 @@ void reset()
     {
         status = EntityStatus.inactiv;
     }
-    boolean isdead(){return curhealth<=0? true: false; }
+
 }
 
 
@@ -420,7 +416,7 @@ class Arrow1 extends Sprite {
 
 
 
-    MeshSpawnShapeValue.Triangle tri;
+
 
     float shaperotation=0;
      float dborderwidth = 10;
@@ -447,12 +443,6 @@ class Arrow1 extends Sprite {
 
        shape.begin(ShapeRenderer.ShapeType.Filled);
        shape.setColor(0.1F, 0.1F, 0.8F, 0.5F);
-         //shape.identity();
-         //shape.translate(getOriginX(),getOriginY() ,0);
-        //shape.translate(1,1 ,0);
-         //shape.rotate(0,0,1,-getRotation()-shaperotation);
-         //shaperotation=getRotation();
-
         shape.rect(1,1,dborderwidth*10,dborderwidth);
        shape.triangle(getX() + dborderwidth * 10, getY() + dborderwidth *2, getX() + dborderwidth * 10, getY() - dborderwidth , (float) (getX() + dborderwidth * 10 + dborderwidth * 2.5), getY()+dborderwidth/2);
        shape.end();
@@ -472,7 +462,7 @@ class Arrow1 extends Sprite {
 
 }
 
-class HealthBar extends Sprite {
+class HealthBar extends Actor {
     Rectangle h1;
     Rectangle h2;
     Rectangle h3;
@@ -485,7 +475,7 @@ class HealthBar extends Sprite {
         h3 = new Rectangle(xPos + 5f*xscale, yPos + 6f*yscale, 286f*xscale, 38f*yscale);
         h2 = new Rectangle(xPos + 5f*xscale, yPos + 6f*yscale, 286f*xscale, 38f*yscale);
        viewport=view;
-
+        setColor(Color.CHARTREUSE);
        /* h1.setFillColor(new Color(80, 74, 74))
         h2.setFillColor(Color.chartreuse);
         h3.setFillColor(Color.chartreuse, 0.2);*/
@@ -493,18 +483,26 @@ class HealthBar extends Sprite {
         this.maxHealth = maxhealth;
         currentHealth = maxHealth;
     }
+    void centeratX()
+    {
+        float x1 =h1.getX();
+        h1.setX(h1.getX()- h1.width / 2.0f);// Zentriere horizontal
+        h2.setX(x1- h2.width / 2.0f);// Zentriere horizontal
+        h3.setX(x1- h3.width / 2.0f);// Zentriere horizontal
+        //setY(getY());
+    }
 
     void takeDamage(float damage) {
         currentHealth -= damage;
         h2.setWidth((maxLaenge * currentHealth / maxHealth)<0?0:maxLaenge * currentHealth / maxHealth);
 
     }
-    void draw()
+    @Override
+    public void draw(Batch batch, float alpha)
     {
+        batch.end();
         ShapeRenderer shape= new ShapeRenderer();
         shape.setProjectionMatrix(viewport.getCamera().combined);
-        Gdx.gl.glEnable(GL20.GL_BLEND);
-        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shape.begin(ShapeRenderer.ShapeType.Filled);
         shape.setColor(0.2f,0.2f,0.2f,1);
         shape.rect(h1.x,+h1.y,h1.width,h1.height);
@@ -514,27 +512,28 @@ class HealthBar extends Sprite {
         shape.setColor(100.0f/255f,117.0f/255f,100.0f/255f,1f);
         shape.rect(h3.x,h3.y,h3.width,h3.height);
 
-        shape.setColor(Color.CHARTREUSE);
+        //shape.setColor(Color.CHARTREUSE);
+        shape.setColor(getColor());
         shape.rect(h2.x,h2.y,h2.width,h2.height);
-
         shape.end();
+        batch.begin();
     }
     void healTo(float health)
     {
         currentHealth = health;
         h2.setWidth(maxLaenge * currentHealth / maxHealth);
     }
-    void heal(float heal)
+    void heal(float healamount)
     {
-        currentHealth += heal;
+        currentHealth += healamount;
         //currentHealth = Math.min(currentHealth, maxHealth);
         currentHealth= MathUtils.clamp(currentHealth, 0,maxHealth);
         h2.setWidth(maxLaenge * currentHealth / maxHealth);
     }
 
-    void setVisible(boolean visible) {
-       setAlpha(visible?1:0);
-    }
+    //void setVisible(boolean visible) {
+       //setAlpha(visible?1:0);
+    //}
     void bringtofront()
     {
 

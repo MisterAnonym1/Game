@@ -26,6 +26,8 @@ public class TextureActor extends Actor
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         initializeHitbox();
+        initializeOtherThings();
+        positionChanged();
         //setOrigin(getCenterX(), getCenterY());
 
     }
@@ -37,6 +39,7 @@ public class TextureActor extends Actor
         setHeight(texture.getRegionHeight());
         initializeHitbox();
         initializeOtherThings();
+        positionChanged();
         //setOrigin(getCenterX(), getCenterY());
 
     }
@@ -200,5 +203,6 @@ public class TextureActor extends Actor
     void scale(float factor)
     {
         setSize(getWidth()*factor,getHeight()*factor);
+        positionChanged();
     }
 }

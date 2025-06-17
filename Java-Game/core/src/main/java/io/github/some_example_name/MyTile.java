@@ -22,7 +22,7 @@ public class MyTile extends Sprite {
     MyTile westNeighbour;
     boolean obstructed;
     public MyTile(int column, int row, String filepath, boolean hasHitbox) {
-        this(column, row, new TextureRegion(new Texture(filepath)), hasHitbox);
+        this(column, row, TextureCache.getRegion(filepath), hasHitbox);
     }
 
     public MyTile(int column, int row, TextureRegion texreg, boolean hasHitbox,boolean iswall){
@@ -79,7 +79,7 @@ public class MyTile extends Sprite {
 
     public float getCenterX() { return getX()+getWidth()/2; }
     public float getCenterY() { return getY()+getHeight()/2; }
-    void destroy() { getTexture().dispose(); }
+    void destroy() { /* getTexture().dispose(); entfernt, da zentral */ }
 
 }
 
@@ -106,8 +106,7 @@ public class MyTile extends Sprite {
                 explosion.scale(4);
                 explosion.playAnimation(12, 21, RepeatType.once, 40);
                 Sound.playSound(Sound.cannon_boom);*/
-
             }
-            getTexture().dispose();
+            // getTexture().dispose(); entfernt, da zentral
         }
     }

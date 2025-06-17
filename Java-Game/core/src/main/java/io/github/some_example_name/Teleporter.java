@@ -62,14 +62,14 @@ public class Teleporter extends TextureActor
                     // Stärkeres Blau
                 )),
                 Actions.sequence(
-                    Actions.delay(0.7f),
+                    Actions.delay(main.DevMode?0.1f:0.7f),
                 Actions.parallel(
                 Actions.repeat(30, Actions.sequence( // **Wackeleffekt**
                     Actions.moveBy(3,0, 0.02f),
                     Actions.moveBy(-3,-0, 0.02f)
                 )),
                     Actions.sequence(
-                    Actions.delay(1f),
+                    Actions.delay(main.DevMode? 0.1f:1f),
                     Actions.fadeOut(0.2f),// **Langsames Verschwinden**
                     new Action() {
                         @Override

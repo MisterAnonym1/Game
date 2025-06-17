@@ -56,6 +56,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 2, 0.01f,Script.loadingscreenscript[ran]);
         textbox.setColor(new Color(0.1f, 0.1f, 0.8f,1));
         delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
+        if(mainl.DevMode){delay=0;}
         main = mainl;
         loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.05f);
     }
@@ -202,7 +203,7 @@ class NewLevelScreen extends Menu {
     AdvancedTextButton skillknopf;
     Revtext secondtext;
     NewLevelScreen(Main main) {
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3, 0.03f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
         secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3.2f, 0.06f,"");
         textbox.setColor(Color.WHITE);
         secondtext.setColor(new Color(0, 0f, 0,1));
@@ -494,7 +495,7 @@ class DevMenu extends Menu
           texte[0].setText("loadedwalls amount: " + main.loadedwalls.size());
           texte[1].setText("Player speed: " + main.Player.movement.len());
           texte[3].setText("Testentitys: " + main.currentlevel.testentitys.size());
-          texte[4].setText("Deaths: " + main.deathcount);
+          texte[4].setText("Deaths: " + DataCenter.getDeathcount());
           texte[5].setText("Player direction-angle: " + main.Player.directionline);
           Vector2 cursorposition= main.viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
           texte[6].setText("Cursor Coordinates: " + Math.round(cursorposition.x)+"X " + Math.round(cursorposition.y)+"Y "   );

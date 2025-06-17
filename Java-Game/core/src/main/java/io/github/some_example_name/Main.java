@@ -18,14 +18,13 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
+import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 enum Gamestate { startmenu, paused, playing, dead, dialouge, loading }
 public class Main implements ApplicationListener {
     ArrayList<MyTile> loadedwalls = new ArrayList<>();
     ShapeRenderer shape;
-    Texture dropTexture;
-    Revtext revtext;
     Music music;
     //TiledMap map;
     static Cursor bettercursor;
@@ -40,13 +39,10 @@ public class Main implements ApplicationListener {
     FitViewport viewport;
     static Skin skin;
     Player Player;
-    Vector2 touchPos;
     float deltaFactor=1;
     NPC dialougnpc;///kann auch alle Unterklassen von NPC speichern
-    //KARLTOFFEL_BOSS El_Karltoffelboss;
     static boolean debugging=false;
     boolean DevMode=false;
-    int deathcount=0;
     Gamestate gamestate;//siehe oben
     @Override
     public void create() {
@@ -56,7 +52,6 @@ public class Main implements ApplicationListener {
         spriteBatch = new SpriteBatch();
 
 
-        dropTexture = new Texture("drop.png");
         music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
         skin= new Skin(Gdx.files.internal("ui/uiskin.json"));
         uiStage=new Stage(new FitViewport(1024,576));
@@ -66,18 +61,16 @@ public class Main implements ApplicationListener {
         int xHotspot = 4, yHotspot = 4;
         bettercursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
         pixmap.dispose(); // We don't need the pixmap anymore
-       setToDefaultCursor();
+        setToDefaultCursor();
 
+        Player = new Player(400,-250, 250,100, viewport);
 
-        touchPos = new Vector2();
         ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
-
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
         //renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         music.setLooping(true);
         music.setVolume(.1f); // .2f ist das selbe wie 0.2f
         music.play();
-        revtext = new Revtext(400,250,1,0.1f,"Hallo das ist ein Revtext");
         dataCenter=new DataCenter(this);
         shape.setAutoShapeType(true);
 
@@ -139,7 +132,15 @@ public class Main implements ApplicationListener {
                 if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
                     Player.invincible = !Player.invincible;
                 }
-                //STRG
+                if(Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+                    currentlevel.reload();
+                }
+                if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+                    if(Player.maxspeed!=400){
+                    Player.maxspeed=400;}
+                    else{Player.maxspeed=250;}
+                }
+                //---STRG
             }
 
 
@@ -167,22 +168,16 @@ public class Main implements ApplicationListener {
         delta=delta/deltaFactor;
         uiStage.act(delta);
 
-        //System.out.println(Gdx.input.getX()+"x "+ Gdx.input.getY()+"y ");
-
+        if(gamestate!=Gamestate.loading&&gamestate!=Gamestate.paused&&gamestate!=Gamestate.startmenu){DataCenter.updateTimeplayed();}
       if(gamestate == Gamestate.playing)
       {
          updatewalls();
          Player.act(delta);
-         //dialougnpc.act(delta);
-         //El_Karltoffelboss.act(delta);
-         revtext.act(delta);
+          //Player.stayinWorldbounds();
+
          currentlevel.act(delta);
-
-
-
-
-         //Player.stayinWorldbounds();
          updateEntitys();
+
          checkplayercollision();
           //ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
           /*if( new Vector2( ocam.position.x - Player.getCenterX(),ocam.position.y - Player.getCenterY()).len()>=99999 )
@@ -220,7 +215,9 @@ public class Main implements ApplicationListener {
         delta= Math.min(delta,1/30.0f);
         delta=delta/deltaFactor;
 
-        ScreenUtils.clear(Color.BLACK);
+        if(gamestate==Gamestate.loading){ScreenUtils.clear(Color.WHITE);}
+        else{
+        ScreenUtils.clear(Color.BLACK);}
 
         ocam.update();
         viewport.apply();
@@ -276,19 +273,16 @@ public class Main implements ApplicationListener {
                 uiStage.addActor(new DevMenu(this));
             case "beforeGame" :
                 gamestate = Gamestate.loading;
-                Player = new Player(400,250,DevMode ? 400 : 250,100, viewport);
-                Player.setWorldbounds(-0,800,0,500);
                 levelnummer = -1;
             case "newlevel" : //triggert den Modus um eine neues Level zu laden
                 Player.normalise();
                 gamestate = Gamestate.loading;
-                uiStage.addActor(new LoadingScreen(this));
-                //Player.healthbar.setVisible(false);
-                if(levelnummer + 1 < LevelList.levels.length)
-                {
-                    levelnummer++;
-                }
+                System.out.println("delta: "+Gdx.graphics.getDeltaTime());
+
+                levelnummer++;
                 showLevel(this.levelnummer);
+                System.out.println("delta: "+Gdx.graphics.getDeltaTime()+"\n");
+                uiStage.addActor(new LoadingScreen(this));
                 gamestate=Gamestate.playing;
                 break;
             case "paused" :
@@ -308,7 +302,7 @@ public class Main implements ApplicationListener {
                 Player.status= Entity.EntityStatus.dead;
                 uiStage.addActor(new Deathscreen(this));
                 //Sound.playSound(Sound.pong_d);
-                deathcount++;
+                DataCenter.increaseDeathcount();
                 break;
             case "respawn" :
                 if(gamestate!=Gamestate.dead){
@@ -357,9 +351,11 @@ public class Main implements ApplicationListener {
         ArrayList <Polygon> walllist = getcollidingWalls(enti);
         for (int i = 0; i <walllist.size() ; i++)
         {
-            enti.moveatAngle( resolveCollision(enti.hitbox,walllist.get(i))  );
+            Vector2 resolve=resolveCollision(enti.hitbox,walllist.get(i));
+            enti.moveatAngle(resolve);
+            //enti.additionalForce.clamp(0,enti.additionalForce.len()-30/**weight*/);
+            enti.additionalForce.setLength(0);
             enti.collides = true;
-            enti.movement.setLength(0);
             ///break; // <--maybe wäre so besser
         }
     }
@@ -388,13 +384,12 @@ public class Main implements ApplicationListener {
                     }
 
             }
-
+            resolveWallCollision(enti);
             if(enti.hitbox.overlaps(Player.hitbox))
             {
                 Vector2 vec= resolveCollision(enti.hitbox, Player.hitbox);
                 vec.setLength(vec.len()/1.7f);
                 enti.moveatAngle(vec);
-                enti.collides = true;
                 enti.movement.setLength(0);
             }
 
@@ -412,7 +407,10 @@ public class Main implements ApplicationListener {
 
         for (Gegner gegner : currentlevel.gegnerliste)
         {
-
+            if(gegner.status== Entity.EntityStatus.dead)
+            {
+                continue;
+            }
                 if(Player.isattacking)
                 {
                     if(Player.handleAttack(gegner)) {
@@ -420,13 +418,27 @@ public class Main implements ApplicationListener {
                     }
 
                 }
+            if(!gegner.collisionOn) {continue;}
 
-            /*if(gegner.update())
-            {
-                currentlevel.gegnerliste.remove(gegner);
-                continue
-            }*/
             resolveWallCollision(gegner);
+            if(Player.collisionOn){
+            if(gegner.hitbox.overlaps(Player.hitbox))
+            {
+                Vector2 vec= resolveCollision(gegner.hitbox, Player.hitbox);
+                vec.setLength(vec.len()/2f);
+                gegner.moveatAngle(vec);
+            }
+
+            resolveWallCollision(gegner);
+
+            if(gegner.hitbox.overlaps(Player.hitbox))
+            {
+                Player.moveatAngle(resolveCollision(Player.hitbox,gegner.hitbox));
+                gegner.onPlayertouch();
+            }
+            }
+
+
         }
 
         updateNpcs();
@@ -489,7 +501,6 @@ public class Main implements ApplicationListener {
         if(!dataCenter.areEnemysRemaining()||DevMode==true)
         {
 
-
             for (Teleporter tile : currentlevel.teleporters)
             {
                 if(tile.state== Teleporter.TelState.inactiv)
@@ -498,14 +509,14 @@ public class Main implements ApplicationListener {
                 }
                 if(tile.state== Teleporter.TelState.activ)
                 {
-                 if(Player.getfootDistance(tile)<15)
+                 if(Player.getfootDistance(tile)<=30)
                     {
                      tile.onStand();
                     }
                 }
                 if(tile.state== Teleporter.TelState.onstand)
                 {
-                    if(Player.getfootDistance(tile)>15)
+                    if(Player.getfootDistance(tile)>30)
                     {
                         tile.activate();
                         break;
@@ -525,35 +536,34 @@ public class Main implements ApplicationListener {
                     Player.moveatAngle( resolveCollision(Player.hitbox,npc.hitbox));
                 }
             }
-
         }
         //--------
     }
 
 
     void showLevel(int level) {
+        if(levelnummer  >= LevelList.levels.length)
+        {
+            ///Win-Screen (Spieldurchgespielt)
+            System.out.println("Time played: "+DataCenter.getTimeplayed());
+            System.out.println("Time: "+DataCenter.getformatedTimeplayed());
+            return;
+        }
         // aktuell sichtbares Level zerstören
         if(currentlevel != null) {
             currentlevel.destroy();
         }
-
+        DataCenter.setLevelnumber(level);
         currentlevel = new Level(LevelList.levels[level],this);
         currentlevel.load();
         dataCenter.level=currentlevel;
 
-      /*if(devmenu.onscreen) {
-         devmenu.setOffscreen();
-         player.hitbox.setAlpha(0);
-       }
-      */
         if(Player != null) {
-
-            //player.bringToFront();
             ///+xPlayer.setWorldbounds(0, currentlevel.getLength(), 0, currentlevel.getHeight());
             Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
         }
 
-        // Nummer des Levels anzeigen:
+        // Nummer des Levels anzeigen (altes feature):
         if(levelnummer != 0) {
 
         }
@@ -570,23 +580,26 @@ public class Main implements ApplicationListener {
                 loadedwalls.add(wall);
             }
         }
-
+        //-------
     }
 
     @Override
     public void pause() {
-        System.out.println("Game paused");
-        setState("paused");
+        //System.out.println("Game paused");
+        if(gamestate==Gamestate.playing){
+        setState("paused");}
     }
 
     @Override
     public void resume() {
-        setState("resume");
+        if(gamestate==Gamestate.paused){
+            setState("resume");}
+
     }
 
     @Override
     public void dispose() {
-
+        TextureCache.disposeAll();
     }
     public static void setToDefaultCursor()
     {

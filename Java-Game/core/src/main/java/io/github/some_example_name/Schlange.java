@@ -52,7 +52,7 @@ class Schlange extends Gegner
         if(inradiusof(player, 64)) {
             simpleattack();
             pathCountdown = 0;
-            goDirectlyToPlayer(delta);
+            goDirectlyToPlayer(delta,5);
             //updatemovement(movement, delta);
             ismoving = true;
 

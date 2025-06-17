@@ -10,6 +10,9 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.util.ArrayList;
 
@@ -34,7 +37,7 @@ abstract class Gegner extends Entity
     //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
     // soll acten zurückgeben ob gegner aus liste entfernt werden soll
     Animation<TextureRegion> explosionAnimation;
-    public enum AttackStatus { inactiv, dash, strike,exploding }
+    public enum AttackStatus { inactiv, dash, strike,exploding,spin,projectile_storm }
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -50,10 +53,6 @@ abstract class Gegner extends Entity
         maxhealth = 100;
         curhealth = 100;
         this.player = logic.Player;
-        hitboxOffsetX = 0;
-        hitboxOffsetY =0;
-
-
     }
 
 
@@ -133,11 +132,13 @@ void reset()
         return true;
     }
 
-    void goDirectlyToPlayer(float delta)
+    void goDirectlyToPlayer(float delta,float minDistance)
     {
             ismoving = true;
             movement=getDistanceVector(player);
-            updatemovement(movement,delta);
+            if(movement.len()>=minDistance){
+            //movement.setLength(Math.min(movement.len(),delta*maxspeed));
+            updatemovement(movement,delta);}
     }
 
     void followPath(float delta)
@@ -247,7 +248,10 @@ void reset()
     }
 
 
+    void onPlayertouch()
+    {
 
+    }
 
 
     ArrayList<MyTile> getneighbours(MyTile feld)
@@ -285,6 +289,7 @@ void reset()
     {
         return 0;
     }
+
     public void simpleattack (){
         if (getdistance(player)<= 20) {
             player.damageby(30);
@@ -327,6 +332,10 @@ void reset()
             Level.projectiles.add( new FireBall(getHitboxCenterX()+vec.x,getHitboxCenterY()+vec.y,new Vector2(vec.x,vec.y)));
             vec.rotateDeg(angle);
         }
+    }
+    void fireStormattack()
+    {
+        attackStatus=AttackStatus.projectile_storm;
     }
 
 

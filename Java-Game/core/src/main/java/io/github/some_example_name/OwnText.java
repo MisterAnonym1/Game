@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 //import com.badlogic.gdx.graphics.g2d.FontGenerator;
@@ -14,16 +15,17 @@ public class OwnText extends Actor {
     private BitmapFont font;
     String text;
     private Color outlineColor;
-
+    private GlyphLayout layout;
     public OwnText(String text, float x, float y, float scale, Color color, Color outlineColor) {
         this.font = new BitmapFont(); // Standard-Schriftart ohne TTF-Import
         this.text = text;
+        layout = new GlyphLayout();
         setX(x);
         setY(y);
         setScale(scale);
         setColor(color);
         this.outlineColor = outlineColor;
-        font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
+        //font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         font.getData().setScale(scale); // Skalierung festlegen
     }
     public OwnText(String text, float x, float y) {
@@ -39,6 +41,17 @@ public class OwnText extends Actor {
         this.text = text;
     }
 
+    void center(String text)
+    {
+        layout.setText(font, text);
+        setX(getX()- layout.width / 2.0f);// Zentriere den Text horizontal
+        //setY(centerY-layout.height / 2.0f);
+        setY(getY());
+    }
+    void center()
+    {
+        center(text);
+    }
 
     @Override
     public void setScale(float scale) {
@@ -63,17 +76,13 @@ public class OwnText extends Actor {
     }
 
     @Override
-    public void act(float delta) {
-        super.act(delta);
-    }
-
-    public void draw(Batch batch) {
-        float offset = 1*getScaleX(); // Randdicke
+    public void draw(Batch batch,float outlinealpha) {
+        float offset = 1.5f*getScaleX(); // Randdicke
 
         // Umrandung zeichnen (leicht versetzter Text)
 
         if(outlineColor==null){return;}
-        font.setColor(outlineColor.r,outlineColor.g,outlineColor.b,getColor().a);
+        font.setColor(outlineColor.r,outlineColor.g,outlineColor.b,getColor().a*outlinealpha);
         font.draw(batch, text, getX() - offset, getY());
         font.draw(batch, text, getX() + offset, getY());
         font.draw(batch, text, getX(), getY() - offset);

@@ -105,7 +105,7 @@ class FireBall extends Projectile
     {
         super(x,y,"Fireball.png",vel,20);
         movement.setLength(speed);
-        scale(0.5f);
+        scale(0.3f);
     }
     @Override
     void reducemovement(float delta)
