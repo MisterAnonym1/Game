@@ -231,19 +231,14 @@ public class Main implements ApplicationListener {
         float worldHeight = Gdx.graphics.getHeight();
         spriteBatch.setColor(1,1,1,1);
 
-        //+spriteBatch.draw(backgroundTexture, viewport.getScreenX(), viewport.getScreenY(), worldWidth, worldHeight);
-        //matrix.actAndDraw(spriteBatch,delta);
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
-        if(gamestate == Gamestate.playing||gamestate ==Gamestate.dead)
+        if(gamestate == Gamestate.playing||gamestate ==Gamestate.dead||gamestate== Gamestate.paused)
         {
         currentlevel.draw(spriteBatch,shape,delta);
-            //dialougnpc.draw(spriteBatch,delta);
-            //dialougnpc.drawInConversation(spriteBatch);
-            // El_Karltoffelboss.draw(spriteBatch,delta);
-        Player.draw(spriteBatch,shape, delta,1.0f);
+        //Player wird im Level gedrawt
         }
         spriteBatch.end();
 
@@ -290,7 +285,8 @@ public class Main implements ApplicationListener {
                 break;
             case "resume" :
                 if(Player!=null){
-                Player.normalise();}
+                //Player.normalise();
+                }
                 gamestate = Gamestate.playing;
                 break;
             case "dead" :
@@ -599,7 +595,13 @@ public class Main implements ApplicationListener {
 
     @Override
     public void dispose() {
+        //currentlevel.destroy();
         TextureCache.disposeAll();
+        SoundManager.dispose();
+        for (TextureRegion reg : FireBall.explosion.getKeyFrames()) {
+            reg.getTexture().dispose();
+        }
+
     }
     public static void setToDefaultCursor()
     {

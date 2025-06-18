@@ -27,6 +27,7 @@ class Level {
     static ArrayList<Testentity> testentitys= new ArrayList<>();
     static ArrayList<Gegner> gegnerliste= new ArrayList<>();
     static ArrayList<Projectile> projectiles= new ArrayList<>();
+    static ArrayList<PartikelSprite> particles= new ArrayList<>();
     static ArrayList<NPC> npcs= new ArrayList<>();
     static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
     //ArrayList<Item> itemlist = new ArrayList<Item>();
@@ -76,6 +77,11 @@ class Level {
             }
             projectiles.clear();
 
+            for (PartikelSprite par : particles) {
+                par.destroy();
+            }
+            particles.clear();
+
             //itemlist.clear();
             for (TextureActor actor : deleteList) {
                 actor.destroy();
@@ -88,11 +94,14 @@ class Level {
         for (Testentity testi : testentitys) {
             testi.act(delta);
         }
-        for (Gegner testi : gegnerliste) {
-            testi.act(delta);
+        for (Gegner gegner : gegnerliste) {
+            gegner.act(delta);
         }
         for (Projectile projec : projectiles) {
             projec.act(delta);
+        }
+        for( PartikelSprite particle : particles) {
+            particle.act(delta);
         }
         for (NPC npc : npcs) {
             npc.act(delta);
@@ -126,20 +135,24 @@ class Level {
 
         batch.begin();
 
-        for (Teleporter testi : teleporters) {
-            testi.draw(batch,delta);
+        for (Teleporter teleporter : teleporters) {
+            teleporter.draw(batch,delta);
         }
         for (Testentity testi : testentitys) {
             testi.draw(batch,delta);
         }
-        for (Gegner testi : gegnerliste) {
-            testi.draw(batch,delta);
-        }
-        for (Projectile projec : projectiles) {
-            projec.draw(batch,delta);
+        for (Gegner gegner : gegnerliste) {
+            gegner.draw(batch,delta);
         }
         for (NPC npc : npcs) {
             npc.draw(batch,delta);
+        }
+        logic.Player.draw(batch,shape, delta,1.0f);
+        for (Projectile projec : projectiles) {
+            projec.draw(batch,delta);
+        }
+        for(PartikelSprite particle : particles) {
+            particle.draw(batch,delta);
         }
 
         batch.end();
@@ -180,6 +193,9 @@ class Level {
         }
         for (NPC npc : npcs) {
             npc.drawHitbox(shape);
+        }
+        for(PartikelSprite particle : particles) {
+            particle.drawHitbox(shape);
         }
 
         shape.end();

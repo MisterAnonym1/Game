@@ -36,6 +36,10 @@ public class DataCenter
         DataCenter.levelnumber = levelnumber;
     }
 
+    public static int getLevelnumber() {
+        return levelnumber;
+    }
+
     public static void increaseDeathcount(/*by 1*/) {
         DataCenter.deathcount +=1;
     }

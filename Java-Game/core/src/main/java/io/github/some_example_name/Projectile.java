@@ -11,36 +11,59 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 class PartikelSprite extends TextureActor
 {
     float delay;
+    private Animation<TextureRegion> animation;
+    private float stateTime = 0f;
+    private boolean useAnimation = false;
 
     PartikelSprite(float x, float y, String filepath, float vanishInSecs)
     {
         super(filepath);
         setPosition(x,y);
-
         delay =  vanishInSecs;
     }
     PartikelSprite(float x,float y,String filepath ,float vanishInSecs,float xTexture,float yTexture,float width,float heigth)
     {
         super(filepath, xTexture, yTexture, width, heigth);
-       setPosition(x,y);
-
+        setPosition(x,y);
         delay =  vanishInSecs;
+    }
+    PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation, float vanishInSecs) {
+        super(animation.getKeyFrame(0f));
+        this.animation = animation;
+        this.useAnimation = true;
+        centerAt(centerx, centery);
+        setOrigin(centerx-getX(), centery-getY());
+        delay = vanishInSecs;
+    }
+    PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation,boolean playOnce) {
+        this(centerx, centery, animation, playOnce ? animation.getAnimationDuration() : Integer.MAX_VALUE); // Default delay if not specified
     }
     @Override
     public void act(float delta)
     {
         super.act(delta);
         delay-=delta;
+        if(useAnimation && animation != null) {
+            stateTime += delta;
+            setRegion(animation.getKeyFrame(stateTime, true));
+        }
         if(delay <= 0)
         {
             Level.deleteList.add(this);
         }
     }
-
     @Override
     public void removeFromLevel() {
-        Level.projectiles.remove(this);
+        Level.particles.remove(this);
     }
+    // Hilfsmethode, um das TextureRegion der Basisklasse zu setzen
+    private void setRegion(TextureRegion region) {
+        this.texture = region;
+        setWidth(region.getRegionWidth());
+        setHeight(region.getRegionHeight());
+    }
+
+
 }
 // Sprite der herunterzählt und sich nach angegebener Zeit zerstört
 
@@ -91,6 +114,10 @@ class Projectile extends PartikelSprite
     {
         Level.deleteList.add(this);
     }
+    @Override
+    public void removeFromLevel() {
+        Level.projectiles.remove(this);
+    }
 
     void reducemovement(float delta){}
 
@@ -100,7 +127,7 @@ class FireBall extends Projectile
 {
     static float speed=300;
     float animationstateTime;
-    static Animation<TextureRegion> explosion=Animator.getAnimation("Explosions.png",9,1,1,9,0.1f);; //Variable zum speichern der letzten abgespielten animation
+    static Animation<TextureRegion> explosion=Animator.getAnimation("Explosions.png",9,1,1,9,0.1f); //Variable zum speichern der letzten abgespielten animation
     FireBall(float x,float y, Vector2 vel)
     {
         super(x,y,"Fireball.png",vel,20);

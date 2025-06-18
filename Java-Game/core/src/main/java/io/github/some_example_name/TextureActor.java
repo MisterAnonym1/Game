@@ -162,10 +162,10 @@ public class TextureActor extends Actor
     {
         setPosition(other.getCenterX()-getWidth()/2, other.getCenterY()-getHeight()/2);
     }
-    /*void centerAt(float x, float y)
+    void centerAt(float x, float y)
     {
-        setPosition(hitbox.x-hitbox.getWidth()/2, hitbox.y-hitbox.getHeight()/2);
-    }*/
+        setPosition(x-hitbox.getWidth()/2, y-hitbox.getHeight()/2);
+    }
 
 
     public void destroy()
