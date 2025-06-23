@@ -20,7 +20,6 @@ class Player extends Entity
 {
     boolean isxmoving;
     boolean isymoving;
-    boolean invincible = false;
     MeeleWeapon weapon;
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
@@ -158,10 +157,21 @@ class Player extends Entity
         if(gegnerhitliste.contains(enti)){return false;}
 
          Vector2 line =new Vector2(enti.getHitboxCenterX() - getHitboxCenterX(), enti.getHitboxCenterY() - getHitboxCenterY());
-        if(line.len()>90+enti.getWidth()/2){return false;}
+        if(line.len()>(Main.DevMode?85:1000)+enti.hitbox.getWidth()/2){return false;}
         //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}
-        if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
-        if(player.currentAnimation==player.sideAttackAnimation){line.setLength(90+enti.getWidth()/2);}else{line.setLength(72+enti.getWidth()/2);}
+
+        if(player.currentAnimation==player.sideAttackAnimation){
+            if(MathHelper.isAngleOutOfBounds(line,directionline,40)){return false;}
+            line.setLength(85);}
+        else{
+            if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
+            line.setLength(65);
+        }
+        if(Main.DevMode)
+        {
+            line.setLength(1000);
+        }
+        //line.add(new Vector2(getCenterX(),getCenterY()));
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),enti.hitbox)){return false;}
         //System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
         gegnerhitliste.add(enti);
@@ -299,37 +309,14 @@ class Player extends Entity
             }
 
             vecup.setLength(maxspeed);
-            updatemovement(vecup,deltatime);
         }
 
-        else{
-            ismoving=false;
+        updatemovement(vecup,deltatime);
 
-            /*if (Math.round(directionline) == 270) {
-                //flip(false);
-                playAnimation(frontAttackAnimation);
-
-            } else if ( Math.round(directionline) == 90) {
-                //flip(false);
-                playAnimation(backAttackAnimation);
-
-
-            } else if (directionline<85||directionline>275) {
-                flip(false);
-                playAnimation(sideAttackAnimation);
-
-            } else if (directionline>95&&directionline<265) {
-                flip(true);
-                playAnimation(sideAttackAnimation);
-            }*/
-
-
-        }
         if(getY()==NaN||getX()==NaN){
             System.out.println("bug detected");
         }
-        //+stayinWorldbounds();
-        //damageby(8.0f*deltatime);
+
     }
 
 }

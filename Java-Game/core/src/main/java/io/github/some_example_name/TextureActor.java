@@ -18,6 +18,7 @@ public class TextureActor extends Actor
     TextureRegion texture;
     Rectangle hitbox;
     float hitboxOffsetX=0, hitboxOffsetY=0;
+
     boolean collisionOn=true;
     TextureActor(String filepath)
     {

@@ -30,6 +30,7 @@ public class Main implements ApplicationListener {
     static Cursor bettercursor;
     String predeterminedDeathmessage= "you died of dumb";
     static Stage uiStage;
+    float cameraoffsetx=0, cameraoffsety=0;
    // private OrthogonalTiledMapRenderer renderer;
     OrthographicCamera ocam;
     SpriteBatch spriteBatch;
@@ -42,7 +43,7 @@ public class Main implements ApplicationListener {
     float deltaFactor=1;
     NPC dialougnpc;///kann auch alle Unterklassen von NPC speichern
     static boolean debugging=false;
-    boolean DevMode=false;
+   static boolean DevMode=false;
     Gamestate gamestate;//siehe oben
     @Override
     public void create() {
@@ -69,8 +70,9 @@ public class Main implements ApplicationListener {
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
         //renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         music.setLooping(true);
-        music.setVolume(.1f); // .2f ist das selbe wie 0.2f
+        music.setVolume(.15f); // .2f ist das selbe wie 0.2f
         music.play();
+        loadSounds();
         dataCenter=new DataCenter(this);
         shape.setAutoShapeType(true);
 
@@ -186,8 +188,8 @@ public class Main implements ApplicationListener {
           }
           else
           {*/
-          ocam.position.x=MathUtils.clamp(Player.getCenterX(), 0+517, currentlevel.getLength()*64-517);
-          ocam.position.y=MathUtils.clamp(Player.getCenterY(), (-currentlevel.getHeight()+1)*64+288,64-288 );
+          ocam.position.x=MathUtils.clamp(Player.getCenterX(), 0+517, currentlevel.getLength()*64-517)+cameraoffsetx;
+          ocam.position.y=MathUtils.clamp(Player.getCenterY(), (-currentlevel.getHeight()+1)*64+288,64-288 )+ cameraoffsety;
 
           if(Player.curhealth <= 0) {
             setState("dead");
@@ -261,14 +263,15 @@ public class Main implements ApplicationListener {
             case "startmenu" :
                 gamestate = Gamestate.startmenu;
                 uiStage.addActor(new Startmenu(this));
-
+                levelnummer=0;
                 break;
             case "DevMode" :
                 DevMode = true;
+                levelnummer = -1;
                 uiStage.addActor(new DevMenu(this));
             case "beforeGame" :
                 gamestate = Gamestate.loading;
-                levelnummer = -1;
+
             case "newlevel" : //triggert den Modus um eine neues Level zu laden
                 Player.normalise();
                 gamestate = Gamestate.loading;
@@ -293,11 +296,12 @@ public class Main implements ApplicationListener {
                 if(gamestate==Gamestate.dead){
                     return;
                 }
+                SoundManager.play("player-death", 0.9f, 1f);
                 Player.normalise();
                 gamestate = Gamestate.dead;
                 Player.status= Entity.EntityStatus.dead;
                 uiStage.addActor(new Deathscreen(this));
-                //Sound.playSound(Sound.pong_d);
+
                 DataCenter.increaseDeathcount();
                 break;
             case "respawn" :
@@ -421,7 +425,7 @@ public class Main implements ApplicationListener {
             if(gegner.hitbox.overlaps(Player.hitbox))
             {
                 Vector2 vec= resolveCollision(gegner.hitbox, Player.hitbox);
-                vec.setLength(vec.len()/2f);
+                vec.setLength(vec.len()/2f/gegner.weight*Player.weight);
                 gegner.moveatAngle(vec);
             }
 
@@ -579,6 +583,13 @@ public class Main implements ApplicationListener {
         //-------
     }
 
+    void loadSounds() {
+        SoundManager.load("medium-explosion", "sounds/medium-explosion-40472.mp3");
+        //SoundManager.load("sword-swing", "sounds/sword-swing-40473.mp3");
+        SoundManager.load("player-death", "sounds/player-hurt_death.mp3");
+    }
+
+
     @Override
     public void pause() {
         //System.out.println("Game paused");
@@ -606,5 +617,28 @@ public class Main implements ApplicationListener {
     public static void setToDefaultCursor()
     {
         Gdx.graphics.setCursor(bettercursor);
+    }
+    public void camerashake(float x, float y)
+    {
+        cameraoffsetx+=x;
+        cameraoffsety+=y;
+        ocam.rotate((x+y)/8);
+    }
+    public void randomcamerashake(float rangex, float rangey)
+    {
+        //cameraoffsetx+=Math.random()*rangex-rangex/2;
+        //cameraoffsety+=Math.random()*rangey-rangey/2;
+        camerashake((float) (Math.random()*rangex-rangex/2), (float) (Math.random()*rangey-rangey/2));
+    }
+    public void ryhtmiccamerashakerotation(float plusminusx, float plusminusy)
+    {
+
+    }
+    public void resetCameraOffset()
+    {
+        cameraoffsetx=0;
+        cameraoffsety=0;
+        ocam.up.set(0, 1, 0);
+        ocam.direction.set(0, 0, -1);
     }
 }

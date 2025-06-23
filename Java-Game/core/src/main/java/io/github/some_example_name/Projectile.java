@@ -11,13 +11,19 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 class PartikelSprite extends TextureActor
 {
     float delay;
-    private Animation<TextureRegion> animation;
-    private float stateTime = 0f;
+     Animation<TextureRegion> animation;
+    float animationstateTime;
     private boolean useAnimation = false;
 
     PartikelSprite(float x, float y, String filepath, float vanishInSecs)
     {
         super(filepath);
+        setPosition(x,y);
+        delay =  vanishInSecs;
+    }
+    PartikelSprite(float x, float y, TextureRegion tex, float vanishInSecs)
+    {
+        super(tex);
         setPosition(x,y);
         delay =  vanishInSecs;
     }
@@ -44,8 +50,8 @@ class PartikelSprite extends TextureActor
         super.act(delta);
         delay-=delta;
         if(useAnimation && animation != null) {
-            stateTime += delta;
-            setRegion(animation.getKeyFrame(stateTime, true));
+            animationstateTime += delta;
+            setRegion(animation.getKeyFrame(animationstateTime, true));
         }
         if(delay <= 0)
         {
@@ -59,8 +65,8 @@ class PartikelSprite extends TextureActor
     // Hilfsmethode, um das TextureRegion der Basisklasse zu setzen
     private void setRegion(TextureRegion region) {
         this.texture = region;
-        setWidth(region.getRegionWidth());
-        setHeight(region.getRegionHeight());
+        //setWidth(region.getRegionWidth());
+        //setHeight(region.getRegionHeight());
     }
 
 
@@ -87,6 +93,15 @@ class Projectile extends PartikelSprite
     Projectile(float centerx, float centery, String filepath, Vector2 velocity, int dmg)
     {
         super(centerx, centery, filepath, 3);
+
+        movement = velocity;
+        //move(movement.x, movement.y);
+
+        setdamage(dmg);
+    }
+    Projectile(float centerx, float centery, Animation<TextureRegion> animation, Vector2 velocity, int dmg)
+    {
+        super(centerx, centery, animation, true);
 
         movement = velocity;
         //move(movement.x, movement.y);
@@ -126,7 +141,7 @@ class Projectile extends PartikelSprite
 class FireBall extends Projectile
 {
     static float speed=300;
-    float animationstateTime;
+
     static Animation<TextureRegion> explosion=Animator.getAnimation("Explosions.png",9,1,1,9,0.1f); //Variable zum speichern der letzten abgespielten animation
     FireBall(float x,float y, Vector2 vel)
     {
@@ -175,5 +190,32 @@ class FireBall extends Projectile
         hitboxOffsetX=0;
         hitboxOffsetY=0;
         hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/1.7f, getHeight()/1.7f);
+    }
+}
+class Shockwave extends PartikelSprite {
+
+    Shockwave(float centerx, float centery) {
+        super(centerx, centery,  Animator.getAnimation("small shockwave.png", 9, 9, 8, 78, 0.02f), true);
+        setSize(106*2,106);
+        centerAt(centerx, centery);
+        setOrigin(centerx-getX(), centery-getY());
+
+    }
+
+
+    void onHit(Entity enti) {
+        if(animationstateTime<=animation.getAnimationDuration()/5) {
+            collisionOn=false;
+            Vector2 knockback = getDistanceVector(enti);
+            knockback.setLength(170);
+            enti.setAdditionalForce(knockback);
+            enti.damageby(20);
+        }
+
+    }
+
+    @Override
+    public void removeFromLevel() {
+       Level.objects.remove(this);
     }
 }

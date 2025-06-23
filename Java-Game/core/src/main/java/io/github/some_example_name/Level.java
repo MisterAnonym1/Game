@@ -29,6 +29,7 @@ class Level {
     static ArrayList<Projectile> projectiles= new ArrayList<>();
     static ArrayList<PartikelSprite> particles= new ArrayList<>();
     static ArrayList<NPC> npcs= new ArrayList<>();
+    static ArrayList<TextureActor> objects= new ArrayList<>();//temporäre objekte die ganz hinten gedrawt werden
     static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
     //ArrayList<Item> itemlist = new ArrayList<Item>();
     Main logic;
@@ -76,7 +77,10 @@ class Level {
                 pro.destroy();
             }
             projectiles.clear();
-
+            for(TextureActor actor : objects) {
+                actor.destroy();
+            }
+            objects.clear();
             for (PartikelSprite par : particles) {
                 par.destroy();
             }
@@ -96,6 +100,9 @@ class Level {
         }
         for (Gegner gegner : gegnerliste) {
             gegner.act(delta);
+        }
+        for(TextureActor object: objects) {
+            object.act(delta);
         }
         for (Projectile projec : projectiles) {
             projec.act(delta);
@@ -132,11 +139,13 @@ class Level {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(4);
         drawShadows(shape);
-
         batch.begin();
 
         for (Teleporter teleporter : teleporters) {
             teleporter.draw(batch,delta);
+        }
+        for(TextureActor object: objects) {
+            object.draw(batch,delta);
         }
         for (Testentity testi : testentitys) {
             testi.draw(batch,delta);
@@ -182,6 +191,9 @@ class Level {
             tile.drawHitbox(shape);
         }
         shape.setColor(0f, 0.2f, 1f, 1  );
+        for(TextureActor object: objects) {
+            object.drawHitbox(shape);
+        }
         for (Testentity testi : testentitys) {
             testi.drawHitbox(shape);
         }
@@ -307,7 +319,13 @@ class Level {
                 gegnerliste.add(new Karltoffelboss(MyTile.columnToX(column), MyTile.rowToY(row),logic));
                 break;
             case '=' :
-                gegnerliste.add(new Dummy(MyTile.columnToX(column), MyTile.rowToY(row),logic));
+                /*for (int j = 0; j <8 ; j++) {
+                for (int i = 0; i <8 ; i++) {
+                    gegnerliste.add(new Dummy(MyTile.columnToX(column)+j*8, MyTile.rowToY(row)+i*8,logic,8,8));
+
+                }}*/
+                gegnerliste.add(new Dummy(MyTile.columnToX(column), MyTile.rowToY(row),logic,32,32));
+
                 break;
             case 't' :
                 testentitys.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(row), logic));
@@ -341,6 +359,10 @@ class Level {
         for (Testentity testi : testentitys) {
             testi.reset();
         }
+        for(TextureActor object: objects) {
+            //object.reset();
+        }
+        objects.clear();
         for (Gegner gegner : gegnerliste) {
             gegner.reset();
         }

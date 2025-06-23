@@ -14,7 +14,7 @@ public class Dummy extends Gegner
     Dummy(float x, float y, Main main)
     {
         super(x,y,main,"debug_dummy.png");
-        scale(2);
+        collisionOn=false;
     }
     Dummy(float x, float y, Main main,float width, float height)
     {
@@ -37,14 +37,14 @@ public class Dummy extends Gegner
     @Override
     public void act(float delta) {
        super.act(delta);
-       updatemovement(new Vector2(0,0),delta);
+       //updatemovement(new Vector2(0,0),delta);
        damageText.act(delta);
     }
 
     @Override
     public void draw(Batch batch, float delta) {
         super.draw(batch, delta);
-        damageText.draw(batch,1);
+        //damageText.draw(batch,1);
     }
 
     @Override
@@ -53,8 +53,10 @@ public class Dummy extends Gegner
             //drawHitbox(shape);}
     }
 
+
     @Override
     public void drawHitbox(ShapeRenderer shape) {
+        if(true)return;
         shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
 
         shape.circle(getHitboxCenterX(),getHitboxCenterY(),5);//Hitboxcenter

@@ -108,7 +108,7 @@ public class Carrot extends Gegner
             {
                 attackdelay=0;
             }
-            if(attackStatus==AttackStatus.inactiv){
+            if(attackStatus==AttackStatus.inactive){
             attackdelay-=delta;
             if(attackdelay<=0)
             {
@@ -147,7 +147,7 @@ public class Carrot extends Gegner
                 maxspeed = 150;
                 hitbox.width=getWidth()/4;
                 playAnimation(walkAnimation);
-                attackStatus= AttackStatus.inactiv;
+                attackStatus= AttackStatus.inactive;
                 return true;
             }
         }));

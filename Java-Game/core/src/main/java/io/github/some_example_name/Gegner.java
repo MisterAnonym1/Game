@@ -8,11 +8,8 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.collision.Ray;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 import java.util.ArrayList;
 
@@ -26,18 +23,19 @@ abstract class Gegner extends Entity
     float attackdelay2 = 0;
     Player player;
     Main logic;
+    float textureYoffset;
     ArrayList<MyTile> queue = new ArrayList<>();
     ArrayList<MyTile> goalfields = new ArrayList<>();
     ArrayList<MyTile> visitedfields = new ArrayList<>();
     MyTile targettile;
     Polygon lineofsight;
-    AttackStatus attackStatus= AttackStatus.inactiv;
+    AttackStatus attackStatus= AttackStatus.inactive;
     Vector2 directiontoTile = new Vector2(0,0);
     boolean inview = false;
-    //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
-    // soll acten zurückgeben ob gegner aus liste entfernt werden soll
+    Vector2 savedVector= new Vector2(0,0);
     Animation<TextureRegion> explosionAnimation;
-    public enum AttackStatus { inactiv, dash, strike,exploding,spin,projectile_storm }
+
+    public enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair }
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -71,11 +69,12 @@ void reset()
         pathCountdown = 0;
         attackdelay = 0;
         attackdelay2 = 0;
+        textureYoffset=0;
         goalfields.clear();
         visitedfields.clear();
         queue.clear();
         targettile = null;
-        attackStatus = AttackStatus.inactiv;
+        attackStatus = AttackStatus.inactive;
     }
 
 
@@ -85,6 +84,11 @@ void reset()
         lineofsight = new Polygon(vertices );
         lineofsight.setOrigin(hitbox.getWidth(), hitbox.getHeight());
         lineofsight.setPosition(hitbox.x,hitbox.y);
+    }
+
+    @Override
+    protected void positionChanged() {
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);
     }
 
     @Override
@@ -225,7 +229,19 @@ void reset()
 
     @Override
     public void draw(Batch batch, float delta) {
-        super.draw(batch, delta);
+        batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
+        animationstateTime += delta;
+        if(movement.angleDeg()>90&&movement.angleDeg()<270)
+        {
+            ismirrored=false;
+        }
+        else{ismirrored=true;}
+        if (currentAnimation==null){batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        }
+        else {
+            TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, true);
+            batch.draw(currentFrame,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        }
     }
 
 
@@ -338,8 +354,100 @@ void reset()
         attackStatus=AttackStatus.projectile_storm;
     }
 
+    @Override
+    public void drawShadow(ShapeRenderer shape) {
+        shape.ellipse( hitbox.getX()+hitbox.getWidth()/2-hitbox.getWidth()*shadowscale/2, hitbox.getY()-hitbox.getWidth()/4*shadowscale , hitbox.getWidth()*shadowscale, hitbox.getWidth()*shadowscale / 2);
+    }
+    void shockwaveAttack(float waveduration, float jumpheight) {
+        if (attackStatus == AttackStatus.inair||attackStatus == AttackStatus.dash)
+        {
+            return;
+        }
+        final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
+        attackdelay=0;
+        attackStatus = AttackStatus.inair;
+        collisionOn=false;
+        invincible=true;
+        savedVector= new Vector2(player.getHitboxCenterX() - getHitboxCenterX(),  player.getHitboxCenterY()-hitbox.y);
+        acceleration=savedVector.len()/jumpheight*250f/2-5;
+        float startValue =1f; // Startwert für shadowscale
+        float endValue = (float) Math.exp( -jumpheight/450f); // Endwert für shadowscale, abhängig von jumpheight
+        float startValue2 =endValue;
+        float endValue2 = 1f;
+        addAction(Actions.sequence(
+            Actions.parallel(
+
+                new Action()
+                {
+                    float elapsed = 0;
+                    float duration = jumpheight/250; // Dauer in Sekunden
+                    @Override
+                    public boolean act(float delta) {
+                        elapsed += delta;
+                        float progress = Math.min(elapsed / duration, 1f);
+                        float interpolated = Interpolation.fastSlow.apply(progress);
+                        // Benutze 'interpolated' für deinen zeitlichen Verlauf, z.B.:
+                        textureYoffset=(jumpheight)*interpolated;
+                        shadowscale = startValue + (endValue - startValue) * interpolated;
+                        return elapsed >= duration;
+                    }
+                }),
+
+            Actions.parallel(
+
+                //Actions.moveBy(0, -jumpheight, jumpheight/250, Interpolation.linear),
+                new Action()
+                {
+
+                    float elapsed = 0;
+                    float duration = jumpheight/250; // Dauer in Sekunden
+                    @Override
+                    public boolean act(float delta) {
+                        elapsed += delta;
+                        float progress = Math.min(elapsed / duration, 1f);
+                        float interpolated = Interpolation.slowFast.apply(progress);
+                        // Benutze 'interpolated' für deinen zeitlichen Verlauf, z.B.:
+                        textureYoffset=jumpheight+(0-jumpheight)*interpolated;
+                        shadowscale = startValue2 + (endValue2 - startValue2) * interpolated;
+                        return elapsed >= duration;
+                    }
+                }
+            ),
+            new Action() {
+                @Override
+                public boolean act(float delta) {
+                    collisionOn=true;
+                    acceleration=maxspeed;
+                    Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
+                    wave.scaleBy(0.8f);
+                    Level.objects.add(wave);
+                    attackStatus = AttackStatus.shockwave;
+                    shadowscale=1f;
+                    return true;}},
+
+            Actions.delay(waveduration),
+
+            new Action() {
+                @Override
+                public boolean act(float delta) {
+                    attackStatus = AttackStatus.inactive;
+                    collisionOn=true;
+                    logic.resetCameraOffset();
+                    if(currentStatus==AttackStatus.projectile_storm){
+                    //attackdelay2=0;
+                        attackStatus = currentStatus;
+                    }
+                    return true;}}
+
+        ));
+
+
+    }
+
+
+
+
 
 
 }
-
 

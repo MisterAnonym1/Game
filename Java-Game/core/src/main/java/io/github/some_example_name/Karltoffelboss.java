@@ -11,11 +11,13 @@ public class Karltoffelboss extends Boss{
         super(x, y, logic,"El_Karltoffel.png");
         acceleration = 100;
         maxspeed = 100;
+        weight=20;
         sethealth(1000,true);
         scale(0.3f);
         setPosition(x,y);
         setBossName("KARLOFF DER SCHRECKLICHE");
         bossTitel.setColor(Color.YELLOW);
+        positionChanged();
     }
 
     @Override
@@ -45,49 +47,84 @@ public class Karltoffelboss extends Boss{
         engagePlayer(delta);
     };
 
+    @Override
+    boolean damageby(float damage) {
+        if(!collisionOn){return false;}
+        shockwaveAttack(0.3f,120);
+        return super.damageby(damage);
+    }
 
-
-
-
-    public void engagePlayer(float delta){
-        attackdelay+=delta;
-        attackdelay2+=delta;
-        if(attackStatus!=AttackStatus.projectile_storm)
+    public void engagePlayer(float delta) {
+        if(attackStatus == AttackStatus.inair)
         {
-            if (attackdelay2>=15)
-            {
-                if(getdistance(player)<= 500)
-                {
-                    attackdelay2=0;
-                    attackdelay=0;
-                    fireStormattack();
+                ismoving=true;
+                updatemovement(savedVector, delta);
+                return;
+        }
+        //player.getdistance(getHitboxCenterX(), hitbox.y)<400
+        attackdelay += delta;
+        if (attackStatus == AttackStatus.shockwave) {
 
-                }
+            if (attackdelay <= 0.2f) {
+                logic.randomcamerashake(100*delta,100*delta);
             }
-            if (attackdelay>=1)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
-            {
-                //line of sight
-                attackdelay=0;
 
-                if(getdistance(player)<= 500&&getdistance(player)>= 100) {
-                    //fireballattack();
-                    fireballringattack(45,(float)Math.random()*35f);
+            if(collisionOn&&player.collisionOn&& attackdelay<=0.3){
+
+                float ellipseDistance= (float) (1.3*Math.pow(getHitboxCenterX()-player.getHitboxCenterX(),2)+4*Math.pow(hitbox.y-player.getHitboxCenterY(),2));
+                if ( ellipseDistance<Math.pow(300,2)*attackdelay/0.3f) {
+                    Vector2 knockback = player.getDistanceVector(getHitboxCenterX(), hitbox.y).scl(-1);
+                    knockback.setLength(160);
+                    player.setAdditionalForce(knockback);
+                    player.damageby((float) (Math.pow(340,2)/ellipseDistance));
+                    System.out.println((float) (Math.pow(340,2)/ellipseDistance));
+                    collisionOn=false;
                 }
             }
         }
         else{
-                if(attackdelay2>=10){attackStatus=AttackStatus.inactiv; attackdelay2=0; attackdelay=0;}
-                if(attackdelay>=0.08f)
+            attackdelay2 += delta;
+
+
+            if (attackStatus == AttackStatus.inactive) {
+                if (attackdelay2 >= 15) {
+                    if (getdistance(player) <= 500) {
+                        attackdelay2 = 0;
+                        attackdelay = 0;
+                        fireStormattack();
+
+                    }
+                }else if (getdistance(player) >= 400) {
+                    shockwaveAttack(0.3f,150);
+                    //dashattack(delta);
+                }
+
+                if (attackdelay >= 2)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
                 {
-                fireballringattack(45,(float)Math.random()*10f+attackdelay2/10*180);
-                attackdelay=0;
+                    attackdelay = 0;
+                    if (getdistance(player) <= 500 && getdistance(player) >= 100) {
+                        fireballringattack(45, (float) Math.random() * 35f);
+                        //shockwaveAttack(0.3f,200);
+                    }
+                }
+            }
+            else if(attackStatus==AttackStatus.projectile_storm){
+                if (attackdelay2 >= 10) {
+                    attackStatus = AttackStatus.inactive;
+                    attackdelay2 = 0;
+                    attackdelay = 0;
+                }
+                if (attackdelay >= 0.08f) {
+                    fireballringattack(45, (float) Math.random() * 10f + attackdelay2 / 10 * 180);
+                    attackdelay = 0;
                 }
             }
 
 
-        if (getdistance(player) >= 300 & attackdelay2 >= 2){
-            //dashattack(delta);
+
         }
+        //-----
     }
+
 
 }

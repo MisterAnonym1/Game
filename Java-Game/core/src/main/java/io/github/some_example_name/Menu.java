@@ -382,8 +382,8 @@ class Startmenu extends Menu
                 SequenceAction sequence = new SequenceAction(
                     Actions.rotateBy(-42,0.5F,Interpolation.elastic),
                     Actions.rotateBy(18,0.9f,Interpolation.circleIn),
-                    Actions.moveBy(0, -150, 0.5f, Interpolation.linear), // Langsam starten
-                    Actions.moveBy(0, -200, 0.4f, Interpolation.pow2),  // Schneller
+                    //Actions.moveBy(0, -150, 0.5f, Interpolation.linear), // Langsam starten
+                    Actions.moveBy(0, -350, 0.9f, Interpolation.pow2),  // Schneller
                     Actions.moveBy(0, -250, 0.3f, Interpolation.exp5)   );
                 addAction(sequence);
                 break;

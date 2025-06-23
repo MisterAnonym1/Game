@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
@@ -154,7 +155,7 @@ public class Testentity extends Gegner {
             PartikelSprite explosion= new PartikelSprite(getHitboxCenterX(), getHitboxCenterY(), Animator.getAnimation("Explosions.png",9,1,1,9,0.1f), true);
             explosion.scaleBy(0.7f);
             Level.particles.add(explosion);
-
+            SoundManager.play("medium-explosion", 1, 1.6f+MathUtils.random(0,0.4f));
         }}
 
     @Override

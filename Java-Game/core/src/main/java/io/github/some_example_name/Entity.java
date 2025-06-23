@@ -26,13 +26,14 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 class Entity extends TextureActor
 {
     float maxhealth, curhealth;
-    float maxspeed, acceleration, directionline=0;
+    float maxspeed, acceleration, directionline=0,shadowscale=1;
     boolean  ismoving, isattacking;
     Vector2 movement;
     Vector2 additionalForce;
     float spawnx;
     float spawny;
     boolean ismirrored;
+    boolean invincible = false;
     float animationstateTime=0f, weight;
     EntityStatus status;
     Rectangle worldbounds;
@@ -72,6 +73,7 @@ void reset()
         animationstateTime=0;
         currentAnimation=defaultAnimation;
         ismirrored=false;
+        acceleration=maxspeed;
         clearActions();
         //super.act(999);
         setColor(1,1,1,1);
@@ -97,7 +99,7 @@ void reset()
 
     public void drawShadow(ShapeRenderer shape)
     {
-        shape.ellipse( hitbox.getX()-hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *1.2f, hitbox.getWidth() / 2);
+        shape.ellipse( hitbox.getX()+hitbox.getWidth() *0.1f, hitbox.getY()-hitbox.getWidth()/4 , hitbox.getWidth() *0.8f, hitbox.getWidth() / 2);
     }
 
     public void playAnimation(Animation<TextureRegion> animation)
@@ -258,7 +260,7 @@ void reset()
         movement=direction;
         if(ismoving) {
 
-            movement.setLength(maxspeed);
+            movement.setLength(acceleration);
 
             if(movement.len()>0)
             {

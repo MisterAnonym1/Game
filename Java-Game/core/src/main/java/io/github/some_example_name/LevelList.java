@@ -2,7 +2,18 @@ package io.github.some_example_name;
 
 public class LevelList { //Hier werden alle Level gespeichert
     static String[][] levels = //Level muss mindestens 16*9 sein wegen der Camera
-            { {
+            { {// Level 0 is only loaded in Devmode
+                "#################",
+                "#  @   ===     #",
+                "#      ===     #",
+                "#      ===     #",
+                "#              #",
+                "#              #",
+                "# d     ##     #",
+                "#             d#",
+                "################"
+            },
+                {
                 "###################",
                 "###################",
                 "#######     #######",
@@ -16,10 +27,10 @@ public class LevelList { //Hier werden alle Level gespeichert
                 "##               ##",
                 "##               ##",
                 "##                   #      #             ##",
-                "##  t    t       ##     #        #@         ",
-                "##    t   tt     ##",
-                "##      t        ##",
+                "##               ##     #        #          ",
+                "##       k       ##",
                 "##               ##",
+                "##       @       ##",
                 "##               ##",
                 "##         d     ##",
                 "######### #########",
@@ -27,17 +38,7 @@ public class LevelList { //Hier werden alle Level gespeichert
                 "###################"
 
             },
-                {
-                    "#################",
-                    "#  @d          #",
-                    "#      =       #",
-                    "#     c        #",
-                    "#     ####     #",
-                    "#              #",
-                    "#       ##     #",
-                    "#             d#",
-                    "################"
-                },
+
                 {
 
                         "#######################################################################################",
@@ -69,7 +70,7 @@ public class LevelList { //Hier werden alle Level gespeichert
                     "#                                     ##",
                     "  t  t  n #                           ##",
                     "   @                                  ##",
-                    "    n            =                    ##",
+                    "    n                                 ##",
                     "#       g                             ##",
                     "# ttt           d                     ##",
                     "#                                     ##",
