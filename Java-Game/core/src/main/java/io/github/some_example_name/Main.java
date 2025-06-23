@@ -584,9 +584,9 @@ public class Main implements ApplicationListener {
     }
 
     void loadSounds() {
-        SoundManager.load("medium-explosion", "sounds/medium-explosion-40472.mp3");
+        SoundManager.load("medium-explosion", "medium-explosion-40472.mp3");
         //SoundManager.load("sword-swing", "sounds/sword-swing-40473.mp3");
-        SoundManager.load("player-death", "sounds/player-hurt_death.mp3");
+        SoundManager.load("player-death", "player-hurt_death.mp3");
     }
 
 
