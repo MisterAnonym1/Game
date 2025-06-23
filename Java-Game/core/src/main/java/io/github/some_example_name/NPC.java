@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -10,6 +11,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.awt.*;
+
+import static io.github.some_example_name.Main.invManager;
 
 public class NPC extends Entity
 {
@@ -175,17 +178,21 @@ class NpcData
 }
 
  class Trader extends NPC {
-    Revtext text;
     Sprite hintergrund;
     double lastx;
     double lasty;
+    int coins;
     int currentline;
     int lineindex;
     int maxline;
     int line;
-    Trader(float x, float y, String filepath, String fileBackground, int lineindex,Main log){
-        super(x, y, filepath, fileBackground, lineindex, log);
+    AdvancedTextButton knopf;
+    Trader(float x, float y, String filepath, String fileBackground, int lineindex, float scale, Main log){
+        super(x, y, filepath, fileBackground, lineindex, scale, log);
         addAction(Actions.delay(1));
+        coins = Main.invManager.getValueByKey("Coins");
+        knopf = new AdvancedTextButton("Moneten sind toll!",1024/2f, 150, 3, com.badlogic.gdx.graphics.Color.SCARLET, Color.BLACK );
+        knopf.getLabel().setFontScale(2f); // 1.5x größer
         //hintergrund = new Sprite(new Texture(fileBackground));
         //hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
     }
@@ -196,8 +203,42 @@ class NpcData
         onPress();
         System.out.println("Entered trader menu succesfully");
         //nextline();
-
-
     }
 
+    @Override
+    public void drawInConversation(Batch batch){
+        batch.begin();
+        batch.setColor(1,1,1,1);
+        if(inConversation){
+            batch.draw(backround, 0,0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            batch.draw(texture,1024/2.0f-hitbox.getWidth(), 0+576/2.0f-hitbox.getHeight(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
+            knopf.draw(batch,getColor().a);
+            Main.uiStage.addActor(knopf);
+            knopf.setOnUp(()->onPress());
+            text.draw(batch,1);
+        }
+        batch.end();
+    }
+
+    @Override
+     public void onLeave() {
+        super.onLeave();
+         knopf.remove();
+     }
+
+     void onPress() {
+         //knopf.onClick();
+         if(coins > 5){
+         coins = coins-5;
+         knopf.setOnUp(()->Main.invManager.setValueByKey("Coins", coins));
+         }
+     }
+
+     @Override
+     public void act(float delta){
+        super.act(delta);
+        if(inConversation) {
+            knopf.act(delta);
+        }
+     }
 }

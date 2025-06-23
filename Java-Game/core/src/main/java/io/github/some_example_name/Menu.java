@@ -596,7 +596,7 @@ class SpriteButton extends Button
 
 }
  class AdvancedTextButton extends TextButton {
-    private Runnable onClick;  // Wird einmal beim Klick ausgeführt
+    Runnable onClick;  // Wird einmal beim Klick ausgeführt
     private Runnable onHold;   // Wird durchgehend ausgeführt, solange gedrückt
     private Runnable onUp;     // Wird ausgeführt, wenn losgelassen
     private Consumer<Boolean> onCheck; // Checkbox-Funktion

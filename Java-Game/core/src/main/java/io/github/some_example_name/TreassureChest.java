@@ -7,7 +7,7 @@ public class TreassureChest extends Trader{
     //boolean opened;
 
     TreassureChest(float x, float y, Main logic){
-        super(x, y, "El_Kartoffel.png", "sand.png", 1, logic);
+        super(x, y, "El_Kartoffel.png", "sand.png", 1, 1,logic);
         spawnx = x;
         spawny = y;
         curlevel=logic.currentlevel;
@@ -20,7 +20,7 @@ public class TreassureChest extends Trader{
     }
 
     @Override
-    void onLeave() {
+    public void onLeave() {
         super.onLeave();
         destroy();
     }

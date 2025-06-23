@@ -37,6 +37,7 @@ public class Main implements ApplicationListener {
     SpriteBatch spriteBatch;
     Level currentlevel;
     int levelnummer;
+    static InventoryManager invManager;
     FitViewport viewport;
     static Skin skin;
     Player Player;
@@ -66,6 +67,7 @@ public class Main implements ApplicationListener {
         int xHotspot = 4, yHotspot = 4;
         bettercursor = Gdx.graphics.newCursor(pixmap, xHotspot, yHotspot);
         pixmap.dispose(); // We don't need the pixmap anymore
+        invManager = new InventoryManager();
        setToDefaultCursor();
 
 

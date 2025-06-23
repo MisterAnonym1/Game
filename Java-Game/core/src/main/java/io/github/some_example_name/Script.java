@@ -10,7 +10,8 @@ public class Script {
                     "   hallo spieler du\n bist unterentwickelt",
                     "test 2 bestanden",
                     "sogar 3 mit bravouraaaaaaaaaa",
-                    "ich bin der der Zerstörer"
+                    "ich bin der der Zerstörer",
+                    "Deine Werbung könnte hier stehen."
                 },
                 {// zweites Statement
                     "zweites Statement",

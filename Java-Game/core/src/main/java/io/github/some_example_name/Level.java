@@ -28,6 +28,7 @@ class Level {
     static ArrayList<Gegner> gegnerliste= new ArrayList<>();
     static ArrayList<Projectile> projectiles= new ArrayList<>();
     static ArrayList<NPC> npcs= new ArrayList<>();
+    //static ArrayList<Trader> traders = new ArrayList<>();
     static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
     //ArrayList<Item> itemlist = new ArrayList<Item>();
     Main logic;
@@ -86,6 +87,11 @@ class Level {
                 npc.destroy();
             }
             npcs.clear();
+
+            //for (Trader trader : traders) {
+                //trader.destroy();
+            //}
+            //traders.clear();
 
             for (Projectile pro : projectiles) {
                 pro.destroy();
@@ -261,6 +267,11 @@ class Level {
 
                     case 'n' :
                         npcs.add(new NPC(MyTile.columnToX(column), MyTile.rowToY(line), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
+                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
+                        rownotwalls[line]++;
+                        break;
+                    case 'h' :
+                        npcs.add(new Trader(MyTile.columnToX(column), MyTile.rowToY(line), "Al Assad.png", "own Watertile 2.png",0,0.3f, logic));
                         notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
                         rownotwalls[line]++;
                         break;
