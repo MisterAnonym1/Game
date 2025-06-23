@@ -24,7 +24,7 @@ public class Script {
                     "ich bin der 2. npc (Händler)",
                     "Gustav Klauk ist mein Name",
                     "wie du glaubst mir nicht?",
-                        "Sehr wohl. Möchtest du etwas kaufen?",
+                    "Sehr wohl. Möchtest du etwas kaufen?",
                 },
                     {//zweites Statment
                             "(2. STatement) warum bin ich so naiv?",
@@ -80,7 +80,7 @@ public class Script {
             "Bereit oder nicht...",
             "Darkness awaits",
             "Wer wagt, gewinnt!",
-            "Jetzt wird’s ernst.",
+            "Jetzt wirds ernst.",
             "I am the voice inside the machine.",//+++++++++++
             "This is not a bug, it is a feature.",///+++++++++++
             "Are you even real?",
@@ -143,6 +143,7 @@ public class Script {
             "Die Steuerung kämpft gegen dich.",
             "Statistik sagt: 100% verloren.",
             "Respawn advised!",
+            "Du könntest gesünder sein",
             "Was that part of the plan?",
             "That was... unfortunate.",
             "Speed alone won’t save you!",

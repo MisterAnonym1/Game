@@ -18,6 +18,7 @@ public class TextureActor extends Actor
     TextureRegion texture;
     Rectangle hitbox;
     float hitboxOffsetX=0, hitboxOffsetY=0;
+
     boolean collisionOn=true;
     TextureActor(String filepath)
     {
@@ -26,6 +27,8 @@ public class TextureActor extends Actor
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         initializeHitbox();
+        initializeOtherThings();
+        positionChanged();
         //setOrigin(getCenterX(), getCenterY());
 
     }
@@ -36,6 +39,8 @@ public class TextureActor extends Actor
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         initializeHitbox();
+        initializeOtherThings();
+        positionChanged();
         //setOrigin(getCenterX(), getCenterY());
 
     }
@@ -46,6 +51,7 @@ public class TextureActor extends Actor
         setWidth(texture.getRegionWidth());
         setHeight(texture.getRegionHeight());
         initializeHitbox();
+        initializeOtherThings();
         //setOrigin(hitbox.getX()+hitbox.getWidth(), hitbox.getY()+hitbox.getHeight());
 
     }
@@ -53,22 +59,34 @@ public class TextureActor extends Actor
     @Override
     public void draw(Batch batch, float delta) {
         //Animation und so
-        batch.setColor(getColor().r,getColor().g,getColor().b,1);
+        batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
         //super.draw(batch,1);
         batch.draw(texture,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
     public void drawHitbox(ShapeRenderer shape)
     {
-        //Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        super.drawDebug(shape);
         shape.rect(hitbox.getX(),hitbox.getY(),hitbox.getWidth(),hitbox.getHeight());
-        //shape.point(getCenterX(),getCenterY(),1);
-        shape.circle(getCenterX(),getCenterY(),5);
+
+        shape.circle(getHitboxCenterX(),getHitboxCenterY(),5);//Hitboxcenter
+
+        shape.setColor(0.5f,1,0.5f,1);//green= coordinates
+        shape.circle(getX(),getY(),4);
+
+        shape.setColor(0f, 0.2f, 1f, 1  );//blue=Hitboxcenter
+
+        //shape.setColor(0.5f,0.5f,1f,1);//blue=origin
+        //shape.circle(getX()+getOriginX(),getY()+getOriginY(),5);
 
     }
     void initializeHitbox()
     {
         //hitbox=new Rectangle(getX(),getY(),texture.getRegionWidth(),texture.getRegionHeight());
         hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth(), getHeight());
+    }
+    void initializeOtherThings()
+    {
+
     }
     public float getCenterX()
     {
@@ -92,21 +110,15 @@ public class TextureActor extends Actor
         super.setPosition(x+hitboxOffsetX+(-getWidth()+hitbox.getWidth())/2, y+hitboxOffsetY+(-getHeight()+hitbox.getHeight())/2);
     }
 
-    public float getdistance(TextureActor other)
+    /*public float getdistance(TextureActor other)
     {
-        float disx = other.getCenterX() - getCenterX();
-        float disy = other.getCenterY() - getCenterY();
+        float disx = other.getHitboxCenterX() - getHitboxCenterX();
+        float disy = other.getHitboxCenterY() - getHitboxCenterY();
         return Vector2.len(disx, disy);
        // return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
 
     }
-    /*public float getdistance(Sprite other)
-    {
-        float distancex = other.getX() - getX();
-        float distancey = other.getY() - getY();
-        return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
 
-    }*/
     public float getdistance(float x, float y)
     {
         float disx = x - getCenterX();
@@ -114,6 +126,21 @@ public class TextureActor extends Actor
         return Vector2.len(disx, disy);
         //return (float) Math.sqrt(Math.pow(distancex, 2) + Math.pow(distancey, 2));
 
+    }*/
+    public float getdistance(TextureActor other) {
+        return getDistanceVector(other).len();
+    }
+
+    public float getdistance(float x, float y) {
+        return getDistanceVector(x, y).len();
+    }
+
+    public Vector2 getDistanceVector(float x, float y) {
+        return new Vector2(x - getHitboxCenterX(), y - getHitboxCenterY());
+    }
+
+    public Vector2 getDistanceVector(TextureActor other) {
+        return getDistanceVector(other.getHitboxCenterX(), other.getHitboxCenterY());
     }
 
     @Override
@@ -136,10 +163,10 @@ public class TextureActor extends Actor
     {
         setPosition(other.getCenterX()-getWidth()/2, other.getCenterY()-getHeight()/2);
     }
-    /*void centerAt(float x, float y)
+    void centerAt(float x, float y)
     {
-        setPosition(hitbox.x-hitbox.getWidth()/2, hitbox.y-hitbox.getHeight()/2);
-    }*/
+        setPosition(x-hitbox.getWidth()/2, y-hitbox.getHeight()/2);
+    }
 
 
     public void destroy()
@@ -161,21 +188,22 @@ public class TextureActor extends Actor
     public void setSize(float width, float height) {
         if(getWidth()==0||getHeight()==0||getWidth()==NaN||getHeight()==NaN)
         {
-            super.setSize(width, height);
             hitbox.setSize(width,height);
+            super.setSize(width, height);
             return;
         }
         //hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
         float factorw=width/getWidth();
         float factorh =height/getHeight();
-        super.setSize(width, height);
         hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
         hitboxOffsetX*=factorw;
         hitboxOffsetY*= factorh;
+        super.setSize(width, height);
         //setOrigin(getCenterX(), getCenterY());
     }
     void scale(float factor)
     {
         setSize(getWidth()*factor,getHeight()*factor);
+        positionChanged();
     }
 }

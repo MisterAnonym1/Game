@@ -21,34 +21,26 @@ class Level {
 
 
     String[] rows;
-    ArrayList<MyTile> notWallsTiles= new ArrayList<>();
-    ArrayList<MyTile> walls = new ArrayList<>();
-    ArrayList<MyTile> teleporters = new ArrayList<>();
+    MyTile[][] tiles;
+    MyTile[] walls;
+    static ArrayList<Teleporter>  teleporters= new ArrayList<>();
     static ArrayList<Testentity> testentitys= new ArrayList<>();
     static ArrayList<Gegner> gegnerliste= new ArrayList<>();
     static ArrayList<Projectile> projectiles= new ArrayList<>();
+    static ArrayList<PartikelSprite> particles= new ArrayList<>();
     static ArrayList<NPC> npcs= new ArrayList<>();
-    //static ArrayList<Trader> traders = new ArrayList<>();
+    static ArrayList<TextureActor> objects= new ArrayList<>();//temporäre objekte die ganz hinten gedrawt werden
     static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
     //ArrayList<Item> itemlist = new ArrayList<Item>();
     Main logic;
-    SpriteBatch batch;
-    int[]rownotwalls;
     int doorsnummer;
-
-
     float xcoplayer;
     float ycoplayer;
 
     Level(String[] rows, Main mainlogic) {
         this.rows = rows;
-        this.logic=mainlogic;
-        /*testentitys = new Stage(log.viewport,log.spriteBatch);
-        gegnerliste= new Stage(log.viewport,log.spriteBatch);
-        projectiles= new Stage(log.viewport,log.spriteBatch);
-        npcs = new Stage(log.viewport,log.spriteBatch);*/
-
-        rownotwalls = new int[rows.length];
+        this.logic = mainlogic;
+        this.tiles = new MyTile[rows.length][getMaxRowLength()];
         doorsnummer = 0;
         xcoplayer = 500;
         ycoplayer = 400;
@@ -58,19 +50,12 @@ class Level {
      * Zerstört das Level, d.h. alle angezeigten Tiles und Kisten
 */
         public void destroy() {
-            for (MyTile wall : walls) {
-                wall.destroy();
+            for (int row = 0; row < tiles.length; row++) {
+                for (int col = 0; col < tiles[row].length; col++) {
+                        tiles[row][col].destroy();
+                }
             }
-            walls.clear();
 
-            for (MyTile notwall : notWallsTiles) {
-                notwall.destroy();
-            }
-            notWallsTiles.clear();
-
-            for (MyTile teleport : teleporters) {
-                teleport.destroy();
-            }
             teleporters.clear();
 
             for (Testentity testentity : testentitys) {
@@ -88,15 +73,18 @@ class Level {
             }
             npcs.clear();
 
-            //for (Trader trader : traders) {
-                //trader.destroy();
-            //}
-            //traders.clear();
-
             for (Projectile pro : projectiles) {
                 pro.destroy();
             }
             projectiles.clear();
+            for(TextureActor actor : objects) {
+                actor.destroy();
+            }
+            objects.clear();
+            for (PartikelSprite par : particles) {
+                par.destroy();
+            }
+            particles.clear();
 
             //itemlist.clear();
             for (TextureActor actor : deleteList) {
@@ -110,19 +98,25 @@ class Level {
         for (Testentity testi : testentitys) {
             testi.act(delta);
         }
-        for (Gegner testi : gegnerliste) {
-            testi.act(delta);
+        for (Gegner gegner : gegnerliste) {
+            gegner.act(delta);
+        }
+        for(TextureActor object: objects) {
+            object.act(delta);
         }
         for (Projectile projec : projectiles) {
             projec.act(delta);
         }
+        for( PartikelSprite particle : particles) {
+            particle.act(delta);
+        }
         for (NPC npc : npcs) {
             npc.act(delta);
         }
-
+        for (Teleporter testi : teleporters) {
+            testi.act(delta);
+        }
         //items?
-
-
         for (TextureActor actor : deleteList) {
             actor.removeFromLevel();
             actor.destroy();
@@ -132,12 +126,12 @@ class Level {
     public void draw(Batch batch,ShapeRenderer shape, float delta)
     {
 
-        for (MyTile tile : notWallsTiles) {
-           tile.draw(batch);
-        }
-
-        for (MyTile tile : teleporters) {
-            tile.draw(batch);
+        for (int row = 0; row < tiles.length; row++) {
+            for (int col = 0; col < tiles[row].length; col++) {
+                if (tiles[row][col] != null) {
+                    tiles[row][col].draw(batch, delta);
+                }
+            }
         }
         batch.end();
 
@@ -145,24 +139,31 @@ class Level {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(4);
         drawShadows(shape);
-
         batch.begin();
 
-        for (MyTile tile : walls) {
-            tile.draw(batch);
+        for (Teleporter teleporter : teleporters) {
+            teleporter.draw(batch,delta);
+        }
+        for(TextureActor object: objects) {
+            object.draw(batch,delta);
         }
         for (Testentity testi : testentitys) {
             testi.draw(batch,delta);
         }
-        for (Gegner testi : gegnerliste) {
-            testi.draw(batch,delta);
-        }
-        for (Projectile projec : projectiles) {
-            projec.draw(batch,delta);
+        for (Gegner gegner : gegnerliste) {
+            gegner.draw(batch,delta);
         }
         for (NPC npc : npcs) {
             npc.draw(batch,delta);
         }
+        logic.Player.draw(batch,shape, delta,1.0f);
+        for (Projectile projec : projectiles) {
+            projec.draw(batch,delta);
+        }
+        for(PartikelSprite particle : particles) {
+            particle.draw(batch,delta);
+        }
+
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -186,10 +187,13 @@ class Level {
         for (MyTile tile : walls) {
             tile.drawHitbox(shape);
         }
-        for (MyTile tile : teleporters) {
+        for (Teleporter tile : teleporters) {
             tile.drawHitbox(shape);
         }
         shape.setColor(0f, 0.2f, 1f, 1  );
+        for(TextureActor object: objects) {
+            object.drawHitbox(shape);
+        }
         for (Testentity testi : testentitys) {
             testi.drawHitbox(shape);
         }
@@ -202,8 +206,10 @@ class Level {
         for (NPC npc : npcs) {
             npc.drawHitbox(shape);
         }
-        shape.setColor(Color.RED);
-        logic.Player.drawHitbox(shape);
+        for(PartikelSprite particle : particles) {
+            particle.drawHitbox(shape);
+        }
+
         shape.end();
     }
     void drawShadows(ShapeRenderer shape)
@@ -228,189 +234,219 @@ class Level {
 
 
     public void load() {
-        // Gehe von oben her alle Zeilen durch:
-        for (int line = 0; line <rows.length ; line++) {
-            // Hole den String-Wert, in dem die aktuelle Zeile kodiert ist
-            String row = rows[line];
-
-            // Gehe von links her alle Spalten durch:
-            for (int column = 0; column < row.length(); column++) {
-                // Zeichen, das die aktuelle Kachel repräsentiert:
-                char tilechar = row.charAt(column);
-
-                switch(tilechar) {
-                    case ' ' : // wall
-
-                        int randomn = MathUtils.random(1, 20);
-                        if(randomn <= 2)
-                        { newtileNotwall(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
-                        else
-                        {
-                            if(randomn <= 4)
-                            { newtileNotwall(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
-                            else
-                            { if(randomn <= 6)
-                            { newtileNotwall(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_2.png")));
-                            }
-                            else
-                            { if(randomn <= 8)
-                            { newtileNotwall(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
-                            else
-                            { notWallsTiles.add(new MyTile(column, line, "Ph.Boden_Tile_1.png", false));
+        int wallCount = 0;
 
 
-                            }
-                            }
-                            }
-                        }
-                        break;
+        for (int row = 0; row < tiles.length; row++) {
+            String rowString = rows[row];
 
-                    case 'n' :
-                        npcs.add(new NPC(MyTile.columnToX(column), MyTile.rowToY(line), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    case 'h' :
-                        npcs.add(new Trader(MyTile.columnToX(column), MyTile.rowToY(line), "Al Assad.png", "own Watertile 2.png",0,0.3f, logic));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    case 'd' :
-                        teleporters.add(new MyTile(column, line, new TextureRegion(new Texture("drop.png")), true));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    case 'k' :
-                        gegnerliste.add(new Karltoffelboss(MyTile.columnToX(column), MyTile.rowToY(line),logic));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                    case '=' :
-                        gegnerliste.add(new Dummy(MyTile.columnToX(column), MyTile.rowToY(line),logic));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    case 'i' :
-                  /*ItemType type= Item.getrandomtype();
-                  itemlist.add(new Item(column * 128, line * 128, Item.getInType(type),type ));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("bucket.png")), false));
-                        rownotwalls[line]++;*/
-
-                        break;
-                    case '#' :
-                        walls.add(new MyTile(column, line, new TextureRegion(new Texture("own Watertile 2.png")), true));
-
-                        int i=1;
-                        break;
-                    case 't' :
-                        testentitys.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(line), logic));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    case '$' :
-                        break;
-                    case '@' :
-                        xcoplayer = MyTile.columnToX(column);
-                        ycoplayer = MyTile.rowToY(line);
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    case 'm' :
-                        gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(line) ));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    case 'g' :
-                        gegnerliste.add(new Schlange(logic, MyTile.columnToX(column), MyTile.rowToY(line)));
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-                        break;
-                    default :
-                        notWallsTiles.add(new MyTile(column, line, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false));
-                        rownotwalls[line]++;
-
+            for (int column = 0; column < tiles[row].length; column++) {
+                char tilechar;
+                try{
+                    tilechar = rowString.charAt(column);
+                 }
+                catch(Exception e)
+                {
+                   tilechar='#';
                 }
+                MyTile tile = createTile(column, row, tilechar);
+                tiles[row][column] = tile;
 
+                if (tilechar == '#') {
+                    wallCount++;
+                } else if (tilechar == 'd') {
+                    tile.obstructed=false;
+                    //teleporters.add(tile);
+                }
             }
         }
 
+        walls = new MyTile[wallCount];
 
 
-        for (MyTile tile : notWallsTiles) {
-            int row = tile.row;
-            int column = tile.column;
-
-            tile.setNorth(getnotwallTile(column, row - 1));
-            tile.setEast(getnotwallTile(column + 1, row));
-            tile.setSouth(getnotwallTile(column, row + 1));
-            tile.setWest(getnotwallTile(column - 1, row));
+        // Speichert alle Wände & Teleporter direkt in ihre Arrays
+        int wallIndex = 0;
+        for (int row = 0; row < tiles.length; row++) {
+            for (int col = 0; col < tiles[row].length; col++) {
+                MyTile tile = tiles[row][col];
+                if (tile.obstructed) {
+                    walls[wallIndex] = tile;
+                    wallIndex++;
+                }
+            }
         }
-        for (MyTile tile : teleporters) {
 
-        }
-        //System.out.print(testentitys.size());
+        setTileNeighbors();
     }
 
 
+    public MyTile getdefaultTile(int column, int row)
+    {
+       return  new MyTile(column,row, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false);
+    }
 
-    public MyTile getnotwallTile2(int column, int row) {
-        for (MyTile tile : notWallsTiles) {
 
-            if(tile.column == column && tile.row == row) {
-                return tile;
+    private MyTile createTile(int column, int row, char tilechar) {
+        switch (tilechar) {
+            case ' ':
+                int randomn = MathUtils.random(1, 20);
+                if(randomn <= 2)
+                { return newtileNotwall(column, row, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
+
+                if(randomn <= 4)
+                { return newtileNotwall(column, row, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
+
+                if(randomn <= 6)
+                { return newtileNotwall(column, row, new TextureRegion(new Texture("Ph.Boden_Tile_2.png")));}
+                if(randomn <= 8)
+                { return newtileNotwall(column, row, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
+
+                /*else*/return new MyTile(column, row, "Ph.Boden_Tile_1.png", false);
+
+
+            case '#':
+                return new MyTile(column, row, "own Watertile 2.png", true);
+            case '@':
+                setPlayerPosition(MyTile.columnToX(column),MyTile.rowToY(row));
+                return new MyTile(column, row, "Ph.Boden_Tile_1.png", false);
+            case 'n' :
+                npcs.add(new NPC(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
+                return getdefaultTile(column,row) ;
+            case 'd' :
+                teleporters.add(new Teleporter(MyTile.columnToX(column),MyTile.rowToY(row),logic));
+                break;
+            case 'k' :
+                gegnerliste.add(new Karltoffelboss(MyTile.columnToX(column), MyTile.rowToY(row),logic));
+                break;
+            case '=' :
+                /*for (int j = 0; j <8 ; j++) {
+                for (int i = 0; i <8 ; i++) {
+                    gegnerliste.add(new Dummy(MyTile.columnToX(column)+j*8, MyTile.rowToY(row)+i*8,logic,8,8));
+
+                }}*/
+                gegnerliste.add(new Dummy(MyTile.columnToX(column), MyTile.rowToY(row),logic,32,32));
+
+                break;
+            case 't' :
+                testentitys.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(row), logic));
+                break;
+            case '$' :
+                break;
+            case 'c' :
+                for (int i = 0; i < 1; i++) {
+                    gegnerliste.add(new Carrot( MyTile.columnToX(column), MyTile.rowToY(row),logic));
+                }
+                break;
+            case 'm' :
+                gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(row) ));
+                break;
+            case 'g' :
+                gegnerliste.add(new Schlange(logic, MyTile.columnToX(column), MyTile.rowToY(row)));
+                break;
+            default:
+                return getdefaultTile(column,row) ;
+        }
+        return getdefaultTile(column,row) ;
+    }
+
+
+    void reload() {
+        destroy();
+        load();
+    }
+    void resetObjects()//resets Entities and Player
+    {
+        for (Testentity testi : testentitys) {
+            testi.reset();
+        }
+        for(TextureActor object: objects) {
+            //object.reset();
+        }
+        objects.clear();
+        for (Gegner gegner : gegnerliste) {
+            gegner.reset();
+        }
+
+        for (NPC npc : npcs) {
+            npc.reset();
+        }
+        for (Teleporter teleporter : teleporters) {
+            teleporter.deactivate();
+        }
+        for (Projectile projec : projectiles) {
+            projec.destroy();
+        }
+        projectiles.clear();
+        for (TextureActor actor : deleteList) {
+            actor.removeFromLevel();
+            actor.destroy();
+        }
+        deleteList.clear();
+        logic.Player.reset();
+        logic.Player.normalise();
+    }
+
+    void setPlayerPosition(float x, float y) {
+        xcoplayer = x;
+        ycoplayer = y;
+        logic.Player.spawnx =x;
+        logic.Player.spawny =y;
+    }
+
+
+    private void setTileNeighbors() {
+        for (int row = 0; row < tiles.length; row++) {
+            for (int col = 0; col < tiles[row].length; col++) {
+                MyTile tile = tiles[row][col];
+
+                    tile.setNeighbors(getTile(col, row - 1),getTile(col + 1, row),getTile(col, row + 1),getTile(col - 1, row));
             }
         }
-        for (MyTile tile : teleporters) {
-
-            if(tile.column == column && tile.row == row) {
-                return tile;
-            }
+    }
+     private MyTile getTile(int column, int row) {
+        if (row >= 0 && row < tiles.length && column >= 0 && column < tiles[row].length) {
+            return tiles[row][column];
         }
-
         return null;
-
     }
-    public MyTile getnotwallTile(int column, int row) {
-        if(row < 0 || column < 0) {
-            return null;
+     private MyTile getnotwallTile(int column, int row) {
+        if (row >= 0 && row < tiles.length && column >= 0 && column < tiles[row].length) {
+            if(tiles[row][column].obstructed){return null;}
+            return tiles[row][column];
         }
-        if(row + 1 > rows.length || column > rows[row].length()) {
-            return null;
-        }
-        int listnr = 0;
-        for (int i = 0; i < row; i++) {
-            listnr += rownotwalls[i];
-        }
-        MyTile tile;
-        for (int i = listnr; i < listnr + rownotwalls[row]; i++) {
-            tile = notWallsTiles.get(i);
-            if(tile.column == column && tile.row == row) {
-                return tile;
+        return null;
+    }
+    MyTile getnotwallTile(float x, float y){
+            return  getnotwallTile(MyTile.xToColumn(x),MyTile.yToRow(y));
+    }
+
+    private int getMaxRowLength() {
+        int max = 0;
+        for (String row : rows) {
+            if (row.length() > max) {
+                max = row.length();
             }
         }
-        // listnr += column;
-        return null;
-
+        return max;
     }
+
+
+
     int getLength()
     {
-        int length = 0;
-        for (int i = 0; i < rows.length; i++) {
-            if(rows[i].length() > length) {
-                length = rows[i].length();
-            }
-        }
-        return length;
+
+        return tiles[0].length;
     }
     int getHeight()
     {
-        return rows.length;
+        //return rows.length;
+        return tiles.length;
     }
 
-    void newtileNotwall(int column, int line, TextureRegion tex)
+    MyTile newtileNotwall(int column, int line, TextureRegion tex)
     {
-        MyTile tili = new MyTile(column, line, tex, false);
-        notWallsTiles.add(tili);
-        rownotwalls[line]++;
+        return new MyTile(column, line, tex, false);
+
     }
 
 

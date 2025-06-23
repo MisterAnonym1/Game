@@ -1,5 +1,6 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -7,35 +8,34 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.collision.Ray;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 import java.util.ArrayList;
 
 
 abstract class Gegner extends Entity
 {
-    float spawnx;
-    float spawny;
+
     Level curlevel;
-    int counter = 0;
+    float pathCountdown= 0;
     float attackdelay = 0;
     float attackdelay2 = 0;
     Player player;
     Main logic;
+    float textureYoffset;
     ArrayList<MyTile> queue = new ArrayList<>();
     ArrayList<MyTile> goalfields = new ArrayList<>();
     ArrayList<MyTile> visitedfields = new ArrayList<>();
     MyTile targettile;
     Polygon lineofsight;
-    boolean isatdestination = false;
-    int delay;
-    AttackStatus attackStatus= AttackStatus.inactiv;
-    //abstract void attack();// diese Methoden müssen in einer Unterklasse definiert werden
-    // soll acten zurückgeben ob gegner aus liste entfernt werden soll
-    abstract void sterben();
+    AttackStatus attackStatus= AttackStatus.inactive;
+    Vector2 directiontoTile = new Vector2(0,0);
+    boolean inview = false;
+    Vector2 savedVector= new Vector2(0,0);
     Animation<TextureRegion> explosionAnimation;
-    public enum AttackStatus { inactiv, dash, strike,exploding }
+
+    public enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair }
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -46,106 +46,140 @@ abstract class Gegner extends Entity
         super(x, y, texture, logic.Player);
         acceleration = 100;
         maxspeed = 100;
-        spawnx = x;
-        spawny = y;
         curlevel = logic.currentlevel;
         this.logic = logic;
         maxhealth = 100;
         curhealth = 100;
         this.player = logic.Player;
-        hitboxOffsetX = 0;
-        hitboxOffsetY =0;
+    }
 
-        float[] vertices = {hitbox.getX(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),1,hitbox.getY(),1,hitbox.getY()+ getHeight()};
+
+
+    @Override
+    protected void scaleChanged() {
+        super.scaleChanged();
+        float[] vertices = {0, 0, 0, 0+ hitbox.getHeight(),100,0+ hitbox.getHeight(),100,0};
+        lineofsight.setVertices(vertices);
+        lineofsight.setOrigin(hitbox.getWidth()/2.0f, hitbox.getHeight()/2.0f);
+    }
+
+void reset()
+    {
+        super.reset();
+        pathCountdown = 0;
+        attackdelay = 0;
+        attackdelay2 = 0;
+        textureYoffset=0;
+        goalfields.clear();
+        visitedfields.clear();
+        queue.clear();
+        targettile = null;
+        attackStatus = AttackStatus.inactive;
+    }
+
+
+    @Override
+    void initializeOtherThings() {
+        float[] vertices = {0, 0, 0, 0+ hitbox.getHeight()/2,100,0+ hitbox.getHeight()/2,100,0};
         lineofsight = new Polygon(vertices );
-        lineofsight.setOrigin(hitbox.getX()+hitbox.getWidth()/2.0f, hitbox.getY()+ hitbox.getHeight()/2.0f);
+        lineofsight.setOrigin(hitbox.getWidth(), hitbox.getHeight());
+        lineofsight.setPosition(hitbox.x,hitbox.y);
+    }
+
+    @Override
+    protected void positionChanged() {
+        hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);
     }
 
     @Override
     public void drawHitbox(ShapeRenderer shape) {
         super.drawHitbox(shape);
-        //shape.scale(2,2,1);
-        //shape.polygon(lineofsight.getVertices());
+        if(inview)
+        {
+            shape.setColor(0.8f,0.2f,1,1);
+        }
+        else
+        {
+            if(targettile!=null) {
+                shape.setColor(Color.PURPLE);
+                shape.rect(targettile.getCenterX()-16+hitbox.height*getScaleY()/2, targettile.getCenterY()-16+hitbox.height*getScaleY()/2, 32-hitbox.height*getScaleY(), 32-hitbox.height*getScaleY());
+            }
+            if(goalfields.size() > 0)
+            {
+            shape.setColor(Color.BLUE);
+                shape.rect(goalfields.get(0).getCenterX()-16+hitbox.height*getScaleY()/2, goalfields.get(0).getCenterY()-16+hitbox.height*getScaleY()/2, 32-hitbox.height*getScaleY(), 32-hitbox.height*getScaleY());
+            }
+            shape.setColor(Color.BROWN);
+        }
+
+        shape.polygon(lineofsight.getTransformedVertices());
+        shape.setColor(Color.BLUE);
     }
 
     boolean playerinview()
-    {   Vector2 vec = new Vector2(player.getCenterX() - getCenterX(), player.getCenterY() - getCenterY());
-        float[] vertices = {hitbox.getX(), hitbox.getY()+ hitbox.getHeight(), hitbox.getX(), hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY(),vec.len()/*+hitbox.getWidth()/2.0f*/,hitbox.getY()+ hitbox.getHeight()};
+    {   Vector2 vec = getDistanceVector(player);
+        //movement=vec;
+        float[] vertices = {0, 0, 0, 0+ hitbox.getHeight(),vec.len(),0+ hitbox.getHeight(),vec.len(),0};
         lineofsight.setVertices(vertices);
+        lineofsight.setOrigin(hitbox.getWidth()/2.0f, hitbox.getHeight()/2.0f);
+        lineofsight.setPosition(hitbox.x,hitbox.y);
         lineofsight.setRotation(vec.angleDeg());
-        //float[] vertices = {(hitbox.getX()- lineofsight.getOriginX())*cos - sin * hitbox.getY(), hitbox.getY(), hitbox.getX(), hitbox.getY()+ getHeight(),vec.len(),hitbox.getY(),vec.len(),hitbox.getY()+ getHeight()};
-        //+lineofsight.setPosition(hitbox.getX()+hitbox.getWidth()/2, hitbox.getY()+hitbox.getWidth()/2);
 
-
-        /*if(logic.DevMenu.onscreen) {
-            lineofsight.setAlpha(0.5);
-        }
-        else {
-            lineofsight.setAlpha(0);
-        }*/
-
-        /*+for (MyTile tile : logic.loadedwalls) {
-            if(lineofsight.collidesWith(tile.hitbox))
+        for (MyTile tile : logic.loadedwalls) {
+            if(Intersector.overlapConvexPolygons(lineofsight, tile.hitbox))
             {
-                //lineofsight.destroy();
+                inview=false;
                 return false;
             }
-        }*/
-
+        }
+        inview=true;
         return true;
     }
 
-    void checkPathToPlayer(float delta)
+    void goDirectlyToPlayer(float delta,float minDistance)
     {
-        counter = 0;
-        if(playerinview()) {
-
-            movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
             ismoving = true;
-            updatemovement(movement,delta);
-        }
+            movement=getDistanceVector(player);
+            if(movement.len()>=minDistance){
+            //movement.setLength(Math.min(movement.len(),delta*maxspeed));
+            updatemovement(movement,delta);}
     }
 
     void followPath(float delta)
     {
         if(goalfields.size() <= 0)
         {
-            checkPathToPlayer(delta);
+            pathCountdown=Math.min(pathCountdown,.3f);
             return;
         }
-        movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
-        if(movement.len() <= maxspeed / 2) {
-            //goalfields.get(0).tint(Color.white);
-            counter--;
+        directiontoTile= new Vector2(goalfields.get(0).getCenterX() - getCenterX(), goalfields.get(0).getCenterY() - getCenterY());
+        if(directiontoTile.len() <= targettile.getWidth()/2-hitbox.height*getScaleY()/2 || directiontoTile.len() >= 200){
 
             goalfields.remove(0);
 
-            if(goalfields.size() <= 0)
+            if(goalfields.size() <= 0) //keine Felder mehr zum Folgen
             {
-                checkPathToPlayer(delta);
+                pathCountdown=0;// neuen Pfad berechnen
                 return;
             }
-            else {
-                movement = new Vector2(goalfields.get(0).getCenterX() - getCenterX(), -goalfields.get(0).getCenterY() + getCenterY());
-            }
         }
-      /*if(logic.DevMenu.onscreen) {
-         goalfields.get(0).tint(Color.blue);
-      }*/
         ismoving = true;
-        updatemovement(movement, delta);
+        updatemovement(directiontoTile, delta);
     }
 
 
     void setPath(MyTile start, MyTile target, Vector2 vec)
     {
+
+        visitedfields.clear();
         queue.clear();
-        if(start == null) {
-            while (true) {
-                goalfields.clear();
-                return;
-            }
+        if(start==null|| target==null|| start.obstructed|| target.obstructed) {
+            goalfields.clear();
+            deactivate();
+            return;
         }
+
+        targettile=target;
         MyTile currenttile = start;
         currenttile.visited = true;
         currenttile.previoustile = null;
@@ -168,7 +202,6 @@ abstract class Gegner extends Entity
         else {
 
             goalfields.clear();
-            currenttile = target;
             while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
             {
 
@@ -176,8 +209,11 @@ abstract class Gegner extends Entity
                 currenttile = currenttile.previoustile;
 
             }
-
-            //followPath();
+        }
+        for (MyTile tile : visitedfields)
+        {
+            tile.visited = false;
+            tile.previoustile = null;
         }
     }
 
@@ -193,7 +229,19 @@ abstract class Gegner extends Entity
 
     @Override
     public void draw(Batch batch, float delta) {
-        super.draw(batch, delta);
+        batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
+        animationstateTime += delta;
+        if(movement.angleDeg()>90&&movement.angleDeg()<270)
+        {
+            ismirrored=false;
+        }
+        else{ismirrored=true;}
+        if (currentAnimation==null){batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        }
+        else {
+            TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, true);
+            batch.draw(currentFrame,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        }
     }
 
 
@@ -204,51 +252,47 @@ abstract class Gegner extends Entity
 
     void locateplayer(float mindistance, float maxdistance)
     {
-        for (MyTile tile : visitedfields)
-        {
-            //tile.tint(Color.white);
-        }
-        visitedfields.clear();
-        movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
+
+
+        movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
         if(movement.len() >= mindistance && movement.len() <= maxdistance) {
-            setPath(curlevel.getnotwallTile(Math.round(getCenterX() / 129.2f), Math.round(getCenterY() / 129.2f)), curlevel.getnotwallTile(Math.round(player.getCenterX() / 129.2f), Math.round(player.getCenterY() / 129.2f)), movement);
+            setPath(curlevel.getnotwallTile( getCenterX(),getCenterY() ), curlevel.getnotwallTile(player.getCenterX(), player.getCenterY()), movement);
 
           }
-        for (MyTile tile : visitedfields)
-        {
-            tile.visited = false;
-            tile.previoustile = null;
-        }
+
 
     }
 
 
+    void onPlayertouch()
+    {
 
+    }
 
 
     ArrayList<MyTile> getneighbours(MyTile feld)
     {
         ArrayList<MyTile> neighbors = new ArrayList<>();
 
-        if(feld.southNeighbour != null && !feld.southNeighbour.visited) {
+        if(feld.southNeighbour!=null && !feld.southNeighbour.obstructed && !feld.southNeighbour.visited) {
             neighbors.add(feld.southNeighbour);
             feld.southNeighbour.visited = true;
             visitedfields.add(feld.southNeighbour);
             feld.southNeighbour.previoustile = feld;
         }
-        if(feld.eastNeighbour != null && !feld.eastNeighbour.visited) {
+        if(feld.eastNeighbour!=null && !feld.eastNeighbour.obstructed && !feld.eastNeighbour.visited) {
             neighbors.add(feld.eastNeighbour);
             feld.eastNeighbour.visited = true;
             visitedfields.add(feld.eastNeighbour);
             feld.eastNeighbour.previoustile = feld;
         }
-        if(feld.northNeighbour != null && !feld.northNeighbour.visited) {
+        if(feld.northNeighbour!=null && !feld.northNeighbour.obstructed && !feld.northNeighbour.visited) {
             neighbors.add(feld.northNeighbour);
             feld.northNeighbour.visited = true;
             visitedfields.add(feld.northNeighbour);
             feld.northNeighbour.previoustile = feld;
         }
-        if(feld.westNeighbour != null && !feld.westNeighbour.visited) {
+        if(feld.westNeighbour!=null && !feld.westNeighbour.obstructed && !feld.westNeighbour.visited) {
             neighbors.add(feld.westNeighbour);
             feld.westNeighbour.visited = true;
             visitedfields.add(feld.westNeighbour);
@@ -257,6 +301,11 @@ abstract class Gegner extends Entity
         return neighbors;
 
     }
+    public int getSignature()
+    {
+        return 0;
+    }
+
     public void simpleattack (){
         if (getdistance(player)<= 20) {
             player.damageby(30);
@@ -277,16 +326,13 @@ abstract class Gegner extends Entity
 
     };
     public void dashattack (float delta) {
-         //läuft direkt gerade zum Spieler
-            acceleration = 6000;
-            maxspeed = 6000;
-            counter = 0;
-            movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
+        if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
+            acceleration = 600;
+            maxspeed = 600;
+            movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
             ismoving = true;
-            updatemovement(movement, delta);
-            if(getdistance(player) <= 100) {
-                player.damageby(30);
-            }
+            //player.damageby(30);
+        }
     }
 
     void fireballringattack(float angle) //
@@ -303,9 +349,105 @@ abstract class Gegner extends Entity
             vec.rotateDeg(angle);
         }
     }
+    void fireStormattack()
+    {
+        attackStatus=AttackStatus.projectile_storm;
+    }
+
+    @Override
+    public void drawShadow(ShapeRenderer shape) {
+        shape.ellipse( hitbox.getX()+hitbox.getWidth()/2-hitbox.getWidth()*shadowscale/2, hitbox.getY()-hitbox.getWidth()/4*shadowscale , hitbox.getWidth()*shadowscale, hitbox.getWidth()*shadowscale / 2);
+    }
+    void shockwaveAttack(float waveduration, float jumpheight) {
+        if (attackStatus == AttackStatus.inair||attackStatus == AttackStatus.dash)
+        {
+            return;
+        }
+        final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
+        attackdelay=0;
+        attackStatus = AttackStatus.inair;
+        collisionOn=false;
+        invincible=true;
+        savedVector= new Vector2(player.getHitboxCenterX() - getHitboxCenterX(),  player.getHitboxCenterY()-hitbox.y);
+        acceleration=savedVector.len()/jumpheight*250f/2-5;
+        float startValue =1f; // Startwert für shadowscale
+        float endValue = (float) Math.exp( -jumpheight/450f); // Endwert für shadowscale, abhängig von jumpheight
+        float startValue2 =endValue;
+        float endValue2 = 1f;
+        addAction(Actions.sequence(
+            Actions.parallel(
+
+                new Action()
+                {
+                    float elapsed = 0;
+                    float duration = jumpheight/250; // Dauer in Sekunden
+                    @Override
+                    public boolean act(float delta) {
+                        elapsed += delta;
+                        float progress = Math.min(elapsed / duration, 1f);
+                        float interpolated = Interpolation.fastSlow.apply(progress);
+                        // Benutze 'interpolated' für deinen zeitlichen Verlauf, z.B.:
+                        textureYoffset=(jumpheight)*interpolated;
+                        shadowscale = startValue + (endValue - startValue) * interpolated;
+                        return elapsed >= duration;
+                    }
+                }),
+
+            Actions.parallel(
+
+                //Actions.moveBy(0, -jumpheight, jumpheight/250, Interpolation.linear),
+                new Action()
+                {
+
+                    float elapsed = 0;
+                    float duration = jumpheight/250; // Dauer in Sekunden
+                    @Override
+                    public boolean act(float delta) {
+                        elapsed += delta;
+                        float progress = Math.min(elapsed / duration, 1f);
+                        float interpolated = Interpolation.slowFast.apply(progress);
+                        // Benutze 'interpolated' für deinen zeitlichen Verlauf, z.B.:
+                        textureYoffset=jumpheight+(0-jumpheight)*interpolated;
+                        shadowscale = startValue2 + (endValue2 - startValue2) * interpolated;
+                        return elapsed >= duration;
+                    }
+                }
+            ),
+            new Action() {
+                @Override
+                public boolean act(float delta) {
+                    collisionOn=true;
+                    acceleration=maxspeed;
+                    Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
+                    wave.scaleBy(0.8f);
+                    Level.objects.add(wave);
+                    attackStatus = AttackStatus.shockwave;
+                    shadowscale=1f;
+                    return true;}},
+
+            Actions.delay(waveduration),
+
+            new Action() {
+                @Override
+                public boolean act(float delta) {
+                    attackStatus = AttackStatus.inactive;
+                    collisionOn=true;
+                    logic.resetCameraOffset();
+                    if(currentStatus==AttackStatus.projectile_storm){
+                    //attackdelay2=0;
+                        attackStatus = currentStatus;
+                    }
+                    return true;}}
+
+        ));
+
+
+    }
+
+
+
 
 
 
 }
-
 

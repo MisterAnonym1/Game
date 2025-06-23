@@ -2,6 +2,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -19,16 +20,14 @@ class Player extends Entity
 {
     boolean isxmoving;
     boolean isymoving;
-    boolean invincible = false;
     MeeleWeapon weapon;
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
-    Animation<TextureRegion> walkAnimation;
+    //Animation<TextureRegion> walkAnimation;
     Animation<TextureRegion> sideAttackAnimation;
     Animation<TextureRegion> frontAttackAnimation;
     Animation<TextureRegion> backAttackAnimation;
-    Animation<TextureRegion> defaultAnimation;
-    Animation<TextureRegion> currentAnimation; //Variable zum speichern der letzten abgespielten animation
+    //Animation<TextureRegion> defaultAnimation;
     Animation<TextureRegion> deadAnimation;
     boolean isattacking;
     Viewport viewport;
@@ -47,8 +46,7 @@ class Player extends Entity
         maxhealth = leben;
         healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
         weapon=new Pipe(this);
-        //healthbar.setVisible(false);
-        //setSize(200, 180);
+        Main.uiStage.addActor(healthbar);
         scale(1f);
 
         texture.flip(true,false);
@@ -69,12 +67,28 @@ class Player extends Entity
         hitbox = new Rectangle(getX() +getWidth()/2, getY() +getHeight()/2, getWidth()/4f, getHeight()/3f);
 
     }
+    void normalise()
+    {
+        clearActions();
+        setColor(1,1,1,1);
+        setScale(1);
+        setRotation(0);
+        animationstateTime=0;
+    }
 
+    float getfootDistance(float x, float y)
+    {
+        return new Vector2(x - getHitboxCenterX(), y - hitbox.y).len();
+    }
+    float getfootDistance(TextureActor other)
+    {
+        return new Vector2(other.getHitboxCenterX() - getHitboxCenterX(), other.getHitboxCenterY() - hitbox.y).len();
+    }
 
     public void draw(Batch batch,ShapeRenderer shape,float delta, float parentAlpha) {
         if(status==EntityStatus.dead){playAnimation(deadAnimation);}
 
-        batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha);
+        batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha*getColor().a);
         animationstateTime += delta; // Accumulate elapsed animation time
         TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, status==EntityStatus.dead? false:true);
 
@@ -84,28 +98,21 @@ class Player extends Entity
         batch.end();
         //shape.end();
         shape.begin(ShapeRenderer.ShapeType.Line);
-
+            shape.setColor(Color.RED);
+           drawHitbox(shape);
         shape.end();
 
         batch.begin();}
-
-
-
-        batch.end();
-
-        healthbar.draw();
-        batch.begin();
     }
 
     @Override
     public void drawHitbox(ShapeRenderer shape) {
-        super.drawHitbox(shape);
         Vector2 worldPosition = attackline.add(new Vector2(getCenterX(),getCenterY()));
         shape.line(new Vector2(getCenterX(),getCenterY()), worldPosition);
         Vector2 direction= new Vector2(100,0);
         direction.rotateDeg(directionline);
         shape.line(new Vector2(getCenterX(),getCenterY()),new Vector2(getCenterX()+direction.x,getCenterY()+direction.y) );
-
+        super.drawHitbox(shape);
 
     }
 
@@ -115,6 +122,7 @@ class Player extends Entity
         if(invincible) {
             return false;
         }
+        damageEffect();
         curhealth -= damage;
         healthbar.takeDamage(damage);
         if(curhealth > maxhealth) {
@@ -122,8 +130,6 @@ class Player extends Entity
         }
         if(curhealth <= 0) {
             return true;
-        }
-        if(damage >= 25) {
         }
         return false;
     }
@@ -137,14 +143,7 @@ class Player extends Entity
 
 
 
-    public void playAnimation(Animation<TextureRegion> animation)
-    {
-        if(animation!=currentAnimation)
-        {
-            animationstateTime=0;
-            currentAnimation=animation;
-        }
-    }
+
 
     void flip(boolean shouldBeMirrored)
     {
@@ -158,20 +157,33 @@ class Player extends Entity
         if(gegnerhitliste.contains(enti)){return false;}
 
          Vector2 line =new Vector2(enti.getHitboxCenterX() - getHitboxCenterX(), enti.getHitboxCenterY() - getHitboxCenterY());
-        if(line.len()>90+enti.getWidth()/2){return false;}
+        if(line.len()>(Main.DevMode?85:1000)+enti.hitbox.getWidth()/2){return false;}
         //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}
-        if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
-        if(player.currentAnimation==player.sideAttackAnimation){line.setLength(90+enti.getWidth()/2);}else{line.setLength(72+enti.getWidth()/2);}
+
+        if(player.currentAnimation==player.sideAttackAnimation){
+            if(MathHelper.isAngleOutOfBounds(line,directionline,40)){return false;}
+            line.setLength(85);}
+        else{
+            if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
+            line.setLength(65);
+        }
+        if(Main.DevMode)
+        {
+            line.setLength(1000);
+        }
+        //line.add(new Vector2(getCenterX(),getCenterY()));
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),enti.hitbox)){return false;}
         //System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
         gegnerhitliste.add(enti);
+        knockbackFromPlayer(enti,200);
         if(enti.damageby(weapon.damage)) {
-            Level.deleteList.add(enti);
+           enti.onDeath();
             return true;
         }
         return false;
 
     }
+
     boolean handleAttack(TextureActor actor, boolean nix)
     {
         if(gegnerhitliste.contains(actor)){return false;}
@@ -186,24 +198,27 @@ class Player extends Entity
         return true;
 
     }
-    /*boolean handleAttack(Entity enti)
-    {
-        if(gegnerhitliste.contains(enti)){return false;}
 
-        Vector2 line =new Vector2(enti.getCenterX() - getCenterX(), enti.getCenterY() - getCenterY());
-        if(line.len()>72){return false;}
-        if(line.len()>20&&(line.angleDeg()>directionline+60||line.angleDeg()<directionline-60)){return false;}
-        gegnerhitliste.add(enti);
-        if(enti.damageby(weapon.damage)) {
-            Level.deleteList.add(enti);
-            return true;
-        }
-        return false;
-
-    }*/
+    void knockbackFromPlayer(Entity enti, float strength/*100 is medium*/) {
+        /*Vector2 knockback = getDistanceVector(enti);
+        knockback.setLength(strength);
+        enti.applyForce(knockback);*/
+        applyknockbackOn(enti,strength);
+    }
 
     @Override
+    void moveatdirection(float delta) {
+        additionalForce.clamp(0,additionalForce.len()-delta*(350)/**weight*/);
+        if(additionalForce.len()<100){additionalForce.setLength(0);}
+        if(additionalForce.x!=0||additionalForce.y!=0){
+            moveBy((additionalForce.x)*delta, (additionalForce.y)*delta);}
+        else
+        {
+            moveBy((movement.x)*delta, (movement.y)*delta);
+        }
+    }
 
+    @Override
     public void act(float deltatime)
     {
         super.act(deltatime);
@@ -294,37 +309,14 @@ class Player extends Entity
             }
 
             vecup.setLength(maxspeed);
-            updatemovement(vecup,deltatime);
         }
 
-        else{
-            ismoving=false;
+        updatemovement(vecup,deltatime);
 
-            /*if (Math.round(directionline) == 270) {
-                //flip(false);
-                playAnimation(frontAttackAnimation);
-
-            } else if ( Math.round(directionline) == 90) {
-                //flip(false);
-                playAnimation(backAttackAnimation);
-
-
-            } else if (directionline<85||directionline>275) {
-                flip(false);
-                playAnimation(sideAttackAnimation);
-
-            } else if (directionline>95&&directionline<265) {
-                flip(true);
-                playAnimation(sideAttackAnimation);
-            }*/
-
-
-        }
         if(getY()==NaN||getX()==NaN){
             System.out.println("bug detected");
         }
-        //+stayinWorldbounds();
-        //damageby(8.0f*deltatime);
+
     }
 
 }

@@ -48,28 +48,29 @@ class Schlange extends Gegner
         if(!inradiusof(player,1600)){
             return;
         }
-        //counter--;
-        if(inradiusof(player, 200)) {
+        pathCountdown-=delta;
+        if(inradiusof(player, 64)) {
             simpleattack();
-            locateplayer(30, 800);
+            pathCountdown = 0;
+            goDirectlyToPlayer(delta,5);
             //updatemovement(movement, delta);
             ismoving = true;
 
         }
         else
         {
-            //this.dashattack(delta);
-            if(playerinview()) { //läuft direkt gerade zum Spieler
+
+            /*if(playerinview()) { //läuft direkt gerade zum Spieler
                 counter = 0;
                 movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY()  +player.getCenterY());
                 //locateplayer(0, 1600);
                 ismoving = true;
                 updatemovement(movement, delta);
-            }
-
-            else if(counter <= 0)
-            { counter = 2;
-                /*locateplayer(40, 1200);*/
+            }*/
+            if(pathCountdown <= 0)
+            {
+                locateplayer(40, 1200);
+                pathCountdown = 2;
             }
             else {
 

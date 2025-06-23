@@ -29,7 +29,7 @@ class Pipe extends MeeleWeapon {
 
     Pipe( Player pl) {
         super(pl);
-        damage=50;
+        damage=40;
 
 
     }

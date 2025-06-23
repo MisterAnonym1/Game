@@ -5,47 +5,72 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-public class Testentity extends Entity {
+public class Testentity extends Gegner {
     Vector2 direction;
-    int spawnx=0;
-    int spawny=0;
-    float delay=0;
-    Main logic;
+    TextureRegion sheet;
+    Vector2 targetpos;
+    Animation<TextureRegion> jumpAnimation;
+    boolean abandonedTarget;
 
-    Position targetpos;
-    Testentity(float x, float y,  Main log) {
-        super(x, y, new TextureRegion(new Texture("slime_move.png"),1,1,80,72),log.Player);
+    Testentity(float x, float y, Main log) {
+        super(x, y, log, new TextureRegion(new Texture("slime_move.png"), 1, 1, 80, 72));
         acceleration = 100;
         maxspeed = 100;
-        setSize(200,200);
-        spawnx = (int)x;
-        spawny = (int)y;
-        logic = log;
-
+        setSize(200, 200);
+        sethealth(100, true);
+        spawnx = x;
+        spawny = y;
+        inview = true;
         scale(1f);
-        hitboxOffsetX=10;
-        hitboxOffsetY=10;
-        walkAnimation= Animator.getAnimation("slime_move.png",7,7,22,28,0.2f);
+        hitboxOffsetX = 0;
+        hitboxOffsetY = 0;
+        sheet = new TextureRegion(new Texture("HappySheep_All.png"));
+        defaultAnimation = new Animation<>(0.2f, sheet.split(sheet.getRegionWidth() / 8, sheet.getRegionHeight() / 2)[0]);
+        jumpAnimation = Animator.getAnimation("HappySheep_All.png", 8, 2, 9, 14, 0.1f);
         direction = new Vector2(0, 0);
-        targetpos = new Position(spawnx , spawny );
-        gotopoint(targetpos.x, targetpos.y);
-        //rotateBy(40);
+        playAnimation(defaultAnimation);
+        animationstateTime= (float)Math.random()*0.2f;
+        moveBy(1, 1);
+        setrandompoint(spawnx, spawny, 140f);
+        addAction(Actions.sequence(Actions.delay(5), new Action() {
+            @Override
+            public boolean act(float delta) {
+                setaggressive();
+                return true;
+            }
+        }));
+    }
+
+    void reset() {
+        super.reset();
+        maxspeed = 100;
+        setrandompoint(spawnx, spawny, 140f);
+        animationstateTime= (float)Math.random()*0.2f;
     }
 
     @Override
-    public void draw(Batch batch,float delta) {
-        //super.draw(batch, parentAlpha);
+    public void draw(Batch batch, float delta) {
+        batch.setColor(getColor());
+        if (movement.angleDeg() > 90 && movement.angleDeg() < 270) {
+            ismirrored = true;
+        } else {
+            ismirrored = false;
+        }
         animationstateTime += delta; // Accumulate elapsed animation time
-        TextureRegion currentFrame = walkAnimation.getKeyFrame(animationstateTime, true);
+        TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, true);
+        batch.draw(currentFrame, getX() + (ismirrored ? getWidth() : 0), getY(), getOriginX(), getOriginY(), ismirrored ? -getWidth() : getWidth(), getHeight(), getScaleX(), getScaleY(), getRotation());
 
-        batch.draw(currentFrame,getX(),getY(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
     }
 
 
@@ -57,99 +82,152 @@ public class Testentity extends Entity {
     @Override
     void initializeHitbox() {
 
-        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/4.1f, getHeight()/4.62f);
+        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth() / 4.1f, getHeight() / 4.62f);
     }
 
-    void setrandompoint(float centerx, float centery, float radius)
-    {
-        delay =  MathUtils.random() * 1.0f + 2.6f;
-        boolean collides;
-        while (true) {
-            float angle = MathUtils.random(0,360);
-            float length = MathUtils.random((float) (radius * 0.1), radius);
+    void setrandompoint(float centerx, float centery, float radius) {
+        abandonedTarget = false;
+        float angle;
+        float length;
+        for (int i = 0; i < 16; i++) {
+
+
+            angle = MathUtils.random(0, 360);
+            length = MathUtils.random(0, radius + getdistance(centerx, centery) / 1.1f - 20);
             float x = (float) (length * Math.cos(angle * Math.PI / 180));
-            float y = (float) ( length * Math.sin((angle * Math.PI) / 180));
-            Vector2 pos = new Vector2(x,y);
+            float y = (float) (length * Math.sin((angle * Math.PI) / 180));
             collides = false;
-            targetpos = new Position(Math.round(centerx + pos.x), Math.round(centery + pos.y));
-            //new Rectangle(targetpos.x, targetpos.y, 20, 20).setAlpha(1);
-            Vector2 vec = new Vector2(targetpos.x - getCenterX(), targetpos.y - getCenterY());
-            ///Rectangle line2 = new Rectangle(getCenterX(), getCenterY() - getHeight() / 2, vec.len(), Math.max(getWidth(), getHeight()));
-
-            //line2.setOrigin(getCenterX(), getCenterY());
-
-            //line2.rotate(vec.getAngleDeg());
-
-         /*for (MyTile tile : logic.loadedwalls) {
-            if(line2.collidesWith(tile.hitbox))
-            {
-               collides = true;
-               break;
+            targetpos = new Vector2(centerx + x, centery + y);
+            Vector2 vec = getDistanceVector(targetpos.x, targetpos.y);
+            if (vec.len() <= hitbox.getWidth() * 1.5f) {
+                collides = true;
+                continue;
             }
-         }*/
-            //line2.destroy();
-            if(!collides) {
+
+            float[] vertices = {hitbox.width / 2, (hitbox.height - hitbox.width) / 2, hitbox.width / 2, (hitbox.height + hitbox.width) / 2, vec.len(), 0 + hitbox.getWidth(), vec.len(), 0};
+            lineofsight.setVertices(vertices);
+            lineofsight.setOrigin(hitbox.getWidth() / 2.0f, hitbox.getHeight() / 2.0f);
+            lineofsight.setPosition(hitbox.x, hitbox.y);
+            lineofsight.setRotation(vec.angleDeg());
+
+            for (MyTile tile : logic.loadedwalls) {
+                if (Intersector.overlapConvexPolygons(lineofsight, tile.hitbox)) {
+                    collides = true;
+                    break;
+                }
+            }
+
+            if (!collides) {
                 return;
             }
 
         }
-
-
-
-    }
-    void gotopoint(float x, float y)
-    {
-        direction = new Vector2(x - getCenterX(), y-getCenterY());
+        abandonedTarget = true;
+        pathCountdown = 0.4f;
 
     }
+
+    void gotopoint(float x, float y) {
+        direction = new Vector2(x - getHitboxCenterX(), y - getHitboxCenterY());
+
+    }
+
     boolean isatdestination() {
-        if(collides || (Math.abs(Math.round(getCenterX()) - targetpos.x) < 10 && Math.abs(Math.round(getCenterY()) - targetpos.y) < 10))
-        {
-            collides = false;
+        if ((Math.abs(getHitboxCenterX() - targetpos.x) < hitbox.getWidth() + 3 && Math.abs(getHitboxCenterY() - targetpos.y) < hitbox.getWidth() + 3)) {
             return true;
-            //gotopoint(targetpos.x, targetpos.y);
 
         }
         return false;
     }
 
+    void setaggressive() {
+        status = EntityStatus.engaging;
+        attackStatus = AttackStatus.exploding;
+        maxspeed = 200;
+        playAnimation(jumpAnimation);
+        animationstateTime= (float)Math.random()*0.2f;
+    }
 
     @Override
-    public void act(float delta)
-    {
+    void onDeath() {
+        super.onDeath();
+        if(attackStatus==AttackStatus.exploding) {
+            PartikelSprite explosion= new PartikelSprite(getHitboxCenterX(), getHitboxCenterY(), Animator.getAnimation("Explosions.png",9,1,1,9,0.1f), true);
+            explosion.scaleBy(0.7f);
+            Level.particles.add(explosion);
+            SoundManager.play("medium-explosion", 1, 1.6f+MathUtils.random(0,0.4f));
+        }}
+
+    @Override
+    public void act(float delta) {
         super.act(delta);
-        if(isatdestination())
-        {
-            delay-=delta;
-            if(delay <= 0) {
-                while (isatdestination())
-                {
-                    setrandompoint(spawnx, spawny, 140f);
-                }
+
+        if (status==EntityStatus.engaging)
+        {engagePlayer(delta);}
+        else{
+
+            ismoving = false;
+            if (collides && !abandonedTarget) {
+               pathCountdown *= 0.3f;
+               abandonedTarget = true;
 
             }
-        }
-        else {
+            if (isatdestination()) {
+                abandonedTarget = true;
+            }
+            if (abandonedTarget)
+            {
 
-            //checknewpos();
-            gotopoint(targetpos.x, targetpos.y);
-            ismoving = true;
-            updatemovement(direction,delta);
+                pathCountdown -= delta;
+                if (pathCountdown <= 0) {
+                    pathCountdown = MathUtils.random() * 4.0f + 1.5f;
+                    setrandompoint(spawnx, spawny, 140f);
+                    collides = false;
+                }
+            }
+            else {
+
+                //checknewpos();
+                gotopoint(targetpos.x, targetpos.y);
+                ismoving = true;
+
+            }
+            updatemovement(direction, delta);
+        }
+    }
+
+    @Override
+    public void engagePlayer(float delta) {
+        if(!inradiusof(player,900)){
+            //playAnimation(defaultAnimation);
+            return;
+        }
+        pathCountdown-=delta;
+        if(playerinview() ) {
+            pathCountdown = 0;
+            goDirectlyToPlayer(delta,40);
+            if(inradiusof(player,50))
+            {
+                //explode();
+                applyknockbackOn(player, 230);
+                onDeath();
+            }
+
+        }
+        else
+        {
+            if(pathCountdown <= 0)
+            {
+                locateplayer(40, 1200);
+                pathCountdown = 1;
+            }
+
+            followPath(delta);
+
+
         }
     }
 
 
-
 }
 
-
- class Position {
-    int x;
-    int y;
-    Position(int x, int y)
-    {
-        this.x=x;
-        this.y=y;
-
-    }
-}

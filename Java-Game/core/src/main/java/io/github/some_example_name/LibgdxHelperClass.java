@@ -6,9 +6,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.utils.Array;
+
 public class LibgdxHelperClass {
 }
- class MathHelper
+ class MathHelper//eigene Klasse von mir zum regeln von sachen
 {
     static  boolean isLineIntersectingRectangle(float x1, float y1, float x2, float y2, Rectangle rect) {
         return (Intersector.intersectSegments(x1, y1, x2, y2, rect.x, rect.y, rect.x + rect.width, rect.y,null) ||
@@ -17,6 +19,35 @@ public class LibgdxHelperClass {
             Intersector.intersectSegments(x1, y1, x2, y2, rect.x + rect.width, rect.y, rect.x + rect.width, rect.y + rect.height,null));
 
     }
+    public static Polygon recToPolygon(Rectangle rect) {
+        float[] vertices = {
+            rect.x, rect.y,                        // Ecke unten links
+            rect.x + rect.width, rect.y,           // Ecke unten rechts
+            rect.x + rect.width, rect.y + rect.height, // Ecke oben rechts
+            rect.x, rect.y + rect.height           // Ecke oben links
+        };
+        return new Polygon(vertices);
+    }
+
+    public static boolean overlaps(Rectangle rec,Polygon polygon){
+        Polygon rectPoly = recToPolygon(rec);
+        return Intersector.overlapConvexPolygons(rectPoly, polygon);
+    }
+
+    public static Vector2 getCollisionResolutionVector(Rectangle rec, Polygon polygon) {
+        Polygon rectPoly = recToPolygon(rec);
+        Intersector.MinimumTranslationVector mtv = new Intersector.MinimumTranslationVector();
+
+        if (Intersector.overlapConvexPolygons(rectPoly, polygon, mtv)) {
+            return mtv.normal.scl(mtv.depth+0.0001f);// Berechnet den tatsächlichen Korrektur-Vektor
+        }
+
+        return new Vector2(0, 0); // Falls keine Kollision vorliegt
+    }
+
+
+
+
     public static boolean isAngleOutOfBounds(Vector2 vector, float referenceAngle, float vary) {
         float vectorAngle = vector.angleDeg(); // Winkel des Vektors in Grad
         float lowerBound = (referenceAngle - vary + 360) % 360;
@@ -54,20 +85,26 @@ public class LibgdxHelperClass {
         TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / sheet_cols, walkSheet.getHeight() / sheet_rows);
 
         // Place the regions into a 1D array in the correct order, starting from the top
-        // left, going across first. The Animation constructor requires a 1D array.
+        // left, going across first. The Animatio n constructor requires a 1D array.
         TextureRegion[] walkFrames = new TextureRegion[Math.min(sheet_cols * sheet_rows,frames)];
-        int index = 0;
-        for (int i = (int) Math.ceil((float)firstFrameisOne1/sheet_cols)-1; i <= Math.ceil((float)lastFrame/sheet_cols)-1; i++) {
+        //int index = 0;
+        for (int i = firstFrameisOne1; i <=lastFrame ; i++) {
+            int h=(int)Math.floor((float)(i-1)/sheet_cols);
+            int j= ((i-1)%sheet_cols);
+            walkFrames[i-firstFrameisOne1]=tmp[h][j];
+        }
+        /*loop:for (int i = (int) Math.ceil((float)firstFrameisOne1/sheet_cols)-1; i <= Math.ceil((float)lastFrame/sheet_cols)-1; i++) {
             for (int j = 0; j < sheet_cols; j++) {
                 walkFrames[index++] = tmp[i][j];
 
                 if (index >= frames) {
                     //System.out.println("\nfirst " + index);
-                    break;
+                    break loop;
                 }
 
             }
-        }
+
+        }*/
 
 
         // Initialize the Animation with the frame interval and array of frames
@@ -86,7 +123,6 @@ public class LibgdxHelperClass {
          }
          Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
 
-         SpriteBatch spriteBatch;
 
 
          // Use the split utility method to create a 2D array of TextureRegions. This is
@@ -113,7 +149,20 @@ public class LibgdxHelperClass {
 
      }
 
-
+    /**
+         * Verbindet zwei Animationen zu einer einzigen Animation, indem die Frames der zweiten Animation
+         * an die der ersten angehängt werden.
+         */
+        public static Animation<TextureRegion> connectAnimations(Animation<TextureRegion> anim1, Animation<TextureRegion> anim2, float frameDuration) {
+            Array<TextureRegion> frames = new Array<>();
+            for (TextureRegion frame : anim1.getKeyFrames()) {
+                frames.add(frame);
+            }
+            for (TextureRegion frame : anim2.getKeyFrames()) {
+                frames.add(frame);
+            }
+            return new Animation<>(frameDuration, frames, Animation.PlayMode.NORMAL);
+        }
 
 
 
