@@ -5,8 +5,16 @@
 .idea/vcs.xml
 Al Assad.png
 Amble-Regular-26.fnt
+background.png
+badlogic.jpg
+battle-of-the-dragons-8037.mp3
+bucket.png
+Carrot-sheet.png
+Carrot_Idle.png
 Credits Button V1.png
 Dead.png
+debug_dummy.png
+drop.png
 El_Karltoffel.png
 El_Karltoffel_Gescailt.png
 Explosions.png
@@ -19,11 +27,16 @@ Fireball00/FB004.png
 Fireball00/FB005.png
 Forest sun backround.png
 HappySheep_All.png
+libgdx.png
 Lines.txt
 Loadingsheet.png
+medium-explosion-40472.mp3
+music.mp3
+own Watertile 2.png
 Ph.Boden 3.png
 Ph.Boden_Tile_1.png
 Ph.Boden_Tile_2.png
+player-hurt_death.mp3
 Pointers/01.png
 Pointers/02.png
 Pointers/03.png
@@ -31,28 +44,21 @@ Pointers/04.png
 Pointers/05.png
 Pointers/06.png
 Pointers/Pointer.png
-Se_Player_ja.jpg
-Seatile_.png
-Test Karte 2.tmx
-Warrior_Blue.png
-background.png
-badlogic.jpg
-battle-of-the-dragons-8037.mp3
-bucket.png
-debug_dummy.png
-drop.png
-libgdx.png
-music.mp3
-own Watertile 2.png
 red_arrow_PNG60.png
 sand.png
 sand2.png
+Seatile_.png
+Se_Player_ja.jpg
 slime_move.png
+small shockwave.png
 speech-bubble/speech1.png
 speech-bubble/speech2.png
 speech-bubble/speech3.png
 speech-bubble/speech4.png
 steel-weapons.png
+teleporter V3.png
+Test Karte 2.tmx
+TPall2.png
 ui/font-list.fnt
 ui/font-subtitle.fnt
 ui/font-window.fnt
@@ -60,10 +66,4 @@ ui/font.fnt
 ui/uiskin.atlas
 ui/uiskin.json
 ui/uiskin.png
-Carrot-sheet.png
-Carrot_Idle.png
-TPall2.png
-teleporter V3.png
-medium-explosion-40472.mp3
-player-hurt_death.mp3
-small shockwave.png
+Warrior_Blue.png

@@ -25,8 +25,11 @@ public class OwnText extends Actor {
         setScale(scale);
         setColor(color);
         this.outlineColor = outlineColor;
+
         //font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         font.getData().setScale(scale); // Skalierung festlegen
+        setScale(scale);
+        center();
     }
     public OwnText(String text, float x, float y) {
         this(text,x,y,1,Color.WHITE,null);
@@ -43,8 +46,9 @@ public class OwnText extends Actor {
 
     void center(String text)
     {
+        this.text=text;
         layout.setText(font, text);
-        setX(getX()- layout.width / 2.0f);// Zentriere den Text horizontal
+        setX(getX()- layout.width*getScaleX() / 2.0f);// Zentriere den Text horizontal
         //setY(centerY-layout.height / 2.0f);
         setY(getY());
     }
@@ -56,7 +60,7 @@ public class OwnText extends Actor {
     @Override
     public void setScale(float scale) {
         super.setScale(scale);
-        font.getData().setScale(scale);
+        //font.getData().setScale(scale);
     }
 
     @Override

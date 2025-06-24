@@ -197,6 +197,70 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     }
 
 }
+class EndScreen extends Menu
+{
+    AdvancedTextButton knopf;
+    AdvancedTextButton exitknopf;
+    private String playtime;
+    OwnText wintext;
+    EndScreen(Main main) { //erschafft den Screen;
+        super();
+        playtime = DataCenter.getformatedTimeplayed();
+        this.main=main;
+        int ran = MathUtils.random(0, Script.deathscreenscript.length - 1);
+        String message=Script.deathscreenscript[ran];
+        /*if(main.predeterminedDeathmessage.length()>0){
+            message=main.predeterminedDeathmessage;
+            main.predeterminedDeathmessage="";
+        }*/
+        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.1f,4, Color.GOLD,Color.WHITE);
+
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.6f, 3, 0.06f,"Glückwunsch! Du hast gesiegt!");
+        textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
+
+        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 130, 3,Color.CORAL,Color.BLACK );
+        knopf.getLabel().setFontScale(2f); // nur Schrift 2x größer
+        knopf.setOnUp(()->this.destroy());
+        Main.uiStage.addActor(knopf);
+
+        exitknopf=new AdvancedTextButton("Quit",ScreenWidth/2f+100, 130, 3,Color.CYAN,Color.BLACK );
+        exitknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
+        exitknopf.setOnUp(()->{
+            Gdx.app.exit();
+            System.exit(0);
+        });
+        Main.uiStage.addActor(exitknopf);
+
+        setColor(1,1,1,0);
+        addAction(Actions.fadeIn(1.1f));
+
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        textbox.draw(batch,getColor().a);
+        wintext.draw(batch,getColor().a);
+        knopf.draw(batch,getColor().a);
+
+    }
+    void destroy(){
+        main.setState("respawn"); ///restart game
+        knopf.remove();
+        remove();
+    }
+
+    @Override
+    public void act(float delta)
+    {
+        super.act(delta);
+        delay-=delta;
+        if(Gdx.input.isKeyPressed(Input.Keys.R)||Gdx.input.isKeyPressed(Input.Keys.ENTER)||Gdx.input.isKeyPressed(Input.Keys.SPACE))
+        {destroy();}
+        textbox.act(delta);
+        knopf.act(delta);
+        wintext.act(delta);
+    }
+}
 class NewLevelScreen extends Menu {
     AdvancedTextButton jaknopf;
     AdvancedTextButton neinknopf;
