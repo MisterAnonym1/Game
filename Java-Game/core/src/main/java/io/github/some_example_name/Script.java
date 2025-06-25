@@ -165,5 +165,30 @@ public class Script {
             "Es liegt nicht an uns, es liegt an dir."
 
         };
+    static String[] winscreenscript =
+        {
+            "Du hast es geschafft!",
+            "Herzlichen Glückwunsch!",
+            "Du bist der Champion!",
+            "Mission erfüllt!",
+            "Das war ein harter Kampf.",
+            "Du hast es überlebt!",
+            "Ein Sieg für die Ewigkeit!",
+            "Das Ende ist erst der Anfang.",
+            "Du hast das Unmögliche geschafft.",
+            "Ein wahrer Held ist geboren.",
+            "Deine Legende wird weiterleben.",
+            "Das Spiel ist vorbei, aber die Reise geht weiter.",
+            "Du hast das Spiel gemeistert!",
+            "Du hast bewiesen, dass du es kannst.",
+            "Dein Mut hat sich ausgezahlt.",
+            "Ein Sieg, der in die Geschichte eingeht.",
+            "Du bist unaufhaltsam!",
+            "Veni Vidi Vici - Ich kam, sah und siegte.",
+                "Legenden werden geboren, nicht gemacht.",
+            "Ichsch schwör bruda du hackst doch",
+            "Auf Ehre spiel nochmal",
+
+        };
 }
 

@@ -286,6 +286,10 @@ public class Main implements ApplicationListener {
             case "paused" :
                 gamestate = Gamestate.paused;
                 break;
+            case "winscreen" :
+                gamestate = Gamestate.paused;
+                uiStage.addActor(new WinScreen(this));
+                break;
             case "resume" :
                 if(Player!=null){
                 //Player.normalise();
@@ -321,6 +325,10 @@ public class Main implements ApplicationListener {
             case "dialouge" :
                 gamestate = Gamestate.dialouge;
                 dialougnpc.onPress();
+                break;
+            case "restart" :
+                System.out.println("Restarting game not implemented yet");
+                gamestate = Gamestate.playing;
                 break;
 
         }
@@ -542,13 +550,7 @@ public class Main implements ApplicationListener {
 
 
     void showLevel(int level) {
-        if(levelnummer  >= LevelList.levels.length)
-        {
-            ///Win-Screen (Spieldurchgespielt)
-            System.out.println("Time played: "+DataCenter.getTimeplayed());
-            System.out.println("Time: "+DataCenter.getformatedTimeplayed());
-            return;
-        }
+
         // aktuell sichtbares Level zerstören
         if(currentlevel != null) {
             currentlevel.destroy();
@@ -594,13 +596,15 @@ public class Main implements ApplicationListener {
     public void pause() {
         //System.out.println("Game paused");
         if(gamestate==Gamestate.playing){
-        setState("paused");}
+        //setState("paused");
+            }
     }
 
     @Override
     public void resume() {
         if(gamestate==Gamestate.paused){
-            setState("resume");}
+            //setState("resume");
+            }
 
     }
 

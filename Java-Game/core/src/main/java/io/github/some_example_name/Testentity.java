@@ -57,6 +57,13 @@ public class Testentity extends Gegner {
         maxspeed = 100;
         setrandompoint(spawnx, spawny, 140f);
         animationstateTime= (float)Math.random()*0.2f;
+        addAction(Actions.sequence(Actions.delay(5), new Action() {
+            @Override
+            public boolean act(float delta) {
+                setaggressive();
+                return true;
+            }
+        }));
     }
 
     @Override
@@ -143,7 +150,7 @@ public class Testentity extends Gegner {
     void setaggressive() {
         status = EntityStatus.engaging;
         attackStatus = AttackStatus.exploding;
-        maxspeed = 200;
+        maxspeed = 300;
         playAnimation(jumpAnimation);
         animationstateTime= (float)Math.random()*0.2f;
     }

@@ -75,7 +75,14 @@ public class Teleporter extends TextureActor
                         @Override
                         public boolean act(float v) {
                             main.setState("paused");
-                            Main.uiStage.addActor(new NewLevelScreen(main));
+                            if(main.levelnummer+1  >=2/* LevelList.levels.length*/)
+                            {
+                                main.setState("winscreen");
+                                System.out.println("Time played: "+DataCenter.getTimeplayed());
+                                System.out.println("Time: "+DataCenter.getformatedTimeplayed());
+                            }
+                            else{
+                                Main.uiStage.addActor(new NewLevelScreen(main));}
                             activate();
                             return true;
                         }
@@ -99,12 +106,20 @@ public class Teleporter extends TextureActor
         super.act(delta);
         if(state!=TelState.onstand)return;
         //countdown-=delta;
-        if(countdown<=0)
+        /*if(countdown<=0)
         {
             main.setState("paused");
-            Main.uiStage.addActor(new NewLevelScreen(main));
+            if(main.levelnummer+1  >=2/* LevelList.levels.length*//*)
+            {
+                main.setState("winscreen");
+                System.out.println("Time played: "+DataCenter.getTimeplayed());
+                System.out.println("Time: "+DataCenter.getformatedTimeplayed());
+                return;
+            }
+            else{
+            Main.uiStage.addActor(new NewLevelScreen(main));}
             activate();
-        }
+        }*/
     }
 
     @Override

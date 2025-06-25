@@ -15,6 +15,7 @@ class Boss extends Gegner {
         bossTitel=new OwnText("",512, 490,1, Color.WHITE,Color.BLACK);
         bossTitel.setScale(1.5f);
         Main.uiStage.addActor(bossTitel);
+        bossTitel.toBack();
     }
 
     @Override

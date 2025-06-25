@@ -11,8 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Touchable;
+
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
@@ -59,6 +58,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         if(mainl.DevMode){delay=0;}
         main = mainl;
         loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.05f);
+        toFront();
     }
     void setfinished()
     {
@@ -197,55 +197,62 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     }
 
 }
-class EndScreen extends Menu
+class WinScreen extends Menu
 {
     AdvancedTextButton knopf;
     AdvancedTextButton exitknopf;
-    private String playtime;
+    TextureRegion hintergrund;
+    private final String playtime= DataCenter.getformatedTimeplayed();
     OwnText wintext;
-    EndScreen(Main main) { //erschafft den Screen;
+    WinScreen(Main main) { //erschafft den Screen;
         super();
-        playtime = DataCenter.getformatedTimeplayed();
         this.main=main;
-        int ran = MathUtils.random(0, Script.deathscreenscript.length - 1);
-        String message=Script.deathscreenscript[ran];
+        int ran = MathUtils.random(0, Script.winscreenscript.length - 1);
+        String message=Script.winscreenscript[ran];
         /*if(main.predeterminedDeathmessage.length()>0){
             message=main.predeterminedDeathmessage;
             main.predeterminedDeathmessage="";
         }*/
+
+
+        hintergrund = new TextureRegion(new Texture("Forest sun backround.png"));
+
         wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.1f,4, Color.GOLD,Color.WHITE);
 
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.6f, 3, 0.06f,"Glückwunsch! Du hast gesiegt!");
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 2, 0.06f,message);
         textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
 
-        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 130, 3,Color.CORAL,Color.BLACK );
+        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 150, 3,Color.CORAL,Color.BLACK );
         knopf.getLabel().setFontScale(2f); // nur Schrift 2x größer
-        knopf.setOnUp(()->this.destroy());
+        knopf.setOnUp(()->this.destroy("restart"));
         Main.uiStage.addActor(knopf);
 
-        exitknopf=new AdvancedTextButton("Quit",ScreenWidth/2f+100, 130, 3,Color.CYAN,Color.BLACK );
+        exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f+150, 150, 3,Color.CYAN,Color.BLACK );
         exitknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
         exitknopf.setOnUp(()->{
             Gdx.app.exit();
+            //main.dispose();
             System.exit(0);
         });
         Main.uiStage.addActor(exitknopf);
 
         setColor(1,1,1,0);
-        addAction(Actions.fadeIn(1.1f));
-
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        textbox.draw(batch,getColor().a);
-        wintext.draw(batch,getColor().a);
-        knopf.draw(batch,getColor().a);
+        batch.setColor(1,1,1,1);
+        batch.draw(hintergrund, 0, 0,0,ScreenHeight, 1026,576,1,1,getRotation());
+        textbox.draw(batch,1);
+        wintext.draw(batch,1);
+        knopf.draw(batch,1);
+        exitknopf.draw(batch,1);
 
     }
-    void destroy(){
-        main.setState("respawn"); ///restart game
+    void destroy(String state){
+        main.setState(state); ///restart game
         knopf.remove();
+        exitknopf.remove();
         remove();
     }
 
@@ -253,11 +260,11 @@ class EndScreen extends Menu
     public void act(float delta)
     {
         super.act(delta);
-        delay-=delta;
-        if(Gdx.input.isKeyPressed(Input.Keys.R)||Gdx.input.isKeyPressed(Input.Keys.ENTER)||Gdx.input.isKeyPressed(Input.Keys.SPACE))
-        {destroy();}
+        if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
+        {destroy("resume");}
         textbox.act(delta);
         knopf.act(delta);
+        exitknopf.act(delta);
         wintext.act(delta);
     }
 }
@@ -400,7 +407,7 @@ class Startmenu extends Menu
         super();
         main = gamel;
         setPosition(0,0);
-        hintergrund = new TextureRegion(new Texture("Forest sun backround.png"));
+        hintergrund = new TextureRegion(new Texture("misty-forest-background.png"));
         textbox = new Revtext(ScreenWidth/2f, 400, 3, 0.04f,"Press \"Enter\" to start");
         textbox.setColor(Color.SKY);
 

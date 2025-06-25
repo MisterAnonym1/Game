@@ -5,7 +5,6 @@
 .idea/vcs.xml
 Al Assad.png
 Amble-Regular-26.fnt
-background.png
 badlogic.jpg
 battle-of-the-dragons-8037.mp3
 bucket.png
@@ -31,6 +30,7 @@ libgdx.png
 Lines.txt
 Loadingsheet.png
 medium-explosion-40472.mp3
+misty-forest-background.png
 music.mp3
 own Watertile 2.png
 Ph.Boden 3.png

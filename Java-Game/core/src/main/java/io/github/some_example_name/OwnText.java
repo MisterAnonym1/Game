@@ -48,7 +48,7 @@ public class OwnText extends Actor {
     {
         this.text=text;
         layout.setText(font, text);
-        setX(getX()- layout.width*getScaleX() / 2.0f);// Zentriere den Text horizontal
+        setX(getX()- layout.width/**getScaleX()*/ / 2.0f);// Zentriere den Text horizontal
         //setY(centerY-layout.height / 2.0f);
         setY(getY());
     }
@@ -81,7 +81,7 @@ public class OwnText extends Actor {
 
     @Override
     public void draw(Batch batch,float outlinealpha) {
-        float offset = 1.5f*getScaleX(); // Randdicke
+        float offset = 0f; // Randdicke
 
         // Umrandung zeichnen (leicht versetzter Text)
 
