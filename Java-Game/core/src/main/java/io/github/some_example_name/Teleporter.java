@@ -104,22 +104,6 @@ public class Teleporter extends TextureActor
     @Override
     public void act(float delta) {
         super.act(delta);
-        if(state!=TelState.onstand)return;
-        //countdown-=delta;
-        /*if(countdown<=0)
-        {
-            main.setState("paused");
-            if(main.levelnummer+1  >=2/* LevelList.levels.length*//*)
-            {
-                main.setState("winscreen");
-                System.out.println("Time played: "+DataCenter.getTimeplayed());
-                System.out.println("Time: "+DataCenter.getformatedTimeplayed());
-                return;
-            }
-            else{
-            Main.uiStage.addActor(new NewLevelScreen(main));}
-            activate();
-        }*/
     }
 
     @Override

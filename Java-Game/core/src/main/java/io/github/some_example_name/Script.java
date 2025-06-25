@@ -128,6 +128,7 @@ public class Script {
             "Der Tod wartet immer.",
             "Das linkere Links vielleicht?",
             "Wieder hier?",
+                "Es ist noch nie ein Meister vom Himmel gefallen.",
             "Sag zum Abschied\n\n   leise Servus...",
             "GG: Get Good",
             "You found me! Now what?", //+++++++++++++++++++++(you found death)

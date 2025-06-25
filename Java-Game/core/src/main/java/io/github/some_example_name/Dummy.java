@@ -31,7 +31,7 @@ public class Dummy extends Gegner
     @Override
     void initializeOtherThings() {
         super.initializeOtherThings();
-        damageText=new OwnText("!",getX()+getWidth()/2, getY()+getHeight()*2,1, Color.WHITE,Color.BLACK);
+        damageText=new OwnText("!",getX()+getWidth()/2, getY()+getHeight()*2,20, Color.WHITE,Color.BLACK);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Dummy extends Gegner
     @Override
     public void draw(Batch batch, float delta) {
         super.draw(batch, delta);
-        //damageText.draw(batch,1);
+        damageText.draw(batch,1);
     }
 
     @Override

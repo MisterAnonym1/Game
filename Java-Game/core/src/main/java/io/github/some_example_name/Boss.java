@@ -12,8 +12,7 @@ class Boss extends Gegner {
         bossbar.setColor(Color.SCARLET);
         Main.uiStage.addActor(bossbar);
         bossbar.toBack();
-        bossTitel=new OwnText("",512, 490,1, Color.WHITE,Color.BLACK);
-        bossTitel.setScale(1.5f);
+        bossTitel=new OwnText("",512, 490,28, Color.WHITE,Color.BLACK);
         Main.uiStage.addActor(bossTitel);
         bossTitel.toBack();
     }

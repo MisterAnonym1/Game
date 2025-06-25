@@ -15,7 +15,7 @@ public class Karltoffelboss extends Boss{
         sethealth(1000,true);
         scale(0.3f);
         setPosition(x,y);
-        setBossName("KARLOFF DER SCHRECKLICHE");
+        setBossName("KARLOFF 0123456789:DER SCHRECKLICHE");
         bossTitel.setColor(Color.YELLOW);
         positionChanged();
     }

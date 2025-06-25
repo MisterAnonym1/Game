@@ -1,5 +1,6 @@
 package io.github.some_example_name;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -7,8 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-//import com.badlogic.gdx.graphics.g2d.FontGenerator;
-//import com.badlogic.gdx.graphics.g2d.FontParameter;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class OwnText extends Actor {
@@ -16,26 +16,32 @@ public class OwnText extends Actor {
     String text;
     private Color outlineColor;
     private GlyphLayout layout;
-    public OwnText(String text, float x, float y, float scale, Color color, Color outlineColor) {
-        this.font = new BitmapFont(); // Standard-Schriftart ohne TTF-Import
+    int size;
+    public OwnText(String text, float x, float y, int size, Color color, Color outlineColor) {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("MountainKing-font.ttf"));
+        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+        parameter.size = size; // Schriftgröße
+        this.size=size;
+         font = generator.generateFont(parameter);
+        generator.dispose();
+        //this.font = new BitmapFont(); // Standard-Schriftart ohne TTF-Import
         this.text = text;
         layout = new GlyphLayout();
         setX(x);
         setY(y);
-        setScale(scale);
+        //setScale(scale);
         setColor(color);
         this.outlineColor = outlineColor;
 
-        //font.getRegion().getTexture().setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        font.getData().setScale(scale); // Skalierung festlegen
-        setScale(scale);
+        //font.getData().setScale(scale); // Skalierung festlegen
+        //setScale(scale);
         center();
     }
     public OwnText(String text, float x, float y) {
-        this(text,x,y,1,Color.WHITE,null);
+        this(text,x,y,20,Color.WHITE,null);
     }
     public OwnText(String text, float x, float y, Color color) {
-        this(text,x,y,1,color,null);
+        this(text,x,y,20,color,null);
     }
 
 
@@ -81,17 +87,15 @@ public class OwnText extends Actor {
 
     @Override
     public void draw(Batch batch,float outlinealpha) {
-        float offset = 0f; // Randdicke
-
-        // Umrandung zeichnen (leicht versetzter Text)
-
-        if(outlineColor==null){return;}
-        font.setColor(outlineColor.r,outlineColor.g,outlineColor.b,getColor().a*outlinealpha);
-        font.draw(batch, text, getX() - offset, getY());
-        font.draw(batch, text, getX() + offset, getY());
-        font.draw(batch, text, getX(), getY() - offset);
-        font.draw(batch, text, getX(), getY() + offset);
-
+        if(outlineColor!=null) {
+            // Umrandung zeichnen (leicht versetzter Text)
+            float offset = 2f+size/40; // Randdicke
+            font.setColor(outlineColor.r, outlineColor.g, outlineColor.b, getColor().a * outlinealpha);
+            font.draw(batch, text, getX() - offset, getY());
+            font.draw(batch, text, getX() + offset, getY());
+            font.draw(batch, text, getX(), getY() - offset);
+            font.draw(batch, text, getX(), getY() + offset);
+        }
         // Originalfarbe des Textes
         font.setColor(getColor());
         font.draw(batch, text, getX(), getY());

@@ -10,6 +10,7 @@ battle-of-the-dragons-8037.mp3
 bucket.png
 Carrot-sheet.png
 Carrot_Idle.png
+ChrustyRock-ORLA.ttf
 Credits Button V1.png
 Dead.png
 debug_dummy.png
@@ -31,6 +32,7 @@ Lines.txt
 Loadingsheet.png
 medium-explosion-40472.mp3
 misty-forest-background.png
+MountainKing-font.ttf
 music.mp3
 own Watertile 2.png
 Ph.Boden 3.png

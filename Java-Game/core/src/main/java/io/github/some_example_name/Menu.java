@@ -217,7 +217,7 @@ class WinScreen extends Menu
 
         hintergrund = new TextureRegion(new Texture("Forest sun backround.png"));
 
-        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.1f,4, Color.GOLD,Color.WHITE);
+        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.1f,50, Color.GOLD,Color.WHITE);
 
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 2, 0.06f,message);
         textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));

@@ -26,7 +26,11 @@ Levelliste
 
 
 HitPolygone anschauen
-CenterRevtext left/center
-überall parenAlpha bei draw() einbauen
+
+
+Credits:
+Mountain king Font by Michael W. Moss: https://www.fontspace.com/mountain-king-font-f119642
+
+
 
 
