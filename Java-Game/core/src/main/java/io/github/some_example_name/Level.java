@@ -340,6 +340,9 @@ class Level {
             case 'm' :
                 gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(row) ));
                 break;
+            case 'h' :
+                npcs.add(new Trader(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
+                break;
             case 'g' :
                 gegnerliste.add(new Schlange(logic, MyTile.columnToX(column), MyTile.rowToY(row)));
                 break;

@@ -15,13 +15,11 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import org.w3c.dom.Text;
 
@@ -103,6 +101,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 
  class Deathscreen extends Menu {
     AdvancedTextButton knopf;
+    ShapeRenderer shape;
     Deathscreen(Main main) { //erschafft den Screen;
         super();
         int ran = MathUtils.random(0, Script.deathscreenscript.length - 1);
@@ -114,6 +113,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.8f, 3, 0.06f,message);
         textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
         delay=1;
+        shape = new ShapeRenderer();
         this.main=main;
         knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 130, 3,Color.SCARLET,Color.BLACK );
         knopf.getLabel().setFontScale(2f); // 1.5x größer
@@ -131,7 +131,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         //if(knopf.getColor().a>=0.85f){
         //ScreenUtils.clear(new Color(40/255.0f, 30/255.0f, 30/255.0f,textbox.getColor().a));}
         batch.end();
-        ShapeRenderer shape = new ShapeRenderer();
+
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(14);
@@ -202,8 +202,10 @@ class WinScreen extends Menu
     AdvancedTextButton knopf;
     AdvancedTextButton exitknopf;
     TextureRegion hintergrund;
+    ShapeRenderer shape;
     private final String playtime= DataCenter.getformatedTimeplayed();
     OwnText wintext;
+    ConfettiManager confettiManager;
     WinScreen(Main main) { //erschafft den Screen;
         super();
         this.main=main;
@@ -214,25 +216,26 @@ class WinScreen extends Menu
             main.predeterminedDeathmessage="";
         }*/
 
-
+         shape = new ShapeRenderer();
         hintergrund = new TextureRegion(new Texture("Forest sun backround.png"));
 
-        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.1f,50, Color.GOLD,Color.WHITE);
+        confettiManager=new ConfettiManager();
+        confettiManager.add(new ConfettiRain(0.00f));
+        confettiManager.add(new ConfettiRain(0.06f));
+        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.2f,100, Color.GOLD,Color.BLACK);
 
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 2, 0.06f,message);
-        textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.8f, 3, 0.06f,message);
+        textbox.setColor(Color.WHITE);
 
-        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 150, 3,Color.CORAL,Color.BLACK );
+        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 100, 3,Color.CORAL,Color.RED );
         knopf.getLabel().setFontScale(2f); // nur Schrift 2x größer
         knopf.setOnUp(()->this.destroy("restart"));
         Main.uiStage.addActor(knopf);
 
-        exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f+150, 150, 3,Color.CYAN,Color.BLACK );
+        exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f+210, 100, 3,Color.CYAN,Color.BLACK );
         exitknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
         exitknopf.setOnUp(()->{
-            Gdx.app.exit();
-            //main.dispose();
-            System.exit(0);
+            showQuitConfirmation();
         });
         Main.uiStage.addActor(exitknopf);
 
@@ -241,13 +244,22 @@ class WinScreen extends Menu
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         batch.setColor(1,1,1,1);
         batch.draw(hintergrund, 0, 0,0,ScreenHeight, 1026,576,1,1,getRotation());
         textbox.draw(batch,1);
         wintext.draw(batch,1);
         knopf.draw(batch,1);
         exitknopf.draw(batch,1);
-
+        batch.end();
+        shape.setProjectionMatrix(batch.getProjectionMatrix());
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        confettiManager.draw(shape);
+        shape.end();
+        batch.begin();
     }
     void destroy(String state){
         main.setState(state); ///restart game
@@ -256,6 +268,7 @@ class WinScreen extends Menu
         remove();
     }
 
+
     @Override
     public void act(float delta)
     {
@@ -263,9 +276,58 @@ class WinScreen extends Menu
         if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
         {destroy("resume");}
         textbox.act(delta);
+        wintext.act(delta);
+        confettiManager.act(delta);
         knopf.act(delta);
         exitknopf.act(delta);
-        wintext.act(delta);
+
+    }
+
+    /**
+     * Zeigt ein Pop-up-Fenster, das fragt, ob das Spiel wirklich beendet werden soll.
+     */
+    void showQuitConfirmation() {
+        final Window confirmWindow = new Window("", Main.skin);
+        confirmWindow.setModal(true);
+        confirmWindow.setMovable(false);
+        confirmWindow.setResizable(false);
+        confirmWindow.setSize(500, 260); // Größer
+        confirmWindow.setPosition(ScreenWidth/2f - 250, ScreenHeight/2f - 130);
+
+        Label label = new Label("Are you sure you want to quit?", Main.skin);
+        label.setAlignment(Align.center);
+        label.setFontScale(2.2f); // Größerer Text
+        confirmWindow.add(label).colspan(2).pad(30);
+        confirmWindow.row();
+
+        TextButton yesButton = new TextButton("Yes", Main.skin);
+        TextButton noButton = new TextButton("No", Main.skin);
+        yesButton.getLabel().setFontScale(2.2f); // Größerer Button-Text
+        yesButton.getLabel().setColor(Color.BLUE);
+
+        noButton.getLabel().setFontScale(2.2f);
+        yesButton.getLabel().setColor(Color.RED);
+        yesButton.setSize(100, 100); // Größe nicht hier ändern
+        noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
+
+        yesButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+                main.dispose();
+                System.exit(0);
+            }
+        });
+        noButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                confirmWindow.remove();
+            }
+        });
+
+        confirmWindow.add(yesButton).width(200).height(80).pad(30);
+        confirmWindow.add(noButton).width(200).height(80).pad(30);
+        Main.uiStage.addActor(confirmWindow);
     }
 }
 class NewLevelScreen extends Menu {
@@ -691,7 +753,7 @@ class SpriteButton extends Button
      public AdvancedTextButton(String text, float centerx, float centery, float scale, Color textcolor,Color box )
      {
          this(text,centerx,centery,scale);
-         getLabel().setColor(box);
+         setColor(box);
          getLabel().setColor(textcolor);
      }
     public AdvancedTextButton(String text, float centerx, float centery, float scale) {

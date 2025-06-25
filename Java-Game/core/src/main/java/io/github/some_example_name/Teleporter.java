@@ -75,7 +75,7 @@ public class Teleporter extends TextureActor
                         @Override
                         public boolean act(float v) {
                             main.setState("paused");
-                            if(main.levelnummer+1  >=2/* LevelList.levels.length*/)
+                            if(main.levelnummer+1  >= LevelList.levels.length)
                             {
                                 main.setState("winscreen");
                                 System.out.println("Time played: "+DataCenter.getTimeplayed());
