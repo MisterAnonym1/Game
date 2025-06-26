@@ -6,6 +6,7 @@
 Al Assad.png
 Amble-Regular-26.fnt
 badlogic.jpg
+baeh-sheep.wav
 battle-of-the-dragons-8037.mp3
 bucket.png
 Carrot-sheet.png
@@ -51,6 +52,7 @@ sand.png
 sand2.png
 Seatile_.png
 Se_Player_ja.jpg
+sheep-hurt.wav
 slime_move.png
 small shockwave.png
 speech-bubble/speech1.png

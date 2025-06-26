@@ -22,48 +22,56 @@ public class Testentity extends Gegner {
     Vector2 targetpos;
     Animation<TextureRegion> jumpAnimation;
     boolean abandonedTarget;
-
-    Testentity(float x, float y, Main log) {
+    boolean aggressive;
+    boolean evil;
+    float soundcountdown;
+    float strivingx,strivingy;
+    Testentity(float x, float y,boolean aggressive, Main log) {
         super(x, y, log, new TextureRegion(new Texture("slime_move.png"), 1, 1, 80, 72));
         acceleration = 100;
         maxspeed = 100;
+        this.evil = aggressive;
         setSize(200, 200);
         sethealth(100, true);
         spawnx = x;
         spawny = y;
+        strivingx=spawnx;
+        strivingy=spawny;
         inview = true;
         scale(1f);
-        hitboxOffsetX = 0;
-        hitboxOffsetY = 0;
+        soundcountdown= MathUtils.random(10f,40);
         sheet = new TextureRegion(new Texture("HappySheep_All.png"));
-        defaultAnimation = new Animation<>(0.2f, sheet.split(sheet.getRegionWidth() / 8, sheet.getRegionHeight() / 2)[0]);
-        jumpAnimation = Animator.getAnimation("HappySheep_All.png", 8, 2, 9, 14, 0.1f);
+        defaultAnimation = new Animation<>(0.2f-MathUtils.random(0f, 0.02f), sheet.split(sheet.getRegionWidth() / 8, sheet.getRegionHeight() / 2)[0]);
+        jumpAnimation = Animator.getAnimation("HappySheep_All.png", 8, 2, 9, 14, 0.11f-MathUtils.random(0f, 0.02f));
         direction = new Vector2(0, 0);
         playAnimation(defaultAnimation);
         animationstateTime= (float)Math.random()*0.2f;
         moveBy(1, 1);
         setrandompoint(spawnx, spawny, 140f);
+        if(aggressive){
         addAction(Actions.sequence(Actions.delay(5), new Action() {
             @Override
             public boolean act(float delta) {
                 setaggressive();
                 return true;
             }
-        }));
+        }));}
     }
 
     void reset() {
         super.reset();
-        maxspeed = 100;
+        acceleration= 100;
+        aggressive=false;
         setrandompoint(spawnx, spawny, 140f);
         animationstateTime= (float)Math.random()*0.2f;
-        addAction(Actions.sequence(Actions.delay(5), new Action() {
-            @Override
-            public boolean act(float delta) {
-                setaggressive();
-                return true;
-            }
-        }));
+        if(evil){
+            addAction(Actions.sequence(Actions.delay(5), new Action() {
+                @Override
+                public boolean act(float delta) {
+                    setaggressive();
+                    return true;
+                }
+            }));}
     }
 
     @Override
@@ -83,7 +91,11 @@ public class Testentity extends Gegner {
 
     @Override
     public void removeFromLevel() {
-        Level.testentitys.remove(this);
+        if(aggressive){
+           Level.gegnerliste.remove(this);
+        }
+        else{
+        Level.testentitys.remove(this);}
     }
 
     @Override
@@ -100,7 +112,7 @@ public class Testentity extends Gegner {
 
 
             angle = MathUtils.random(0, 360);
-            length = MathUtils.random(0, radius + getdistance(centerx, centery) / 1.1f - 20);
+            length = MathUtils.random(0, radius + getdistance(centerx, centery) / 1.1f);
             float x = (float) (length * Math.cos(angle * Math.PI / 180));
             float y = (float) (length * Math.sin((angle * Math.PI) / 180));
             collides = false;
@@ -147,29 +159,45 @@ public class Testentity extends Gegner {
         return false;
     }
 
+
+
     void setaggressive() {
         status = EntityStatus.engaging;
         attackStatus = AttackStatus.exploding;
-        maxspeed = 300;
+        acceleration=200;
+        aggressive = true;
         playAnimation(jumpAnimation);
         animationstateTime= (float)Math.random()*0.2f;
+    }
+    void setStrivingTarget(float x, float y) {
+        strivingx = x;
+        strivingy = y;
     }
 
     @Override
     void onDeath() {
         super.onDeath();
-        if(attackStatus==AttackStatus.exploding) {
-            PartikelSprite explosion= new PartikelSprite(getHitboxCenterX(), getHitboxCenterY(), Animator.getAnimation("Explosions.png",9,1,1,9,0.1f), true);
-            explosion.scaleBy(0.7f);
-            Level.particles.add(explosion);
-            SoundManager.play("medium-explosion", 1, 1.6f+MathUtils.random(0,0.4f));
-        }}
+        }
+
+    @Override
+    boolean damageby(float damage) {
+        SoundManager.play("sheep",0.4f,0.95f);
+        return super.damageby(damage);
+    }
 
     @Override
     public void act(float delta) {
         super.act(delta);
-
-        if (status==EntityStatus.engaging)
+        soundcountdown-= delta;
+        if(soundcountdown <= 0) {
+            soundcountdown = MathUtils.random(10f, 40);
+            SoundManager.play("sheep", 0.3f, (aggressive?.8f:1f)+ MathUtils.random(-0.1f, 0.1f));
+        }
+        if(!inradiusof(player,900)){
+            //playAnimation(defaultAnimation);
+            return;
+        }
+        if (aggressive)
         {engagePlayer(delta);}
         else{
 
@@ -187,8 +215,8 @@ public class Testentity extends Gegner {
 
                 pathCountdown -= delta;
                 if (pathCountdown <= 0) {
-                    pathCountdown = MathUtils.random() * 4.0f + 1.5f;
-                    setrandompoint(spawnx, spawny, 140f);
+                    pathCountdown = MathUtils.random() * 3.5f + 1.5f+ MathUtils.random()*Level.testentitys.size()/2;
+                    setrandompoint(strivingx, strivingy, 140f);
                     collides = false;
                 }
             }
@@ -205,19 +233,14 @@ public class Testentity extends Gegner {
 
     @Override
     public void engagePlayer(float delta) {
-        if(!inradiusof(player,900)){
-            //playAnimation(defaultAnimation);
-            return;
-        }
         pathCountdown-=delta;
         if(playerinview() ) {
             pathCountdown = 0;
             goDirectlyToPlayer(delta,40);
-            if(inradiusof(player,50))
+            if(inradiusof(player,60))
             {
-                //explode();
-                applyknockbackOn(player, 230);
-                onDeath();
+                explodeAttack(20);
+
             }
 
         }

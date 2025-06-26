@@ -166,7 +166,10 @@ void reset()
         ismoving = true;
         updatemovement(directiontoTile, delta);
     }
-
+    @Override
+    public void drawShadow(ShapeRenderer shape) {
+        shape.ellipse( hitbox.getX()+hitbox.getWidth()/2-hitbox.getWidth()*shadowscale/2, hitbox.getY()-hitbox.getWidth()/4*shadowscale , hitbox.getWidth()*shadowscale, hitbox.getWidth()*shadowscale / 2);
+    }
 
     void setPath(MyTile start, MyTile target, Vector2 vec)
     {
@@ -354,10 +357,19 @@ void reset()
         attackStatus=AttackStatus.projectile_storm;
     }
 
-    @Override
-    public void drawShadow(ShapeRenderer shape) {
-        shape.ellipse( hitbox.getX()+hitbox.getWidth()/2-hitbox.getWidth()*shadowscale/2, hitbox.getY()-hitbox.getWidth()/4*shadowscale , hitbox.getWidth()*shadowscale, hitbox.getWidth()*shadowscale / 2);
+    void explodeAttack(float damage) {
+
+        if(attackStatus==AttackStatus.exploding) {
+            PartikelSprite explosion= new PartikelSprite(getHitboxCenterX(), getHitboxCenterY(), Animator.getAnimation("Explosions.png",9,1,1,9,0.1f), true);
+            explosion.scaleBy(0.7f);
+            Level.particles.add(explosion);
+            SoundManager.play("medium-explosion", 1, 1.6f+MathUtils.random(0,0.4f));
+        }
+        applyknockbackOn(player, 230);
+        player.damageby(damage);
+        onDeath();
     }
+
     void shockwaveAttack(float waveduration, float jumpheight) {
         if (attackStatus == AttackStatus.inair||attackStatus == AttackStatus.dash)
         {

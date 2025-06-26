@@ -140,8 +140,8 @@ public class Main implements ApplicationListener {
                     currentlevel.reload();
                 }
                 if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-                    if(Player.maxspeed!=400){
-                    Player.maxspeed=400;}
+                    if(Player.acceleration!=400){
+                    Player.acceleration=400;}
                     else{Player.maxspeed=250;}
                 }
                 //---STRG
@@ -180,7 +180,7 @@ public class Main implements ApplicationListener {
           //Player.stayinWorldbounds();
 
          currentlevel.act(delta);
-         updateEntitys();
+         updateEntitys(delta);
 
          checkplayercollision();
           //ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
@@ -302,7 +302,7 @@ public class Main implements ApplicationListener {
                 if(gamestate==Gamestate.dead){
                     return;
                 }
-                SoundManager.play("player-death", 0.9f, 1f);
+                SoundManager.play("player-death", 0.9f, 0.6f);
                 Player.normalise();
                 gamestate = Gamestate.dead;
                 Player.status= Entity.EntityStatus.dead;
@@ -383,10 +383,30 @@ public class Main implements ApplicationListener {
         return list;
     }
 
-    void updateEntitys()
+    void updateEntitys(float delta)
     {
+
+        if(currentlevel.testentitys.size()!=0)
+        {
+            float herdcenterx=0,herdcentery=0;
+          for(Testentity enti : currentlevel.testentitys)
+          {
+              herdcenterx+=enti.getCenterX();
+              herdcentery+=enti.getCenterY();
+          }
+          herdcenterx/=currentlevel.testentitys.size();
+          herdcentery/=currentlevel.testentitys.size();
+
+                for(Testentity enti : currentlevel.testentitys)
+                {
+                    enti.setStrivingTarget(herdcenterx,herdcentery);
+                }
+
+        }
+
         for (Testentity enti : currentlevel.testentitys)
         {
+
             if(Player.isattacking)
             {
                     if(Player.handleAttack(enti)) {
@@ -591,6 +611,8 @@ public class Main implements ApplicationListener {
         SoundManager.load("medium-explosion", "medium-explosion-40472.mp3");
         //SoundManager.load("sword-swing", "sounds/sword-swing-40473.mp3");
         SoundManager.load("player-death", "player-hurt_death.mp3");
+        SoundManager.load("sheep", "baeh-sheep.wav");
+        //SoundManager.load("sheep-hurt", "sheep-hurt.wav");
     }
 
 

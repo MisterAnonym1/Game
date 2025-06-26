@@ -69,7 +69,7 @@ public class Karltoffelboss extends Boss{
                 logic.randomcamerashake(100*delta,100*delta);
             }
 
-            if(collisionOn&&player.collisionOn&& attackdelay<=0.27f) {
+            if(collisionOn&&player.collisionOn&& attackdelay<=0.25f) {
 
                 float ellipseDistance= (float) (1.3*Math.pow(getHitboxCenterX()-player.getHitboxCenterX(),2)+4*Math.pow(hitbox.y-player.hitbox.y,2));
                 if ( ellipseDistance<Math.pow(300,2)*attackdelay/0.3f) {

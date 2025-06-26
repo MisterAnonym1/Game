@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import org.w3c.dom.Text;
@@ -113,6 +114,7 @@ class Level {
         for (NPC npc : npcs) {
             npc.act(delta);
         }
+        applySeperation(delta);
         for (Teleporter testi : teleporters) {
             testi.act(delta);
         }
@@ -324,11 +326,11 @@ class Level {
                     gegnerliste.add(new Dummy(MyTile.columnToX(column)+j*8, MyTile.rowToY(row)+i*8,logic,8,8));
 
                 }}*/
-                gegnerliste.add(new Dummy(MyTile.columnToX(column), MyTile.rowToY(row),logic,32,32));
+                gegnerliste.add(new Dummy(MyTile.columnToX(column), MyTile.rowToY(row),logic,64,64));
 
                 break;
             case 't' :
-                testentitys.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(row), logic));
+                testentitys.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(row), false,logic));
                 break;
             case '$' :
                 break;
@@ -344,7 +346,7 @@ class Level {
                 npcs.add(new Trader(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
                 break;
             case 'g' :
-                gegnerliste.add(new Schlange(logic, MyTile.columnToX(column), MyTile.rowToY(row)));
+                gegnerliste.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(row), true,logic));
                 break;
             default:
                 return getdefaultTile(column,row) ;
@@ -380,6 +382,10 @@ class Level {
             projec.destroy();
         }
         projectiles.clear();
+        for (PartikelSprite par : particles) {
+            par.destroy();
+        }
+        particles.clear();
         for (TextureActor actor : deleteList) {
             actor.removeFromLevel();
             actor.destroy();
@@ -444,6 +450,40 @@ class Level {
     {
         //return rows.length;
         return tiles.length;
+    }
+    ArrayList<Entity> getEntities() {
+        ArrayList<Entity> entities = new ArrayList<>();
+        entities.addAll(testentitys);
+        entities.addAll(gegnerliste);
+        entities.addAll(npcs);
+        return entities;
+    }
+    void applySeperation(float delta) {
+        // Separation-Parameter
+        float separationRadius = 80f; // Abstand, ab dem abgestoßen wird
+        float separationStrength = 2000f; // Stärke der Abstoßung
+        for (Entity enti : getEntities()) {
+            // --- Separation-Kraft berechnen ---
+            Vector2 separation = new Vector2();
+            int count = 0;
+            for (Entity other : getEntities()) {
+                if (other == enti) continue;
+                float dist = enti.getdistance(other);
+                if (dist < separationRadius && dist > 0.00001f) {
+                    Vector2 diff = new Vector2(other.getDistanceVector(enti));
+                    diff.nor();//normalise (setzt die Länge auf 1)
+                    diff.scl(1f / dist); // Je näher, desto stärker
+                    separation.add(diff);
+                    count++;
+                }
+            }
+            if (count > 0) {
+                separation.scl(separationStrength / count*delta);
+                //enti.direction.add(separation);
+                enti.moveatAngle(separation);
+            }
+
+        }
     }
 
     MyTile newtileNotwall(int column, int line, TextureRegion tex)
