@@ -32,6 +32,7 @@ class Player extends Entity
     boolean isattacking;
     Viewport viewport;
     Vector2 attackline;
+    StorySpeechBox speechbox;
     Player(float x, float y, float speed, int leben, Viewport view) {
 
 
@@ -47,7 +48,12 @@ class Player extends Entity
         healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
         weapon=new Pipe(this);
         Main.uiStage.addActor(healthbar);
-        scale(1f);
+
+        speechbox=new StorySpeechBox(512+150,60,300+300,100);
+        Main.uiStage.addActor(speechbox);
+
+
+        //scale(1f);
 
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.15f);
