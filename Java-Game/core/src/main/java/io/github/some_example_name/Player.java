@@ -50,7 +50,8 @@ class Player extends Entity
         Main.uiStage.addActor(healthbar);
 
         speechbox=new StorySpeechBox(512+150,60,300+300,100);
-        Main.uiStage.addActor(speechbox);
+        ///+Main.uiStage.addActor(speechbox);
+        speechbox.toBack();
 
 
         //scale(1f);

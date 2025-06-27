@@ -12,10 +12,10 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 
 public class OwnText extends Actor {
-    private BitmapFont font;
+     BitmapFont font;
     String text;
-    private Color outlineColor;
-    private GlyphLayout layout;
+   Color outlineColor;
+    GlyphLayout layout;
     int size;
     public OwnText(String text, float x, float y, int size, Color color, Color outlineColor) {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("MountainKing-font.ttf"));
@@ -84,17 +84,33 @@ public class OwnText extends Actor {
     public void setOutlineColor(Color outlineColor) {
         this.outlineColor = outlineColor;
     }
+    public void setColor(Color color) {
+        super.setColor(color);
+        font.setColor(color);
+    }
+
+    public void setColor(Color color,Color outlinecolor) {
+        super.setColor(color);
+        font.setColor(color);
+        setOutlineColor(outlinecolor);
+    }
 
     @Override
     public void draw(Batch batch,float outlinealpha) {
         if(outlineColor!=null) {
             // Umrandung zeichnen (leicht versetzter Text)
-            float offset = 2f+size/40; // Randdicke
+            float offset = 1.4f+size/33; // Randdicke
             font.setColor(outlineColor.r, outlineColor.g, outlineColor.b, getColor().a * outlinealpha);
+
             font.draw(batch, text, getX() - offset, getY());
             font.draw(batch, text, getX() + offset, getY());
             font.draw(batch, text, getX(), getY() - offset);
             font.draw(batch, text, getX(), getY() + offset);
+
+            /*font.draw(batch, text, getX() + offset, getY()- offset);
+            font.draw(batch, text, getX() - offset, getY()+ offset);
+            font.draw(batch, text, getX()- offset, getY() - offset);
+            font.draw(batch, text, getX()+ offset, getY() + offset);*/
         }
         // Originalfarbe des Textes
         font.setColor(getColor());

@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -21,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
-import org.w3c.dom.Text;
 
 import java.util.function.Consumer;
 
@@ -50,8 +48,8 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 
         super();
         int ran = MathUtils.random(0, Script.loadingscreenscript.length - 1);
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 2, 0.01f,Script.loadingscreenscript[ran]);
-        textbox.setColor(new Color(0.1f, 0.1f, 0.8f,1));
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 40, 0.01f,Script.loadingscreenscript[ran]);
+        textbox.setColor(new Color(0.2f, 0.2f, 0.7f,1),null);
         delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         if(mainl.DevMode){delay=0;}
         main = mainl;
@@ -110,7 +108,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
             message=main.predeterminedDeathmessage;
             main.predeterminedDeathmessage="";
         }
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.8f, 3, 0.06f,message);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.8f, 45, 0.06f,message);
         textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
         delay=1;
         shape = new ShapeRenderer();
@@ -201,6 +199,7 @@ class WinScreen extends Menu
 {
     AdvancedTextButton knopf;
     AdvancedTextButton exitknopf;
+    AdvancedTextButton creditsknopf;
     TextureRegion hintergrund;
     ShapeRenderer shape;
     private final String playtime= DataCenter.getformatedTimeplayed();
@@ -222,9 +221,9 @@ class WinScreen extends Menu
         confettiManager=new ConfettiManager();
         confettiManager.add(new ConfettiRain(0.00f));
         confettiManager.add(new ConfettiRain(0.06f));
-        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.2f,100, Color.GOLD,Color.BLACK);
+        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.2f,80, Color.GOLD,Color.BLACK);
 
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.8f, 3, 0.06f,message);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.8f, 40, 0.06f,message);
         textbox.setColor(Color.WHITE);
 
         knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 100, 3,Color.CORAL,Color.RED );
@@ -232,12 +231,19 @@ class WinScreen extends Menu
         knopf.setOnUp(()->this.destroy("restart"));
         Main.uiStage.addActor(knopf);
 
-        exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f+210, 100, 3,Color.CYAN,Color.BLACK );
+        exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f-215, 100, 3,Color.ROYAL,Color.BLACK );
         exitknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
         exitknopf.setOnUp(()->{
             showQuitConfirmation();
         });
         Main.uiStage.addActor(exitknopf);
+
+        creditsknopf=new AdvancedTextButton("  Credits  ",ScreenWidth/2f+210, 100, 3,Color.CYAN,Color.BLACK );
+        creditsknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
+        creditsknopf.setOnUp(()->{
+            showCreditsWindow();
+        });
+        Main.uiStage.addActor(creditsknopf);
 
         setColor(1,1,1,0);
     }
@@ -250,21 +256,23 @@ class WinScreen extends Menu
 
         batch.setColor(1,1,1,1);
         batch.draw(hintergrund, 0, 0,0,ScreenHeight, 1026,576,1,1,getRotation());
-        textbox.draw(batch,1);
-        wintext.draw(batch,1);
         knopf.draw(batch,1);
         exitknopf.draw(batch,1);
+        creditsknopf.draw(batch,1);
         batch.end();
         shape.setProjectionMatrix(batch.getProjectionMatrix());
         shape.begin(ShapeRenderer.ShapeType.Filled);
         confettiManager.draw(shape);
         shape.end();
         batch.begin();
+        textbox.draw(batch,1);
+        wintext.draw(batch,1);
     }
     void destroy(String state){
         main.setState(state); ///restart game
         knopf.remove();
         exitknopf.remove();
+        creditsknopf.remove();
         remove();
     }
 
@@ -278,9 +286,6 @@ class WinScreen extends Menu
         textbox.act(delta);
         wintext.act(delta);
         confettiManager.act(delta);
-        knopf.act(delta);
-        exitknopf.act(delta);
-
     }
 
     /**
@@ -329,6 +334,42 @@ class WinScreen extends Menu
         confirmWindow.add(noButton).width(200).height(80).pad(30);
         Main.uiStage.addActor(confirmWindow);
     }
+    public void showCreditsWindow() {
+        Window creditsWindow = new Window("", Main.skin); // Kein Titel im Fensterkopf
+        creditsWindow.setModal(true);
+        creditsWindow.setMovable(false);
+        creditsWindow.setResizable(false);
+        creditsWindow.setSize(800, 500);
+        creditsWindow.setPosition(ScreenWidth/2f - 400, ScreenHeight/2f - 250);
+
+        // Titel als Label im Fenster-Inhalt, damit er nicht überlappt
+        Label titleLabel = new Label("Credits", Main.skin);
+        titleLabel.setAlignment(Align.center);
+        titleLabel.setFontScale(2.5f);
+        creditsWindow.add(titleLabel).expandX().padTop(10).padBottom(10);
+        creditsWindow.row();
+
+        Label creditsLabel = new Label(
+                "Game made by: The Boys Deluxe \nGrafik: ...\nMusic: I stole it (joke)\nSpecial Thanks: Frau Bauereisen\n" ,
+                Main.skin);
+        creditsLabel.setAlignment(Align.center);
+        creditsLabel.setFontScale(1.6f);
+        creditsWindow.add(creditsLabel).expand().fill().pad(20);
+        creditsWindow.row();
+        TextButton closeButton = new TextButton("Schließen", Main.skin);
+        closeButton.getLabel().setFontScale(1.6f);
+        closeButton.setSize(180, 60); // Größere Box
+        closeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                creditsWindow.remove();
+            }
+        });
+        creditsWindow.add(closeButton).padBottom(20).padTop(10).width(180).height(60);
+        Main.uiStage.addActor(creditsWindow);
+    }
+
+
 }
 class NewLevelScreen extends Menu {
     AdvancedTextButton jaknopf;
@@ -336,8 +377,8 @@ class NewLevelScreen extends Menu {
     AdvancedTextButton skillknopf;
     Revtext secondtext;
     NewLevelScreen(Main main) {
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
-        secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 3.2f, 0.06f,"");
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 50, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
+        secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 52, 0.06f,"");
         textbox.setColor(Color.WHITE);
         secondtext.setColor(new Color(0, 0f, 0,1));
         this.main=main;
@@ -460,7 +501,7 @@ class NewLevelScreen extends Menu {
 class Startmenu extends Menu
 {
     TextureRegion hintergrund;
-    SpriteButton exit;//quit game
+    SpriteButton credits;
     Revtext randomtext;
     boolean inmatrix;
     Matrix matrix;
@@ -470,20 +511,20 @@ class Startmenu extends Menu
         main = gamel;
         setPosition(0,0);
         hintergrund = new TextureRegion(new Texture("misty-forest-background.png"));
-        textbox = new Revtext(ScreenWidth/2f, 400, 3, 0.04f,"Press \"Enter\" to start");
+        textbox = new Revtext(ScreenWidth/2f, 400, 65, 0.04f,"Press \"Enter\" to start");
         textbox.setColor(Color.SKY);
 
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
         String message=Script.startmenuscript[ran];
         //message="Now with 10% more bugs!!";
-        randomtext = new Revtext(ScreenWidth/2f, 320, 2, 0.03f,message);
+        randomtext = new Revtext(ScreenWidth/2f, 320, 40, 0.03f,message);
         checkmessage(message);
         //randomtext.setBorderColor(Color.black, 1);
         //randomtext.setBorderWidth(6);
 
-        exit = new SpriteButton(675, 120, "Credits Button V1.png",1);
-        exit.setOnUp( ()->System.exit(187));
-        Main.uiStage.addActor(exit);
+        credits = new SpriteButton(675, 60, "Credits Button V1.png",2);
+        credits.setOnUp( ()->showCreditsWindow());
+        Main.uiStage.addActor(credits);
     }
 
 
@@ -494,15 +535,53 @@ class Startmenu extends Menu
         batch.draw(hintergrund, getX(), getY(),0,ScreenHeight, 1024,576,1,1,getRotation());
         textbox.draw(batch,1);
         randomtext.draw(batch,1);
-        exit.draw(batch,1);
+        credits.draw(batch,1);
     }
 
 
     public void destroy() {
       hintergrund.getTexture().dispose();
       remove();
-      exit.remove();
+      credits.remove();
     }
+
+
+    public void showCreditsWindow() {
+        Window creditsWindow = new Window("", Main.skin); // Kein Titel im Fensterkopf
+        creditsWindow.setModal(true);
+        creditsWindow.setMovable(false);
+        creditsWindow.setResizable(false);
+        creditsWindow.setSize(800, 500);
+        creditsWindow.setPosition(ScreenWidth/2f - 400, ScreenHeight/2f - 250);
+
+        // Titel als Label im Fenster-Inhalt, damit er nicht überlappt
+        Label titleLabel = new Label("Credits", Main.skin);
+        titleLabel.setAlignment(Align.center);
+        titleLabel.setFontScale(2.5f);
+        creditsWindow.add(titleLabel).expandX().padTop(10).padBottom(10);
+        creditsWindow.row();
+
+        Label creditsLabel = new Label(
+                "Game made by: The Boys Deluxe \nGrafik: ...\nMusic: I stole it (joke)\nSpecial Thanks: Frau Bauereisen\n" ,
+                Main.skin);
+        creditsLabel.setAlignment(Align.center);
+        creditsLabel.setFontScale(1.6f);
+        creditsWindow.add(creditsLabel).expand().fill().pad(20);
+        creditsWindow.row();
+        TextButton closeButton = new TextButton("Schließen", Main.skin);
+        closeButton.getLabel().setFontScale(1.6f);
+        closeButton.setSize(180, 60); // Größere Box
+        closeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                creditsWindow.remove();
+            }
+        });
+        creditsWindow.add(closeButton).padBottom(20).padTop(10).width(180).height(60);
+        Main.uiStage.addActor(creditsWindow);
+    }
+
+
     void checkmessage(String mes)
     {
         switch (mes)
@@ -555,7 +634,7 @@ class Startmenu extends Menu
         }
         textbox.act(delta);
         randomtext.act(delta);
-        exit.act(delta);
+        credits.act(delta);
            //1903080120100509014090190200140903080200101201205019
 
 
@@ -577,9 +656,9 @@ class DevMenu extends Menu
         this.main = main;
         for (int i = 0; i < texte.length; i++)
         {
-            texte[i] = new Revtext( 20,  30 + i * 27, 1.5f,"hallo");
+            texte[i] = new Revtext( 20,  30 + i * 27, 20,"hallo");
             texte[i].setColor(Color.GOLDENROD);
-            //texte[i].setBorderColor(Color.white);
+            texte[i].setOutlineColor(Color.BLACK);
         }
         texte[0].setColor(Color.YELLOW);
         texte[1].setColor(Color.RED);
