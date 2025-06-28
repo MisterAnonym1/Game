@@ -18,7 +18,7 @@ public class Carrot extends Gegner
     Animation<TextureRegion> damageAnimation;
     Carrot( float x, float y, Main logic) {
         super(x, y,logic, "Carrot_Idle.png");
-        maxspeed = 150;
+        speed = 150;
         maxhealth = 100;
         curhealth = 100;
         hitboxOffsetX = 0;
@@ -90,6 +90,7 @@ public class Carrot extends Gegner
         super.reset();
         attackdelay=3;
         hitbox.width=getWidth()/4;
+        speed=150;
     }
 
     public void engagePlayer(float delta)
@@ -100,6 +101,7 @@ public class Carrot extends Gegner
             //playAnimation(defaultAnimation);
             return;
         }
+
         pathCountdown-=delta;
         if(playerinview() ) {
             pathCountdown = 0;
@@ -138,13 +140,13 @@ public class Carrot extends Gegner
     {
         playAnimation(spinattackAnimation);
         attackStatus= AttackStatus.spin;
-        maxspeed=260;
+        speed=260;
         hitbox.width*=1.3f;
         addAction(Actions.sequence(Actions.delay(2.9f),
             new Action() {
             @Override
             public boolean act(float delta) {
-                maxspeed = 150;
+                speed = 150;
                 hitbox.width=getWidth()/4;
                 playAnimation(walkAnimation);
                 attackStatus= AttackStatus.inactive;

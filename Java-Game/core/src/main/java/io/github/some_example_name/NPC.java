@@ -34,7 +34,7 @@ public class NPC extends Entity
         //addAction(Actions.delay(1));
         backroundfilepath=fileBackround;
         viewport=Main.uiStage.getViewport();
-        text = new Revtext(512, 120, 3,0.04f, "Diese Zeile sollte nicht sichtbar sein");
+        text = new Revtext(512, 120, 40,0.04f, "Diese Zeile sollte nicht sichtbar sein");
         this.scriptIndex = scriptindex;
         line = 0;
         maxline = Script.npcscript[scriptIndex][0].length;;
@@ -220,7 +220,7 @@ class NpcData
             batch.draw(texture,1024/2.0f-hitbox.getWidth(), 0+576/2.0f-hitbox.getHeight(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
             knopf.draw(batch,getColor().a);
             Main.uiStage.addActor(knopf);
-            knopf.setOnUp(()->onPress());
+            knopf.setOnUp(()->onButtonPress());
             text.draw(batch,1);
         }
         batch.end();
@@ -232,7 +232,7 @@ class NpcData
          knopf.remove();
      }
 
-     void onPress() {
+     void onButtonPress() {
          //knopf.onClick();
          if(coins > 5){
          coins = coins-5;

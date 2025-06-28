@@ -67,6 +67,10 @@ public class InventoryManager {
         // Die Datei mit den neuen Werten überschreiben
         inventoryFile.writeString(builder.toString(), false);
     }
+    public void addValueByKey(String key, int valueToAdd) {
+        int currentValue = getValueByKey(key);
+        setValueByKey(key, currentValue + valueToAdd);
+    }
 
     // Optional: Speichern erzwingen, falls du keine "automatische Speicherung" im Code verwendest
     //public void saveInventory() {

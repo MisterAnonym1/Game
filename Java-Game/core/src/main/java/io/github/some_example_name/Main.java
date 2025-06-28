@@ -83,7 +83,6 @@ public class Main implements ApplicationListener {
 
         setState("startmenu");
         Gdx.input.setInputProcessor(uiStage);
-        new InventoryManager().setValueByKey("Coins", 187);
     }
 
     @Override
@@ -140,9 +139,9 @@ public class Main implements ApplicationListener {
                     currentlevel.reload();
                 }
                 if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-                    if(Player.acceleration!=400){
-                    Player.acceleration=400;}
-                    else{Player.maxspeed=250;}
+                    if(Player.speed!=400){
+                    Player.speed=400;}
+                    else{Player.speed=250;}
                 }
                 //---STRG
             }
@@ -613,6 +612,7 @@ public class Main implements ApplicationListener {
         SoundManager.load("player-death", "player-hurt_death.mp3");
         SoundManager.load("sheep", "baeh-sheep.wav");
         //SoundManager.load("sheep-hurt", "sheep-hurt.wav");
+        SoundManager.load("coin_pickup", "dading.mp3");
     }
 
 

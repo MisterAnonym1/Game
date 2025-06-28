@@ -9,8 +9,7 @@ class Schlange extends Gegner
 
     Schlange(Main logic, float x, float y) {
         super(x, y,logic, "bucket.png");
-        acceleration = 200;
-        maxspeed = 120;
+       speed = 120;
         maxhealth = 100;
         curhealth = 100;
         scale(1.0f);

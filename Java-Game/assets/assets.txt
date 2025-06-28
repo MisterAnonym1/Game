@@ -12,7 +12,9 @@ bucket.png
 Carrot-sheet.png
 Carrot_Idle.png
 ChrustyRock-ORLA.ttf
+Coin-rotating.png
 Credits Button V1.png
+dading.mp3
 Dead.png
 debug_dummy.png
 drop.png
@@ -47,6 +49,7 @@ Pointers/04.png
 Pointers/05.png
 Pointers/06.png
 Pointers/Pointer.png
+potato.png
 red_arrow_PNG60.png
 sand.png
 sand2.png

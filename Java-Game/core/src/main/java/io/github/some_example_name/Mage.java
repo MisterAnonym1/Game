@@ -9,8 +9,7 @@ class Mage extends Gegner
 
     Mage(Main logic, float x, float y) {
         super( x, y,logic, "bucket.png");
-        acceleration = 12;
-        maxspeed = 12;
+        speed = 60;
         maxhealth = 100;
         curhealth = 100;
         hitboxOffsetX = 30;

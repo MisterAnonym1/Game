@@ -44,8 +44,7 @@ abstract class Gegner extends Entity
     Gegner(float x, float y, Main logic, TextureRegion texture)
     {
         super(x, y, texture, logic.Player);
-        acceleration = 100;
-        maxspeed = 100;
+        speed = 100;
         curlevel = logic.currentlevel;
         this.logic = logic;
         maxhealth = 100;
@@ -169,6 +168,12 @@ void reset()
     @Override
     public void drawShadow(ShapeRenderer shape) {
         shape.ellipse( hitbox.getX()+hitbox.getWidth()/2-hitbox.getWidth()*shadowscale/2, hitbox.getY()-hitbox.getWidth()/4*shadowscale , hitbox.getWidth()*shadowscale, hitbox.getWidth()*shadowscale / 2);
+    }
+
+    @Override
+    void onDeath() {
+        super.onDeath();
+        Level.objects.add(new Coin(getHitboxCenterX(), getHitboxCenterY(), Math.max(1,(int)(maxhealth/10f))) );
     }
 
     void setPath(MyTile start, MyTile target, Vector2 vec)
@@ -330,8 +335,7 @@ void reset()
     };
     public void dashattack (float delta) {
         if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
-            acceleration = 600;
-            maxspeed = 600;
+           speed = 600;
             movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
             ismoving = true;
             //player.damageby(30);
@@ -381,11 +385,12 @@ void reset()
         collisionOn=false;
         invincible=true;
         savedVector= new Vector2(player.getHitboxCenterX() - getHitboxCenterX(),  player.getHitboxCenterY()-hitbox.y);
-        acceleration=savedVector.len()/jumpheight*250f/2-5;
+       speed=savedVector.len()/jumpheight*250f/2-5;
         float startValue =1f; // Startwert für shadowscale
         float endValue = (float) Math.exp( -jumpheight/450f); // Endwert für shadowscale, abhängig von jumpheight
         float startValue2 =endValue;
         float endValue2 = 1f;
+        final float maxspeed = speed;
         addAction(Actions.sequence(
             Actions.parallel(
 
@@ -429,7 +434,7 @@ void reset()
                 @Override
                 public boolean act(float delta) {
                     collisionOn=true;
-                    acceleration=maxspeed;
+                   speed=maxspeed;
                     Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
                     wave.scaleBy(0.8f);
                     Level.objects.add(wave);

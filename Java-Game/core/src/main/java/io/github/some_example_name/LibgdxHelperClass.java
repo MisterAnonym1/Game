@@ -115,7 +115,9 @@ public class LibgdxHelperClass {
     }
      static public Animation<TextureRegion> getAnimation(TextureRegion sheet, int sheet_cols, int sheet_rows, float frameDuration)
      {
-
+         int firstFrameisOne1=1;
+         int lastFrame=sheet_cols*sheet_rows;
+         int frames=lastFrame-firstFrameisOne1 +1;
          float frameduration= frameDuration;
          if (frameduration<=0)
          {
@@ -123,29 +125,31 @@ public class LibgdxHelperClass {
          }
          Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
 
+         SpriteBatch spriteBatch;
 
-
+         Texture walkSheet = sheet.getTexture();
          // Use the split utility method to create a 2D array of TextureRegions. This is
          // possible because this sprite sheet contains frames of equal size and they are
          // all aligned.
-         TextureRegion[][] tmp = sheet.split(sheet.getRegionWidth() / sheet_cols, sheet.getRegionWidth() / sheet_rows);
-             //TextureRegion.split(walkSheet, walkSheet.getWidth() / sheet_cols, walkSheet.getHeight() / sheet_rows);
+         TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / sheet_cols, walkSheet.getHeight() / sheet_rows);
 
          // Place the regions into a 1D array in the correct order, starting from the top
-         // left, going across first. The Animation constructor requires a 1D array.
-         TextureRegion[] walkFrames = new TextureRegion[sheet_cols * sheet_rows];
-
-         int index = 0;
-         for (int i = 0; i < sheet_rows; i++) {
-             for (int j = 0; j < sheet_cols; j++) {
-                 walkFrames[index++] = tmp[i][j];
-             }
+         // left, going across first. The Animatio n constructor requires a 1D array.
+         TextureRegion[] walkFrames = new TextureRegion[Math.min(sheet_cols * sheet_rows,frames)];
+         //int index = 0;
+         for (int i = firstFrameisOne1; i <=lastFrame ; i++) {
+             int h=(int)Math.floor((float)(i-1)/sheet_cols);
+             int j= ((i-1)%sheet_cols);
+             walkFrames[i-firstFrameisOne1]=tmp[h][j];
          }
+
 
          // Initialize the Animation with the frame interval and array of frames
          walkAnimation = new Animation<TextureRegion>(frameduration, walkFrames);
 
          return walkAnimation;
+
+
 
      }
 

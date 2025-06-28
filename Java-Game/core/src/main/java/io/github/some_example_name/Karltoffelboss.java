@@ -9,8 +9,7 @@ public class Karltoffelboss extends Boss{
 
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
-        acceleration = 100;
-        maxspeed = 100;
+        speed = 100;
         weight=20;
         sethealth(1000,true);
         scale(0.3f);

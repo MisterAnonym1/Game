@@ -26,7 +26,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 class Entity extends TextureActor
 {
     float maxhealth, curhealth;
-    float maxspeed, acceleration, directionline=0,shadowscale=1;
+    float speed, directionline=0,shadowscale=1;
     boolean  ismoving, isattacking;
     Vector2 movement;
     Vector2 additionalForce;
@@ -73,7 +73,6 @@ void reset()
         animationstateTime=0;
         currentAnimation=defaultAnimation;
         ismirrored=false;
-        acceleration=maxspeed;
         clearActions();
         //super.act(999);
         setColor(1,1,1,1);
@@ -260,7 +259,7 @@ void reset()
         movement=direction;
         if(ismoving) {
 
-            movement.setLength(acceleration);
+            movement.setLength(speed);
 
             if(movement.len()>0)
             {

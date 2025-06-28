@@ -28,8 +28,7 @@ public class Testentity extends Gegner {
     float strivingx,strivingy;
     Testentity(float x, float y,boolean aggressive, Main log) {
         super(x, y, log, new TextureRegion(new Texture("slime_move.png"), 1, 1, 80, 72));
-        acceleration = 100;
-        maxspeed = 100;
+        speed = 100;
         this.evil = aggressive;
         setSize(200, 200);
         sethealth(100, true);
@@ -60,7 +59,7 @@ public class Testentity extends Gegner {
 
     void reset() {
         super.reset();
-        acceleration= 100;
+        speed= 100;
         aggressive=false;
         setrandompoint(spawnx, spawny, 140f);
         animationstateTime= (float)Math.random()*0.2f;
@@ -164,7 +163,7 @@ public class Testentity extends Gegner {
     void setaggressive() {
         status = EntityStatus.engaging;
         attackStatus = AttackStatus.exploding;
-        acceleration=200;
+        speed=200;
         aggressive = true;
         playAnimation(jumpAnimation);
         animationstateTime= (float)Math.random()*0.2f;

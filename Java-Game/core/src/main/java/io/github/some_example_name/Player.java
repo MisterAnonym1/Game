@@ -41,8 +41,7 @@ class Player extends Entity
         player=this;
         weight = 0.5f;
         viewport=view;
-        maxspeed = speed;
-        acceleration = speed;
+        this.speed = speed;
         curhealth = leben;
         maxhealth = leben;
         healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
@@ -315,7 +314,7 @@ class Player extends Entity
                 {flip(false);}*/
             }
 
-            vecup.setLength(maxspeed);
+            vecup.setLength(speed);
         }
 
         updatemovement(vecup,deltatime);
