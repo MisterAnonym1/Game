@@ -352,7 +352,7 @@ void reset()
         vec.rotateDeg(angleoffset);
         for(int i=0; i<=360-angle;i+=angle)
         {
-            Level.projectiles.add( new FireBall(getHitboxCenterX()+vec.x,getHitboxCenterY()+vec.y,new Vector2(vec.x,vec.y)));
+            Level.projectiles.add( new FireBall(getHitboxCenterX()/*+vec.x*/,getHitboxCenterY()/*+vec.y*/,new Vector2(vec.x,vec.y)));
             vec.rotateDeg(angle);
         }
     }

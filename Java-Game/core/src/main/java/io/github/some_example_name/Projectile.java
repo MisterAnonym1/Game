@@ -18,19 +18,22 @@ class PartikelSprite extends TextureActor
     PartikelSprite(float x, float y, String filepath, float vanishInSecs)
     {
         super(filepath);
-        setPosition(x,y);
+        //setPosition(x,y);
+        centerAt(x,y);
         delay =  vanishInSecs;
     }
     PartikelSprite(float x, float y, TextureRegion tex, float vanishInSecs)
     {
         super(tex);
-        setPosition(x,y);
+        //setPosition(x,y);
+        centerAt(x,y);
         delay =  vanishInSecs;
     }
     PartikelSprite(float x,float y,String filepath ,float vanishInSecs,float xTexture,float yTexture,float width,float heigth)
     {
         super(filepath, xTexture, yTexture, width, heigth);
-        setPosition(x,y);
+        //setPosition(x,y);
+        centerAt(x,y);
         delay =  vanishInSecs;
     }
     PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation, float vanishInSecs) {
@@ -145,9 +148,9 @@ class FireBall extends Projectile
     static Animation<TextureRegion> explosion=Animator.getAnimation("Explosions.png",9,1,1,9,0.1f); //Variable zum speichern der letzten abgespielten animation
     FireBall(float x,float y, Vector2 vel)
     {
-        super(x,y,"Fireball.png",vel,20);
+        super(x,y,"potato.png",vel,20);
         movement.setLength(speed);
-        scale(0.3f);
+        scale(2.5f);
     }
     @Override
     void reducemovement(float delta)
@@ -189,7 +192,8 @@ class FireBall extends Projectile
     void initializeHitbox() {
         hitboxOffsetX=0;
         hitboxOffsetY=0;
-        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/1.7f, getHeight()/1.7f);
+        super.initializeHitbox();
+        //hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/1.7f, getHeight()/1.7f);
     }
 }
 interface Groundobject
