@@ -68,6 +68,7 @@ void reset()
         setPosition(spawnx,spawny);
         sethealth(maxhealth,true);
         collisionOn=true;
+        invincible=false;
         additionalForce.set(0,0);
         status = EntityStatus.inactiv;
         animationstateTime=0;

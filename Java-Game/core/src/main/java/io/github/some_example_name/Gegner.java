@@ -333,13 +333,22 @@ void reset()
             Level.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
 
     };
-    public void dashattack (float delta) {
-        if (getdistance(player) <= 20 && getdistance(player) >= 5) {//läuft direkt gerade zum Spieler
-           speed = 600;
-            movement = new Vector2(-getCenterX() + player.getCenterX(), getCenterY() - player.getCenterY());
-            ismoving = true;
-            //player.damageby(30);
-        }
+    public void dashattack () {
+        speed=450;
+        collisionOn=true;
+        attackStatus=AttackStatus.dash;
+        savedVector=getDistanceVector(player);
+        addAction(Actions.sequence(
+                Actions.delay(2f),
+                new Action() {
+                    @Override
+                    public boolean act(float delta) {
+                        attackStatus=AttackStatus.inactive;
+                        speed=100;
+                        return true;
+                    }
+                }
+        ));
     }
 
     void fireballringattack(float angle) //
@@ -352,7 +361,7 @@ void reset()
         vec.rotateDeg(angleoffset);
         for(int i=0; i<=360-angle;i+=angle)
         {
-            Level.projectiles.add( new FireBall(getHitboxCenterX()/*+vec.x*/,getHitboxCenterY()/*+vec.y*/,new Vector2(vec.x,vec.y)));
+            Level.projectiles.add( new FireBall(getHitboxCenterX()+vec.x,getHitboxCenterY()+vec.y,new Vector2(vec.x,vec.y)));
             vec.rotateDeg(angle);
         }
     }
@@ -375,10 +384,6 @@ void reset()
     }
 
     void shockwaveAttack(float waveduration, float jumpheight) {
-        if (attackStatus == AttackStatus.inair||attackStatus == AttackStatus.dash)
-        {
-            return;
-        }
         final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
         attackdelay=0;
         attackStatus = AttackStatus.inair;
@@ -448,7 +453,8 @@ void reset()
                 @Override
                 public boolean act(float delta) {
                     attackStatus = AttackStatus.inactive;
-                    collisionOn=true;
+                    collisionOn=false;
+                    invincible=false;
                     logic.resetCameraOffset();
                     if(currentStatus==AttackStatus.projectile_storm){
                     //attackdelay2=0;
@@ -460,6 +466,7 @@ void reset()
 
 
     }
+
 
 
 

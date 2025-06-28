@@ -442,6 +442,7 @@ public class Main implements ApplicationListener {
             }
                 if(Player.isattacking)
                 {
+                    int d=0;
                     if(Player.handleAttack(gegner)) {
                         continue;
                     }

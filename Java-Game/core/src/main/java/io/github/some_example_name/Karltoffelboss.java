@@ -17,6 +17,7 @@ public class Karltoffelboss extends Boss{
         setBossName("KARLTOFFEL DER SCHRECKLICHE");
         bossTitel.setColor(Color.YELLOW);
         positionChanged();
+        collisionOn=false;
     }
 
     @Override
@@ -34,6 +35,7 @@ public class Karltoffelboss extends Boss{
     @Override
     void reset() {
         super.reset();
+        //collisionOn=false;
     }
 
     @Override
@@ -48,9 +50,27 @@ public class Karltoffelboss extends Boss{
 
     @Override
     boolean damageby(float damage) {
-        if(!collisionOn){return false;}
-        shockwaveAttack(0.3f,120);
+        if(invincible){return false;}
+        if (attackStatus != AttackStatus.inair&&attackStatus != AttackStatus.dash)
+        {
+            shockwaveAttack(0.3f,120);
+        }
+
         return super.damageby(damage);
+    }
+
+    @Override
+    void onPlayertouch() {
+        super.onPlayertouch();
+        if(attackStatus == AttackStatus.dash) {
+            Vector2 knockback = player.getDistanceVector(getHitboxCenterX(), hitbox.y).scl(-1);
+            knockback.setLength(160);
+            player.setAdditionalForce(knockback);
+            player.damageby(15);
+            collisionOn=false;
+            //invincible = true;
+            attackStatus = AttackStatus.inactive;
+        }
     }
 
     public void engagePlayer(float delta) {
@@ -76,7 +96,7 @@ public class Karltoffelboss extends Boss{
                     knockback.setLength(160);
                     player.setAdditionalForce(knockback);
                     player.damageby((float) (Math.pow(340,2)/ellipseDistance));
-                    System.out.println((float) (Math.pow(340,2)/ellipseDistance));
+                    //System.out.println((float) (Math.pow(340,2)/ellipseDistance));
                     collisionOn=false;
                 }
             }
@@ -94,8 +114,8 @@ public class Karltoffelboss extends Boss{
 
                     }
                 }else if (getdistance(player) >= 400) {
-                    shockwaveAttack(0.3f,150);
-                    //dashattack(delta);
+                    //shockwaveAttack(0.3f,150);
+                    dashattack();
                 }
 
                 if (attackdelay >= 2)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
@@ -117,8 +137,11 @@ public class Karltoffelboss extends Boss{
                     fireballringattack(45, (float) Math.random() * 10f + attackdelay2 / 10 * 180);
                     attackdelay = 0;
                 }
-            }
+            } else if (attackStatus==AttackStatus.dash) {
+                ismoving=true;
+                updatemovement(savedVector, delta);
 
+            }
 
 
         }

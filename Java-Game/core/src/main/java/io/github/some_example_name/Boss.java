@@ -26,12 +26,13 @@ class Boss extends Gegner {
     @Override
     boolean damageby(float damage){
         bossbar.takeDamage(damage);
-        curhealth-=damage;
+        return super.damageby(damage);
+        /*curhealth-=damage;
         if(curhealth <= 0) {
             return true;
         } else{
             return false;
-        }
+        }*/
     }
     @Override
     void sethealth(float health, boolean ignoremax) {
