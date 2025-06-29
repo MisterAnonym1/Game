@@ -451,7 +451,7 @@ public class Main implements ApplicationListener {
             if(!gegner.collisionOn) {continue;}
 
             resolveWallCollision(gegner);
-            if(Player.collisionOn){
+            if(Player.collisionOn&&gegner.attackStatus!= Gegner.AttackStatus.inair) {
             if(gegner.hitbox.overlaps(Player.hitbox))
             {
                 Vector2 vec= resolveCollision(gegner.hitbox, Player.hitbox);
@@ -552,6 +552,24 @@ public class Main implements ApplicationListener {
                         break;
                     }
                 }
+            }
+        }
+        for(TextureActor object: Level.objects)
+        {
+            if( Player.hitbox.overlaps(object.hitbox))
+            {
+                if(object instanceof Coin)
+                {
+                    ((Coin) object).onTouch(Player);
+                }
+                /*else if(object instanceof Door)
+                {
+                    ((Door) object).onStand();
+                }
+                else if(object instanceof Chest)
+                {
+                    ((Chest) object).onStand();
+                }*/
             }
         }
 

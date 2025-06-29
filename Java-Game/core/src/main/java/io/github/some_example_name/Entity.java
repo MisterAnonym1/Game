@@ -171,7 +171,6 @@ void reset()
             }
         ));
 
-
     }
     void onDeath()
     {

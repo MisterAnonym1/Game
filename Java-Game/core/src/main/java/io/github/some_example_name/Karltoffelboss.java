@@ -2,14 +2,19 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Action;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+
+import static java.lang.Float.NaN;
 
 public class Karltoffelboss extends Boss{
-
+    int recenthits=0;
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
-        speed = 100;
+        speed = 200;
         weight=20;
         sethealth(1000,true);
         scale(0.3f);
@@ -17,7 +22,7 @@ public class Karltoffelboss extends Boss{
         setBossName("KARLTOFFEL DER SCHRECKLICHE");
         bossTitel.setColor(Color.YELLOW);
         positionChanged();
-        collisionOn=false;
+        collisionOn=true;
     }
 
     @Override
@@ -35,6 +40,7 @@ public class Karltoffelboss extends Boss{
     @Override
     void reset() {
         super.reset();
+        speed=200;
         //collisionOn=false;
     }
 
@@ -51,11 +57,18 @@ public class Karltoffelboss extends Boss{
     @Override
     boolean damageby(float damage) {
         if(invincible){return false;}
-        if (attackStatus != AttackStatus.inair&&attackStatus != AttackStatus.dash)
+        recenthits++;
+        if (attackStatus != AttackStatus.dash&&recenthits>=3)
         {
-            shockwaveAttack(0.3f,120);
+            addAction(Actions.sequence(Actions.delay((float) (Math.random()*0.15)), new Action() {
+                @Override
+                public boolean act(float delta) {
+                    shockwaveAttack(0.3f,120);
+                    recenthits-= MathUtils.random(1,2);
+                    return true;
+                }
+            }));
         }
-
         return super.damageby(damage);
     }
 
@@ -67,7 +80,7 @@ public class Karltoffelboss extends Boss{
             knockback.setLength(160);
             player.setAdditionalForce(knockback);
             player.damageby(15);
-            collisionOn=false;
+            collisionOn=true;
             //invincible = true;
             attackStatus = AttackStatus.inactive;
         }
@@ -95,8 +108,11 @@ public class Karltoffelboss extends Boss{
                     Vector2 knockback = player.getDistanceVector(getHitboxCenterX(), hitbox.y).scl(-1);
                     knockback.setLength(160);
                     player.setAdditionalForce(knockback);
-                    player.damageby((float) (Math.pow(340,2)/ellipseDistance));
-                    //System.out.println((float) (Math.pow(340,2)/ellipseDistance));
+                    float damage = (float) (Math.min(Math.pow(300, 2) / ellipseDistance,100));
+                    if (damage == NaN ||Float.isInfinite(damage)) {
+                        damage = 100;
+                    }
+                    player.damageby(damage);
                     collisionOn=false;
                 }
             }
@@ -107,23 +123,35 @@ public class Karltoffelboss extends Boss{
 
             if (attackStatus == AttackStatus.inactive) {
                 if (attackdelay2 >= 15) {
-                    if (getdistance(player) <= 500) {
+
+                    if (getdistance(spawnx,spawny)<=100) {
+
+                        if(getdistance(player)>=250){
                         attackdelay2 = 0;
                         attackdelay = 0;
                         fireStormattack();
+                        recenthits=0;}
+                        else{shockwaveAttack(0.3f,150);
+                            recenthits= Math.max(recenthits-1,0);}
 
                     }
+                    else{
+                    attackStatus=AttackStatus.repositioning;}
+
                 }else if (getdistance(player) >= 400) {
                     //shockwaveAttack(0.3f,150);
                     dashattack();
+                    recenthits=0;
                 }
+
+
 
                 if (attackdelay >= 2)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
                 {
                     attackdelay = 0;
                     if (getdistance(player) <= 500 && getdistance(player) >= 100) {
                         fireballringattack(45, (float) Math.random() * 35f);
-                        //shockwaveAttack(0.3f,200);
+                        recenthits= Math.max(recenthits-1,0);
                     }
                 }
             }
@@ -138,13 +166,31 @@ public class Karltoffelboss extends Boss{
                     attackdelay = 0;
                 }
             } else if (attackStatus==AttackStatus.dash) {
+                if(collides)
+                {
+                    attackStatus = AttackStatus.inactive;
+                    speed=200;
+                }
+                else{
                 ismoving=true;
-                updatemovement(savedVector, delta);
+                speed+=160*delta;
+                updatemovement(savedVector, delta);}
+
+            }
+            else if (attackStatus == AttackStatus.repositioning) {
+                if(getdistance(spawnx,spawny)>100)
+                {
+                   updatemovement(getDistanceVector(spawnx, spawny), delta);
+                }
+                else {attackStatus = AttackStatus.inactive;
+                     attackdelay = 0;
+                }
 
             }
 
 
         }
+        collides=false;
         //-----
     }
 

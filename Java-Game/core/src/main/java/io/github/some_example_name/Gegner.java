@@ -35,7 +35,7 @@ abstract class Gegner extends Entity
     Vector2 savedVector= new Vector2(0,0);
     Animation<TextureRegion> explosionAnimation;
 
-    public enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair }
+    public enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair, repositioning }
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -88,6 +88,12 @@ void reset()
     @Override
     protected void positionChanged() {
         hitbox.setPosition(getCenterX()-hitbox.getWidth()/2- hitboxOffsetX, getCenterY()-hitbox.getHeight()/2 - hitboxOffsetY);
+    }
+
+    @Override
+    boolean damageby(float damage) {
+        Level.indicators.addActor(new PopUpText("-" + (int) damage, (player.getCenterX()<getCenterX()?hitbox.x:hitbox.x+hitbox.width), getHitboxCenterY()));
+        return super.damageby(damage);
     }
 
     @Override
@@ -334,17 +340,18 @@ void reset()
 
     };
     public void dashattack () {
-        speed=450;
+        final float savedspeed=speed;
+        speed=320;
         collisionOn=true;
         attackStatus=AttackStatus.dash;
         savedVector=getDistanceVector(player);
         addAction(Actions.sequence(
-                Actions.delay(2f),
+                Actions.delay(1.5f),
                 new Action() {
                     @Override
                     public boolean act(float delta) {
                         attackStatus=AttackStatus.inactive;
-                        speed=100;
+                        speed=savedspeed;
                         return true;
                     }
                 }
@@ -387,9 +394,9 @@ void reset()
         final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
         attackdelay=0;
         attackStatus = AttackStatus.inair;
-        collisionOn=false;
+        //collisionOn=false;
         invincible=true;
-        savedVector= new Vector2(player.getHitboxCenterX() - getHitboxCenterX(),  player.getHitboxCenterY()-hitbox.y);
+        savedVector= new Vector2(player.getHitboxCenterX() - getHitboxCenterX(),  player.hitbox.y-hitbox.y);
        speed=savedVector.len()/jumpheight*250f/2-5;
         float startValue =1f; // Startwert für shadowscale
         float endValue = (float) Math.exp( -jumpheight/450f); // Endwert für shadowscale, abhängig von jumpheight
@@ -453,10 +460,10 @@ void reset()
                 @Override
                 public boolean act(float delta) {
                     attackStatus = AttackStatus.inactive;
-                    collisionOn=false;
+                    collisionOn=true;
                     invincible=false;
                     logic.resetCameraOffset();
-                    if(currentStatus==AttackStatus.projectile_storm){
+                    if(currentStatus==AttackStatus.projectile_storm||currentStatus==AttackStatus.inair){
                     //attackdelay2=0;
                         attackStatus = currentStatus;
                     }

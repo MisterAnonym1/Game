@@ -29,6 +29,7 @@ class Level {
     static ArrayList<Gegner> gegnerliste= new ArrayList<>();
     static ArrayList<Projectile> projectiles= new ArrayList<>();
     static ArrayList<PartikelSprite> particles= new ArrayList<>();
+    static Stage indicators;
     static ArrayList<NPC> npcs= new ArrayList<>();
     static ArrayList<TextureActor> objects= new ArrayList<>();//temporäre objekte die ganz hinten gedrawt werden
     static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
@@ -45,6 +46,7 @@ class Level {
         doorsnummer = 0;
         xcoplayer = 500;
         ycoplayer = 400;
+        indicators= new Stage(mainlogic.viewport);
     }
 
     /**
@@ -74,6 +76,7 @@ class Level {
             }
             npcs.clear();
 
+            indicators.clear();
             for (Projectile pro : projectiles) {
                 pro.destroy();
             }
@@ -108,6 +111,7 @@ class Level {
         for (Projectile projec : projectiles) {
             projec.act(delta);
         }
+        indicators.act(delta);
         for( PartikelSprite particle : particles) {
             particle.act(delta);
         }
@@ -149,16 +153,17 @@ class Level {
         for(TextureActor object: objects) {
             object.draw(batch,delta);
         }
+        for (NPC npc : npcs) {
+            npc.draw(batch,delta);
+        }
         for (Testentity testi : testentitys) {
             testi.draw(batch,delta);
         }
         for (Gegner gegner : gegnerliste) {
             gegner.draw(batch,delta);
         }
-        for (NPC npc : npcs) {
-            npc.draw(batch,delta);
-        }
         logic.Player.draw(batch,shape, delta,1.0f);
+        System.out.println("1");
         for (Projectile projec : projectiles) {
             projec.draw(batch,delta);
         }
@@ -166,8 +171,9 @@ class Level {
             particle.draw(batch,delta);
         }
 
-        batch.end();
 
+        batch.end();
+        indicators.draw();
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         Gdx.gl.glLineWidth(4);
@@ -390,6 +396,7 @@ class Level {
             actor.removeFromLevel();
             actor.destroy();
         }
+        indicators.clear();
         deleteList.clear();
         logic.Player.reset();
         logic.Player.normalise();

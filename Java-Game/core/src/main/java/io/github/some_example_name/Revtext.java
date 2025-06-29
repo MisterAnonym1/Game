@@ -16,10 +16,13 @@ public class Revtext extends OwnText {
     float lineDelay=0.1f;
     boolean waitingforLine;
     boolean centered;
+    float centerx, centery;
 
     public Revtext(float centerx, float centery, int fontsize, float chardelay, String mainText) {
         super("", centerx, centery, fontsize, Color.WHITE, null);
         centered = true;
+        this.centerx = centerx;
+        this.centery = centery;
         charDelay = chardelay;
         maintext = mainText;
         setColor(1,1,1,1);
@@ -92,9 +95,9 @@ public class Revtext extends OwnText {
     }
     void center(String text) {
         layout.setText(font, text);
-        setX(getX()- layout.width / 2.0f);// Zentriere den Text horizontal
+        setX(centerx- layout.width / 2.0f);// Zentriere den Text horizontal
         layout.setText(font,"X");
-        setY(getY()+ layout.height / 2.0f); // Zentriere den Text vertikal
+        setY(centery+ layout.height / 2.0f); // Zentriere den Text vertikal
         //setY(getX()-layout.height / 2.0f);
         //setY(getY());
 

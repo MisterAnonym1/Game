@@ -216,7 +216,6 @@ public class Testentity extends Gegner {
                 if (pathCountdown <= 0) {
                     pathCountdown = MathUtils.random() * 3.5f + 1.5f+ MathUtils.random()*Level.testentitys.size()/2;
                     setrandompoint(strivingx, strivingy, 140f);
-                    collides = false;
                 }
             }
             else {

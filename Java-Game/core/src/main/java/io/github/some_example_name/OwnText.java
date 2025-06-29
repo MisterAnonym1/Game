@@ -7,9 +7,13 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Interpolation;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 public class OwnText extends Actor {
      BitmapFont font;
@@ -173,3 +177,30 @@ public class OwnText extends Actor {
     }
 }*/
 
+class PopUpText extends OwnText {
+    public PopUpText(String text, float x, float y, int size, Color color, Color outlineColor) {
+        super(text, x, y, size, color, outlineColor);
+        final PopUpText thistext =this;
+        addAction(Actions.fadeIn(0.2f));
+        addAction(Actions.sequence(
+                Actions.moveBy(0, 50, 0.25f,Interpolation.fastSlow),// Bewege den Text nach oben
+                Actions.moveBy(0,-80,0.5f, Interpolation.slowFast)
+
+        ));
+        addAction(new SequenceAction(Actions.scaleBy(0.3f, 0.3f, 0.4f),
+                Actions.fadeOut(0.3f),
+                Actions.run(() -> {
+                  remove(); // Entferne den Text nach der Animation
+                })
+        ));
+    }
+
+    public PopUpText(String text, float x, float y) {
+        this(text, x, y, 20, Color.WHITE, Color.BLACK);
+    }
+
+    @Override
+    public void draw(Batch batch, float outlinealpha) {
+        super.draw(batch, outlinealpha);
+    }
+}

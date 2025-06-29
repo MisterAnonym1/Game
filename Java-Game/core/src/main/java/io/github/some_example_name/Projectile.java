@@ -196,11 +196,7 @@ class FireBall extends Projectile
         //hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/1.7f, getHeight()/1.7f);
     }
 }
-interface Groundobject
-{
-    void onTouch(Entity enti);
-}
-class Shockwave extends PartikelSprite implements Groundobject {
+class Shockwave extends PartikelSprite {
 
     Shockwave(float centerx, float centery) {
         super(centerx, centery,  Animator.getAnimation("small shockwave.png", 9, 9, 8, 78, 0.02f), true);
@@ -222,7 +218,7 @@ class Shockwave extends PartikelSprite implements Groundobject {
 
     }
 
-    @Override
+
     public void onTouch(Entity enti) {
 
     }
