@@ -163,7 +163,6 @@ class Level {
             gegner.draw(batch,delta);
         }
         logic.Player.draw(batch,shape, delta,1.0f);
-        System.out.println("1");
         for (Projectile projec : projectiles) {
             projec.draw(batch,delta);
         }

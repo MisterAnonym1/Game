@@ -175,8 +175,11 @@ public class Testentity extends Gegner {
 
     @Override
     void onDeath() {
-        super.onDeath();
+        if(aggressive){
+            spawnCoins();
         }
+        Level.deleteList.add(this);
+    }
 
     @Override
     boolean damageby(float damage) {

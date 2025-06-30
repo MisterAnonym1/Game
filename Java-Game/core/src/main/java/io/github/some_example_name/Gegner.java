@@ -179,7 +179,22 @@ void reset()
     @Override
     void onDeath() {
         super.onDeath();
-        Level.objects.add(new Coin(getHitboxCenterX(), getHitboxCenterY(), Math.max(1,(int)(maxhealth/10f))) );
+        spawnCoins();
+    }
+    void spawnCoins()
+    {
+        int combinedvalue=Math.max(1,(int)(maxhealth/10f));
+        int objectcount=Math.min((int)Math.ceil(combinedvalue/5f),5);
+        int value=(int) Math.floor((float)combinedvalue/(float)objectcount);
+        for(int i=1; i<objectcount; i++)
+        {
+            combinedvalue-=value;
+            Level.objects.add(new Coin(getHitboxCenterX()+MathUtils.random(-hitbox.width/2,hitbox.width/2), getHitboxCenterY()+MathUtils.random(-hitbox.height/2,hitbox.height/2), value));
+        }
+
+        Level.objects.add(new Coin(getHitboxCenterX()+MathUtils.random(-hitbox.width/2,hitbox.width/2), getHitboxCenterY()+MathUtils.random(-hitbox.height/2,hitbox.height/2), combinedvalue));
+
+
     }
 
     void setPath(MyTile start, MyTile target, Vector2 vec)
