@@ -2,10 +2,7 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Cursor;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
@@ -17,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -376,6 +374,14 @@ class NewLevelScreen extends Menu {
     AdvancedTextButton neinknopf;
     AdvancedTextButton skillknopf;
     Revtext secondtext;
+    // --- Skill Menü Variablen ---
+    private int healthLevel = 0;
+    private int attackLevel = 0;
+    private int speedLevel = 0;
+    private final int maxLevel = 5;
+    private Window skillWindow;
+    private java.util.List<Label> skillCostLabels = new java.util.ArrayList<>();
+
     NewLevelScreen(Main main) {
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 50, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
         secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 52, 0.06f,"");
@@ -395,10 +401,116 @@ class NewLevelScreen extends Menu {
 
         skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+150, 130, 3,Color.SKY,Color.WHITE );
         skillknopf.getLabel().setFontScale(2f); // 1.5x größer
-        skillknopf.setOnUp(()-> System.out.println("Skills are coming soon"));
+        skillknopf.setOnUp(this::showSkillMenu);
         Main.uiStage.addActor(skillknopf);
          delay=0;
 
+    }
+
+    private void showSkillMenu() {
+        skillCostLabels.clear();
+        if (skillWindow != null && skillWindow.hasParent()) return;
+        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        skillWindow = new Window("Skill Menü", skin);
+        skillWindow.setSize(ScreenWidth, ScreenHeight);
+        skillWindow.setPosition(0, 0);
+        skillWindow.setMovable(false);
+        skillWindow.setModal(true);
+        skillWindow.setResizable(false);
+        skillWindow.setColor(new Color(0.13f, 0.18f, 0.32f, 0.98f)); // Blau-grau
+
+        Table table = new Table(skin);
+        table.setFillParent(true);
+        table.defaults().pad(20);
+
+        Label title = new Label("Skill Menü", skin);
+        title.setFontScale(2.2f);
+        title.setColor(new Color(0.5f,0.7f,1f,1f)); // Hellblau
+        table.add(title).colspan(4).center().padBottom(40);
+        table.row();
+
+        addSkillRow(table, "Health", () -> healthLevel, v -> healthLevel = v);
+        addSkillRow(table, "Attack", () -> attackLevel, v -> attackLevel = v);
+        addSkillRow(table, "Speed", () -> speedLevel, v -> speedLevel = v);
+
+        table.row();
+        TextButton closeBtn = new TextButton("Schließen", skin);
+        closeBtn.getLabel().setFontScale(1.7f);
+        closeBtn.setColor(new Color(0.5f,0.7f,1f,1f));
+        closeBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                skillWindow.remove();
+                System.out.println("Skills - Health: " + healthLevel + ", Attack: " + attackLevel + ", Speed: " + speedLevel);
+            }
+        });
+        table.add(closeBtn).colspan(4).center().padTop(30).width(220).height(60);
+        skillWindow.add(table).expand().fill();
+        Main.uiStage.addActor(skillWindow);
+    }
+
+    private void addSkillRow(Table table, String label, java.util.function.Supplier<Integer> getter, java.util.function.IntConsumer setter) {
+        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        Label skillLabel = new Label(label, skin);
+        skillLabel.setFontScale(1.7f); // Größer
+        ProgressBar bar = new ProgressBar(0, maxLevel, 1, false, skin);
+        bar.setValue(getter.get());
+        bar.setAnimateDuration(0.2f);
+        bar.getStyle().knobBefore = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("blue-loading.png"))));
+        bar.getStyle().knobBefore.setMinHeight(24); // dicker
+        bar.getStyle().background.setMinHeight(18); // dicker
+        bar.setHeight(32f);
+        bar.setWidth(260f);
+        TextButton plusBtn = new TextButton("+", skin);
+        plusBtn.getLabel().setFontScale(2.1f); // Größer
+        plusBtn.setColor(new Color(0.5f,0.7f,1f,1f));
+        int cost = (getter.get() + 1) * 5;
+        int coins = Main.invManager.getValueByKey("Coins");
+        Label costLabel = new Label(cost + " Münzen", skin);
+        costLabel.setFontScale(1.3f);
+        if (coins < cost) costLabel.setColor(Color.RED); else costLabel.setColor(Color.GOLD);
+        skillCostLabels.add(costLabel);
+        plusBtn.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                int val = getter.get();
+                int coins = Main.invManager.getValueByKey("Coins");
+                int cost = (val + 1) * 5;
+                if (val < maxLevel && coins >= cost) {
+                    Main.invManager.setValueByKey("Coins", coins - cost);
+                    setter.accept(val + 1);
+                    bar.setValue(val + 1);
+                    if(bar.getValue()==bar.getMaxValue()) {
+                        costLabel.setText("Max");
+                        costLabel.setColor(Color.GRAY);
+                    } else {
+                        costLabel.setText((val + 2) * 5 + " Münzen");
+                    }
+                    updateAllSkillCostLabels();
+                }
+            }
+        });
+        table.row();
+        table.add(skillLabel).width(160).height(60);
+        table.add(bar).width(260).height(32).padLeft(10).padRight(10);
+        table.add(costLabel).width(110).height(60);
+        table.add(plusBtn).width(70).height(60);
+    }
+
+    private void updateAllSkillCostLabels() {
+        int coins = Main.invManager.getValueByKey("Coins");
+        int[] levels = {healthLevel, attackLevel, speedLevel};
+        for (int i = 0; i < skillCostLabels.size(); i++) {
+            Label label = skillCostLabels.get(i);
+            int cost = (levels[i] + 1) * 5;
+            if (levels[i] >= maxLevel) {
+                label.setText("Max");
+                label.setColor(Color.GRAY);
+            } else {
+                label.setText(cost + " Münzen");
+                if (coins < cost) label.setColor(Color.RED); else label.setColor(Color.GOLD);
+            }
+        }
     }
 
     @Override

@@ -1,4 +1,4 @@
-#Coins 0
+#Coins 5
 #Potions 0
 #Armor 50
 #Sword 1

@@ -34,6 +34,7 @@ public class Coin extends PartikelSprite {
     public void onTouch(Entity enti) {
         if (enti instanceof Player) {
             Main.invManager.addValueByKey("Coins", amount);
+            SoundManager.stop("coin_pickup");
             SoundManager.play("coin_pickup",0.11f, MathUtils.random(0.9f,1.1f));
             Level.indicators.addActor(new PopUpText("+" + amount, getX() + getWidth() /2, getY() + getHeight(), 15, Color.YELLOW, Color.BLACK));
             Level.deleteList.add(this);

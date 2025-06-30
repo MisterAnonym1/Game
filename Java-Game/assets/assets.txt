@@ -8,6 +8,7 @@ Amble-Regular-26.fnt
 badlogic.jpg
 baeh-sheep.wav
 battle-of-the-dragons-8037.mp3
+blue-loading.png
 bucket.png
 Carrot-sheet.png
 Carrot_Idle.png

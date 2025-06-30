@@ -72,7 +72,7 @@ public class Main implements ApplicationListener {
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
         //renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         music.setLooping(true);
-        music.setVolume(.15f); // .2f ist das selbe wie 0.2f
+        music.setVolume(.17f); // .2f ist das selbe wie 0.2f
         music.play();
         loadSounds();
         dataCenter=new DataCenter(this);
