@@ -21,6 +21,11 @@ public class InventoryManager {
             inventoryFile.writeString(defaultContent, false); // Erstelle die Datei mit Standardwerten
         }
     }
+    public void resetInventory() {
+        // Setzt das Inventar auf die Standardwerte zurück
+        String defaultContent = "#Coins 0\n#Potions 0\n#Armor 50\n#Sword 1\n"; // Beispielwerte
+        inventoryFile.writeString(defaultContent, false); // Überschreibt die Datei mit den Standardwerten
+    }
 
     // Lese den Inhalt der Datei und gib ihn als Array von Zeilen zurück
     public String[] readInventory() {

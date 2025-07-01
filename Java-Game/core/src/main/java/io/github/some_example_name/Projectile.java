@@ -143,7 +143,7 @@ class Projectile extends PartikelSprite
 
 class FireBall extends Projectile
 {
-    static float speed=300;
+    static float speed=370;
 
     static Animation<TextureRegion> explosion=Animator.getAnimation("Explosions.png",9,1,1,9,0.1f); //Variable zum speichern der letzten abgespielten animation
     FireBall(float x,float y, Vector2 vel)

@@ -12,6 +12,7 @@ public class Coin extends PartikelSprite {
         super(cx,cy, Animator.getAnimation(new TextureRegion(new Texture("Coin-rotating.png")), 8, 1, 0.07f),false);
         this.amount = amount;
         //coinAnimation = Animator.getAnimation(new TextureRegion(new Texture("Coin-rotating.png")), 1, 1, 0.5f);
+        scaleBy(0.4f);
     }
 
     public int getAmount() {
@@ -36,7 +37,7 @@ public class Coin extends PartikelSprite {
             Main.invManager.addValueByKey("Coins", amount);
             SoundManager.stop("coin_pickup");
             SoundManager.play("coin_pickup",0.11f, MathUtils.random(0.9f,1.1f));
-            Level.indicators.addActor(new PopUpText("+" + amount, getX() + getWidth() /2, getY() + getHeight(), 15, Color.YELLOW, Color.BLACK));
+            Level.indicators.addActor(new PopUpText("+" + amount, getX() + getWidth() /2, getY() + getHeight(), 17, Color.YELLOW, Color.BLACK));
             Level.deleteList.add(this);
         }
     }

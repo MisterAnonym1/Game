@@ -484,6 +484,12 @@ class HealthBar extends Actor {
         this.maxHealth = maxhealth;
         currentHealth = maxHealth;
     }
+
+    public void setMaxHealth(float maxHealth) {
+        this.maxHealth = maxHealth;
+        takeDamage(0); // Update the health bar width based on the new max health
+    }
+
     void centeratX()
     {
         float x1 =h1.getX();

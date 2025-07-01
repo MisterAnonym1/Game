@@ -28,12 +28,92 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     float delay=1;
     Main main;
     Revtext textbox;//erschafft eine Textbox, <---dein ernst? ich kann selber sehen
-    final float ScreenWidth=1024;
-    final float ScreenHeight=576;
-    @Override
-    public void act(float delta) {
-        super.act(delta);
+    static float ScreenWidth=1024;
+    static float ScreenHeight=576;
+    void showRestartConfirmation() {
+        final Window confirmWindow = new Window("", Main.skin);
+        confirmWindow.setModal(true);
+        confirmWindow.setMovable(false);
+        confirmWindow.setResizable(false);
+        confirmWindow.setSize(500, 260); // Größer
+        confirmWindow.setPosition(ScreenWidth/2f - 250, ScreenHeight/2f - 130);
 
+        Label label = new Label("Are you sure you want to\n restart the whole game?\nThis will delete your progress.", Main.skin);
+        label.setAlignment(Align.center);
+        label.setFontScale(2.2f); // Größerer Text
+        confirmWindow.add(label).colspan(2).pad(30);
+        confirmWindow.row();
+
+        TextButton yesButton = new TextButton("Yes", Main.skin);
+        TextButton noButton = new TextButton("No", Main.skin);
+        yesButton.getLabel().setFontScale(2.2f); // Größerer Button-Text
+        yesButton.getLabel().setColor(Color.BLUE);
+
+        noButton.getLabel().setFontScale(2.2f);
+        yesButton.getLabel().setColor(Color.RED);
+        yesButton.setSize(100, 100); // Größe nicht hier ändern
+        noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
+
+        yesButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                confirmWindow.remove();
+                main.setState("restart");
+            }
+        });
+        noButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                confirmWindow.remove();
+            }
+        });
+
+        confirmWindow.add(yesButton).width(150).height(70).pad(30);
+        confirmWindow.add(noButton).width(150).height(70).pad(30);
+        Main.uiStage.addActor(confirmWindow);
+    }
+     static void showQuitConfirmation(Main main) {
+        final Window confirmWindow = new Window("", Main.skin);
+        confirmWindow.setModal(true);
+        confirmWindow.setMovable(false);
+        confirmWindow.setResizable(false);
+        confirmWindow.setSize(500, 260); // Größer
+        confirmWindow.setPosition(ScreenWidth/2f - 250, ScreenHeight/2f - 130);
+
+        Label label = new Label("Are you sure you want to quit?", Main.skin);
+        label.setAlignment(Align.center);
+        label.setFontScale(2.2f); // Größerer Text
+        confirmWindow.add(label).colspan(2).pad(30);
+        confirmWindow.row();
+
+        TextButton yesButton = new TextButton("Yes", Main.skin);
+        TextButton noButton = new TextButton("No", Main.skin);
+        yesButton.getLabel().setFontScale(2.2f); // Größerer Button-Text
+        yesButton.getLabel().setColor(Color.BLUE);
+
+        noButton.getLabel().setFontScale(2.2f);
+        yesButton.getLabel().setColor(Color.RED);
+        yesButton.setSize(100, 100); // Größe nicht hier ändern
+        noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
+
+        yesButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                Gdx.app.exit();
+                main.dispose();
+                System.exit(0);
+            }
+        });
+        noButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                confirmWindow.remove();
+            }
+        });
+
+        confirmWindow.add(yesButton).width(200).height(80).pad(30);
+        confirmWindow.add(noButton).width(200).height(80).pad(30);
+        Main.uiStage.addActor(confirmWindow);
     }
 }
 
@@ -226,13 +306,13 @@ class WinScreen extends Menu
 
         knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 100, 3,Color.CORAL,Color.RED );
         knopf.getLabel().setFontScale(2f); // nur Schrift 2x größer
-        knopf.setOnUp(()->this.destroy("restart"));
+        knopf.setOnUp(()->showRestartConfirmation());
         Main.uiStage.addActor(knopf);
 
         exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f-215, 100, 3,Color.ROYAL,Color.BLACK );
         exitknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
         exitknopf.setOnUp(()->{
-            showQuitConfirmation();
+            showQuitConfirmation(main);
         });
         Main.uiStage.addActor(exitknopf);
 
@@ -289,49 +369,7 @@ class WinScreen extends Menu
     /**
      * Zeigt ein Pop-up-Fenster, das fragt, ob das Spiel wirklich beendet werden soll.
      */
-    void showQuitConfirmation() {
-        final Window confirmWindow = new Window("", Main.skin);
-        confirmWindow.setModal(true);
-        confirmWindow.setMovable(false);
-        confirmWindow.setResizable(false);
-        confirmWindow.setSize(500, 260); // Größer
-        confirmWindow.setPosition(ScreenWidth/2f - 250, ScreenHeight/2f - 130);
 
-        Label label = new Label("Are you sure you want to quit?", Main.skin);
-        label.setAlignment(Align.center);
-        label.setFontScale(2.2f); // Größerer Text
-        confirmWindow.add(label).colspan(2).pad(30);
-        confirmWindow.row();
-
-        TextButton yesButton = new TextButton("Yes", Main.skin);
-        TextButton noButton = new TextButton("No", Main.skin);
-        yesButton.getLabel().setFontScale(2.2f); // Größerer Button-Text
-        yesButton.getLabel().setColor(Color.BLUE);
-
-        noButton.getLabel().setFontScale(2.2f);
-        yesButton.getLabel().setColor(Color.RED);
-        yesButton.setSize(100, 100); // Größe nicht hier ändern
-        noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
-
-        yesButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
-                main.dispose();
-                System.exit(0);
-            }
-        });
-        noButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                confirmWindow.remove();
-            }
-        });
-
-        confirmWindow.add(yesButton).width(200).height(80).pad(30);
-        confirmWindow.add(noButton).width(200).height(80).pad(30);
-        Main.uiStage.addActor(confirmWindow);
-    }
     public void showCreditsWindow() {
         Window creditsWindow = new Window("", Main.skin); // Kein Titel im Fensterkopf
         creditsWindow.setModal(true);
@@ -374,13 +412,12 @@ class NewLevelScreen extends Menu {
     AdvancedTextButton neinknopf;
     AdvancedTextButton skillknopf;
     Revtext secondtext;
+    UpgradeManager upmanager;
     // --- Skill Menü Variablen ---
-    private int healthLevel = 0;
-    private int attackLevel = 0;
-    private int speedLevel = 0;
     private final int maxLevel = 5;
     private Window skillWindow;
     private java.util.List<Label> skillCostLabels = new java.util.ArrayList<>();
+    private java.util.List<Upgrade> skillUpgrades = new java.util.ArrayList<>();
 
     NewLevelScreen(Main main) {
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 50, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
@@ -388,7 +425,7 @@ class NewLevelScreen extends Menu {
         textbox.setColor(Color.WHITE);
         secondtext.setColor(new Color(0, 0f, 0,1));
         this.main=main;
-
+        upmanager=main.Player.upgradeManager;
         jaknopf = new AdvancedTextButton(" JA ",ScreenWidth/2f-150, 130, 3,Color.SKY,Color.WHITE );
         jaknopf.getLabel().setFontScale(2f); // 1.5x größer
         jaknopf.setOnUp(()->this.destroy("newlevel"));
@@ -409,9 +446,10 @@ class NewLevelScreen extends Menu {
 
     private void showSkillMenu() {
         skillCostLabels.clear();
+        skillUpgrades.clear();
         if (skillWindow != null && skillWindow.hasParent()) return;
         Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        skillWindow = new Window("Skill Menü", skin);
+        skillWindow = new Window("", skin);
         skillWindow.setSize(ScreenWidth, ScreenHeight);
         skillWindow.setPosition(0, 0);
         skillWindow.setMovable(false);
@@ -429,9 +467,9 @@ class NewLevelScreen extends Menu {
         table.add(title).colspan(4).center().padBottom(40);
         table.row();
 
-        addSkillRow(table, "Health", () -> healthLevel, v -> healthLevel = v);
-        addSkillRow(table, "Attack", () -> attackLevel, v -> attackLevel = v);
-        addSkillRow(table, "Speed", () -> speedLevel, v -> speedLevel = v);
+        addSkillRow(table, upmanager.getUpgrade("Health"));
+        addSkillRow(table, upmanager.getUpgrade("Damage"));
+        addSkillRow(table, upmanager.getUpgrade("Speed"));
 
         table.row();
         TextButton closeBtn = new TextButton("Schließen", skin);
@@ -441,7 +479,6 @@ class NewLevelScreen extends Menu {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 skillWindow.remove();
-                System.out.println("Skills - Health: " + healthLevel + ", Attack: " + attackLevel + ", Speed: " + speedLevel);
             }
         });
         table.add(closeBtn).colspan(4).center().padTop(30).width(220).height(60);
@@ -449,12 +486,12 @@ class NewLevelScreen extends Menu {
         Main.uiStage.addActor(skillWindow);
     }
 
-    private void addSkillRow(Table table, String label, java.util.function.Supplier<Integer> getter, java.util.function.IntConsumer setter) {
+    private void addSkillRow(Table table, Upgrade upgrade) {
         Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        Label skillLabel = new Label(label, skin);
+        Label skillLabel = new Label(upgrade.getName(), skin);
         skillLabel.setFontScale(1.7f); // Größer
         ProgressBar bar = new ProgressBar(0, maxLevel, 1, false, skin);
-        bar.setValue(getter.get());
+        bar.setValue(upgrade.getLevel());
         bar.setAnimateDuration(0.2f);
         bar.getStyle().knobBefore = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("blue-loading.png"))));
         bar.getStyle().knobBefore.setMinHeight(24); // dicker
@@ -464,27 +501,31 @@ class NewLevelScreen extends Menu {
         TextButton plusBtn = new TextButton("+", skin);
         plusBtn.getLabel().setFontScale(2.1f); // Größer
         plusBtn.setColor(new Color(0.5f,0.7f,1f,1f));
-        int cost = (getter.get() + 1) * 5;
+        int cost = upgrade.getCost(upgrade.getLevel()+1);
         int coins = Main.invManager.getValueByKey("Coins");
         Label costLabel = new Label(cost + " Münzen", skin);
         costLabel.setFontScale(1.3f);
-        if (coins < cost) costLabel.setColor(Color.RED); else costLabel.setColor(Color.GOLD);
+        if(bar.getValue()==bar.getMaxValue()) {
+            costLabel.setText("Max");
+            costLabel.setColor(Color.GRAY);
+        }else if (coins < cost) {costLabel.setColor(Color.RED);} else {costLabel.setColor(Color.GOLD);}
         skillCostLabels.add(costLabel);
+        skillUpgrades.add(upgrade);
         plusBtn.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                int val = getter.get();
+                int val = upgrade.getLevel();
                 int coins = Main.invManager.getValueByKey("Coins");
-                int cost = (val + 1) * 5;
+                int cost = upgrade.getCost(val + 1);
                 if (val < maxLevel && coins >= cost) {
                     Main.invManager.setValueByKey("Coins", coins - cost);
-                    setter.accept(val + 1);
+                    upgrade.upgrade();
                     bar.setValue(val + 1);
                     if(bar.getValue()==bar.getMaxValue()) {
                         costLabel.setText("Max");
                         costLabel.setColor(Color.GRAY);
                     } else {
-                        costLabel.setText((val + 2) * 5 + " Münzen");
+                        costLabel.setText(upgrade.getCost(val+2) +" Münzen");
                     }
                     updateAllSkillCostLabels();
                 }
@@ -499,11 +540,12 @@ class NewLevelScreen extends Menu {
 
     private void updateAllSkillCostLabels() {
         int coins = Main.invManager.getValueByKey("Coins");
-        int[] levels = {healthLevel, attackLevel, speedLevel};
         for (int i = 0; i < skillCostLabels.size(); i++) {
             Label label = skillCostLabels.get(i);
-            int cost = (levels[i] + 1) * 5;
-            if (levels[i] >= maxLevel) {
+            Upgrade upgrade = skillUpgrades.get(i);
+            int nextLevel = upgrade.getLevel() + 1;
+            int cost = upgrade.getCost(nextLevel);
+            if (upgrade.getLevel() >= maxLevel) {
                 label.setText("Max");
                 label.setColor(Color.GRAY);
             } else {
@@ -801,6 +843,60 @@ class DevMenu extends Menu
 
     public void act(float delta)
    {
+
+       delta = Gdx.graphics.getDeltaTime();
+       if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
+       {
+           //STRG
+           if (Gdx.input.isKeyPressed(Input.Keys.O) ) {
+               main.deltaFactor*=1+delta;
+           }
+           if (Gdx.input.isKeyPressed(Input.Keys.L) ) {
+               main.deltaFactor/=1f+delta;
+
+           }
+           if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {
+               main.debugging = !main.debugging;
+
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+               main.setState("dead");
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
+               showQuitConfirmation(main);
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
+               showRestartConfirmation();
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+               main.Player.sethealth(main.Player.maxhealth, false);
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+               main.Player.collisionOn=!main.Player.collisionOn;
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
+               main.Player.invincible = !main.Player.invincible;
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+               main.currentlevel.reload();
+           }
+           if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+               if(main.Player.speed!=400){
+                   main.Player.speed=400;}
+               else{main.Player.speed=250;}
+           }
+           if (Gdx.input.isKeyPressed(Input.Keys.Y)) {
+               main.ocam.zoom -= 0.5f*delta;
+           }
+           if (Gdx.input.isKeyPressed(Input.Keys.H)) {
+               main.ocam.zoom += 0.5f*delta;
+           }
+           //---STRG
+       }
+
+
+
+
        if(Main.debugging != onscreen)
        {
            onscreen = !onscreen;

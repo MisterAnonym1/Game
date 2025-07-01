@@ -23,17 +23,17 @@ class Player extends Entity
     MeeleWeapon weapon;
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
-    //Animation<TextureRegion> walkAnimation;
+    UpgradeManager upgradeManager;
+
     Animation<TextureRegion> sideAttackAnimation;
     Animation<TextureRegion> frontAttackAnimation;
     Animation<TextureRegion> backAttackAnimation;
-    //Animation<TextureRegion> defaultAnimation;
     Animation<TextureRegion> deadAnimation;
     boolean isattacking;
     Viewport viewport;
     Vector2 attackline;
     StorySpeechBox speechbox;
-    Player(float x, float y, float speed, int leben, Viewport view) {
+    Player(float x, float y, Viewport view) {
 
 
         super(x, y,new TextureRegion(new Texture("Se_Player_ja.jpg"),0,0,200,180),null);
@@ -41,9 +41,9 @@ class Player extends Entity
         player=this;
         weight = 0.5f;
         viewport=view;
-        this.speed = speed;
-        curhealth = leben;
-        maxhealth = leben;
+        this.speed = 250;
+        curhealth = 100;
+        maxhealth = 100;
         healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
         weapon=new Pipe(this);
         Main.uiStage.addActor(healthbar);
@@ -51,6 +51,7 @@ class Player extends Entity
         speechbox=new StorySpeechBox(512+150,60,300+300,100);
         ///+Main.uiStage.addActor(speechbox);
         speechbox.toBack();
+        speechbox.setVisible(false);
 
 
         //scale(1f);
@@ -58,12 +59,22 @@ class Player extends Entity
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.15f);
         defaultAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,1,6,0.12f);
-
         sideAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,13,18,0.08f);
         frontAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,25,30,0.08f);
         backAttackAnimation=Animator.getAnimation("Warrior_Blue.png", 6,8,37,42,0.08f);
         deadAnimation=Animator.getAnimation("Dead.png", 7,2,1,14,0.082f);
 
+        upgradeManager = new UpgradeManager(this);
+        upgradeManager.addnewPlayerUpgrade("Health", "Increases the maximum health of the player", (forlevel) -> forlevel * 10, (level) -> {
+            maxhealth = 100+level * 10;
+            healthbar.setMaxHealth(maxhealth);
+        });
+        upgradeManager.addnewPlayerUpgrade("Speed", "Increases the speed of the player", (forlevel) -> forlevel * 5, (level) -> {
+            speed = 250 + level * 20;
+        });
+        upgradeManager.addnewPlayerUpgrade("Damage", "Increases the damage of the player's weapon", (forlevel) -> 5+forlevel *15 , (level) -> {
+            weapon.damage= 40+level * 5;
+        });
     }
 
     @Override

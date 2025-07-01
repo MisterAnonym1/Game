@@ -65,6 +65,9 @@ public class DataCenter
         int seconds=(int)Math.round(timeplayed%60);
         return "0"+hours+":"+(minutes<10?"0":"")+minutes+":"+(seconds<10?"0":"")+seconds;
     }
+    public static void resetTimeplayed() {
+        timeplayed=0;
+    }
 
     void act(float delta)
     {

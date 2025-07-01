@@ -66,7 +66,7 @@ public class Main implements ApplicationListener {
         invManager = new InventoryManager();
        setToDefaultCursor();
 
-        Player = new Player(400,-250, 250,100, viewport);
+        Player = new Player(400,-250, viewport);
 
         ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
@@ -102,57 +102,16 @@ public class Main implements ApplicationListener {
 
     private void input() {
         float delta = Gdx.graphics.getDeltaTime();
-
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            Menu.showQuitConfirmation(this);
+        }
 
 
         if(DevMode)
         {
 
 
-            if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
-            {
-                //STRG
-                if (Gdx.input.isKeyPressed(Input.Keys.R) ) {
-                    deltaFactor*=1+delta;
-                }
-                if (Gdx.input.isKeyPressed(Input.Keys.F) ) {
-                    deltaFactor/=1+delta;
 
-                }
-                if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {
-                    debugging = !debugging;
-
-                }
-                if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
-                    setState("dead");
-                }
-                if(Gdx.input.isKeyJustPressed(Input.Keys.H)) {
-                    Player.sethealth(Player.maxhealth, false);
-                }
-                if(Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-                    Player.collisionOn=!Player.collisionOn;
-                }
-                if(Gdx.input.isKeyJustPressed(Input.Keys.I)) {
-                    Player.invincible = !Player.invincible;
-                }
-                if(Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-                    currentlevel.reload();
-                }
-                if(Gdx.input.isKeyJustPressed(Input.Keys.T)) {
-                    if(Player.speed!=400){
-                    Player.speed=400;}
-                    else{Player.speed=250;}
-                }
-                //---STRG
-            }
-
-
-            if (Gdx.input.isKeyPressed(Input.Keys.R)) {
-                ocam.zoom += 1*delta;
-            }
-            if (Gdx.input.isKeyPressed(Input.Keys.F)) {
-                ocam.zoom -= 1*delta;
-            }
 
         }
 
@@ -168,7 +127,7 @@ public class Main implements ApplicationListener {
 
         float delta = Gdx.graphics.getDeltaTime();
         delta= Math.min(delta,1/30.0f);
-        delta=delta/deltaFactor;
+        delta=delta*deltaFactor;
         uiStage.act(delta);
 
         if(gamestate!=Gamestate.loading&&gamestate!=Gamestate.paused&&gamestate!=Gamestate.startmenu){DataCenter.updateTimeplayed();}
@@ -216,7 +175,7 @@ public class Main implements ApplicationListener {
     private void draw() {
         float delta = Gdx.graphics.getDeltaTime();
         delta= Math.min(delta,1/30.0f);
-        delta=delta/deltaFactor;
+        delta=delta*deltaFactor;
 
         if(gamestate==Gamestate.loading){ScreenUtils.clear(Color.WHITE);}
         else{
@@ -264,14 +223,20 @@ public class Main implements ApplicationListener {
             case "startmenu" :
                 gamestate = Gamestate.startmenu;
                 uiStage.addActor(new Startmenu(this));
-                levelnummer=0;
+                levelnummer=invManager.getValueByKey("Level")-1;
+
                 break;
             case "DevMode" :
                 DevMode = true;
-                levelnummer = -1;
+                if(levelnummer==0) {
+                    levelnummer = -1; }
+
                 uiStage.addActor(new DevMenu(this));
             case "beforeGame" :
                 gamestate = Gamestate.loading;
+                if(!DevMode) {
+                    levelnummer = Math.max(0,levelnummer);
+                }
 
             case "newlevel" : //triggert den Modus um eine neues Level zu laden
                 Player.normalise();
@@ -328,8 +293,16 @@ public class Main implements ApplicationListener {
                 dialougnpc.onPress();
                 break;
             case "restart" :
-                System.out.println("Restarting game not implemented yet");
-                gamestate = Gamestate.playing;
+                levelnummer=0;
+                Player.upgradeManager.reset();
+                Player.reset();
+                invManager.resetInventory();
+                gamestate = Gamestate.startmenu;
+                uiStage.clear();
+                uiStage.addActor(Player.healthbar);
+                uiStage.addActor(Player.speechbox);
+                uiStage.addActor(new Startmenu(this));
+                DataCenter.resetTimeplayed();
                 break;
 
         }
@@ -595,6 +568,8 @@ public class Main implements ApplicationListener {
         if(currentlevel != null) {
             currentlevel.destroy();
         }
+        invManager.setValueByKey("Playtime", (int)DataCenter.getTimeplayed());
+        invManager.setValueByKey("Level", level);
         DataCenter.setLevelnumber(level);
         currentlevel = new Level(LevelList.levels[level],this);
         currentlevel.load();

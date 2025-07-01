@@ -33,7 +33,7 @@ public class Revtext extends OwnText {
 
     }
     public Revtext(float leftx, float bottomy, int fontsize, String mainText) {
-        super("", leftx, bottomy, fontsize, Color.WHITE, null);
+        super("", leftx, bottomy, fontsize, Color.WHITE, null,false);
         centered = false;
         charDelay = 0;
         maintext = mainText;
