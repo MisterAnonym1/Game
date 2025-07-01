@@ -845,6 +845,9 @@ class DevMenu extends Menu
    {
 
        delta = Gdx.graphics.getDeltaTime();
+       if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+           main.deltaFactor=(main.deltaFactor==0?1:0);
+       }
        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
        {
            //STRG
@@ -969,7 +972,7 @@ class SpriteButton extends Button
                 //onMouseLeave();
                 isChecked = !isChecked;
                 if (onUp != null) onUp.run();
-                if (onCheck != null) onCheck.accept(isChecked);// Umschalten für Checkbox-Funktion
+                //if (onCheck != null) onCheck.accept(isChecked);// Umschalten für Checkbox-Funktion
             }
 
             @Override
@@ -1062,7 +1065,7 @@ class SpriteButton extends Button
             public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
                 isChecked = !isChecked;
                 if (onUp != null) onUp.run();
-                if (onCheck != null) onCheck.accept(isChecked);
+                //if (onCheck != null) onCheck.accept(isChecked);
             }
 
             @Override

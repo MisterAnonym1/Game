@@ -162,7 +162,7 @@ class Level {
         for (Gegner gegner : gegnerliste) {
             gegner.draw(batch,delta);
         }
-        logic.Player.draw(batch,shape, delta,1.0f);
+        logic.Player.draw(batch,shape, delta==0?Gdx.graphics.getDeltaTime():delta,1.0f);
         for (Projectile projec : projectiles) {
             projec.draw(batch,delta);
         }

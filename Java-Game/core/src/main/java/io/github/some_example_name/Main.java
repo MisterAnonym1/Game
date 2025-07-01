@@ -109,15 +109,8 @@ public class Main implements ApplicationListener {
 
         if(DevMode)
         {
-
-
-
-
+            //Wurde ins DevMenu verlegt
         }
-
-
-        //float effectiveViewportWidth = ocam.viewportWidth * ocam.zoom;
-        //float effectiveViewportHeight = ocam.viewportHeight * ocam.zoom;
 
 
     }
@@ -126,15 +119,14 @@ public class Main implements ApplicationListener {
     {
 
         float delta = Gdx.graphics.getDeltaTime();
+        uiStage.act(delta);
         delta= Math.min(delta,1/30.0f);
         delta=delta*deltaFactor;
-        uiStage.act(delta);
-
         if(gamestate!=Gamestate.loading&&gamestate!=Gamestate.paused&&gamestate!=Gamestate.startmenu){DataCenter.updateTimeplayed();}
       if(gamestate == Gamestate.playing)
       {
          updatewalls();
-         Player.act(delta);
+         Player.act(delta==0?Gdx.graphics.getDeltaTime():delta);
           //Player.stayinWorldbounds();
 
          currentlevel.act(delta);
