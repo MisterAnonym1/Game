@@ -1,6 +1,6 @@
-#Coins 0
+#Coins 100
 #Potions 0
 #Armor 50
 #Sword 1
-#Playtime 232
+#Playtime 7
 #Level 2

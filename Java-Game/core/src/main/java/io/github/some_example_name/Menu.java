@@ -115,6 +115,46 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         confirmWindow.add(noButton).width(200).height(80).pad(30);
         Main.uiStage.addActor(confirmWindow);
     }
+
+    public void showCreditsWindow() {
+        Window creditsWindow = new Window("", Main.skin); // Kein Titel im Fensterkopf
+        creditsWindow.setModal(true);
+        creditsWindow.setMovable(false);
+        creditsWindow.setResizable(false);
+        creditsWindow.setSize(800, 500);
+        creditsWindow.setPosition(ScreenWidth/2f - 400, ScreenHeight/2f - 250);
+
+        // Titel als Label im Fenster-Inhalt, damit er nicht überlappt
+        Label titleLabel = new Label("Credits", Main.skin);
+        titleLabel.setAlignment(Align.center);
+        titleLabel.setFontScale(2.5f);
+        creditsWindow.add(titleLabel).expandX().padTop(10).padBottom(10);
+        creditsWindow.row();
+
+        Label creditsLabel = new Label(
+                "Game made by: The Boys Deluxe \nGrafik: ...\nMusic: I stole it (joke)\nSpecial Thanks: Frau Bauereisen\n" ,
+                Main.skin);
+        creditsLabel.setAlignment(Align.center);
+        creditsLabel.setFontScale(1.6f);
+        creditsWindow.add(creditsLabel).expand().fill().pad(20);
+        creditsWindow.row();
+        TextButton closeButton = new TextButton("Schließen", Main.skin);
+        closeButton.getLabel().setFontScale(1.6f);
+        closeButton.setSize(180, 60); // Größere Box
+        closeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                creditsWindow.remove();
+            }
+        });
+        creditsWindow.add(closeButton).padBottom(20).padTop(10).width(180).height(60);
+        Main.uiStage.addActor(creditsWindow);
+    }
+
+
+
+
+
 }
 
  class LoadingScreen extends Menu
@@ -126,7 +166,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 
         super();
         int ran = MathUtils.random(0, Script.loadingscreenscript.length - 1);
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.7f, 40, 0.01f,Script.loadingscreenscript[ran]);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.65f, 40, 0.01f,Script.loadingscreenscript[ran]);
         textbox.setColor(new Color(0.2f, 0.2f, 0.7f,1),null);
         delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         if(mainl.DevMode){delay=0;}
@@ -366,47 +406,12 @@ class WinScreen extends Menu
         confettiManager.act(delta);
     }
 
-    /**
-     * Zeigt ein Pop-up-Fenster, das fragt, ob das Spiel wirklich beendet werden soll.
-     */
-
-    public void showCreditsWindow() {
-        Window creditsWindow = new Window("", Main.skin); // Kein Titel im Fensterkopf
-        creditsWindow.setModal(true);
-        creditsWindow.setMovable(false);
-        creditsWindow.setResizable(false);
-        creditsWindow.setSize(800, 500);
-        creditsWindow.setPosition(ScreenWidth/2f - 400, ScreenHeight/2f - 250);
-
-        // Titel als Label im Fenster-Inhalt, damit er nicht überlappt
-        Label titleLabel = new Label("Credits", Main.skin);
-        titleLabel.setAlignment(Align.center);
-        titleLabel.setFontScale(2.5f);
-        creditsWindow.add(titleLabel).expandX().padTop(10).padBottom(10);
-        creditsWindow.row();
-
-        Label creditsLabel = new Label(
-                "Game made by: The Boys Deluxe \nGrafik: ...\nMusic: I stole it (joke)\nSpecial Thanks: Frau Bauereisen\n" ,
-                Main.skin);
-        creditsLabel.setAlignment(Align.center);
-        creditsLabel.setFontScale(1.6f);
-        creditsWindow.add(creditsLabel).expand().fill().pad(20);
-        creditsWindow.row();
-        TextButton closeButton = new TextButton("Schließen", Main.skin);
-        closeButton.getLabel().setFontScale(1.6f);
-        closeButton.setSize(180, 60); // Größere Box
-        closeButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                creditsWindow.remove();
-            }
-        });
-        creditsWindow.add(closeButton).padBottom(20).padTop(10).width(180).height(60);
-        Main.uiStage.addActor(creditsWindow);
-    }
 
 
 }
+
+
+
 class NewLevelScreen extends Menu {
     AdvancedTextButton jaknopf;
     AdvancedTextButton neinknopf;
@@ -700,40 +705,7 @@ class Startmenu extends Menu
     }
 
 
-    public void showCreditsWindow() {
-        Window creditsWindow = new Window("", Main.skin); // Kein Titel im Fensterkopf
-        creditsWindow.setModal(true);
-        creditsWindow.setMovable(false);
-        creditsWindow.setResizable(false);
-        creditsWindow.setSize(800, 500);
-        creditsWindow.setPosition(ScreenWidth/2f - 400, ScreenHeight/2f - 250);
 
-        // Titel als Label im Fenster-Inhalt, damit er nicht überlappt
-        Label titleLabel = new Label("Credits", Main.skin);
-        titleLabel.setAlignment(Align.center);
-        titleLabel.setFontScale(2.5f);
-        creditsWindow.add(titleLabel).expandX().padTop(10).padBottom(10);
-        creditsWindow.row();
-
-        Label creditsLabel = new Label(
-                "Game made by: The Boys Deluxe \nGrafik: ...\nMusic: I stole it (joke)\nSpecial Thanks: Frau Bauereisen\n" ,
-                Main.skin);
-        creditsLabel.setAlignment(Align.center);
-        creditsLabel.setFontScale(1.6f);
-        creditsWindow.add(creditsLabel).expand().fill().pad(20);
-        creditsWindow.row();
-        TextButton closeButton = new TextButton("Schließen", Main.skin);
-        closeButton.getLabel().setFontScale(1.6f);
-        closeButton.setSize(180, 60); // Größere Box
-        closeButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                creditsWindow.remove();
-            }
-        });
-        creditsWindow.add(closeButton).padBottom(20).padTop(10).width(180).height(60);
-        Main.uiStage.addActor(creditsWindow);
-    }
 
 
     void checkmessage(String mes)
@@ -775,12 +747,11 @@ class Startmenu extends Menu
     public void act(float delta)
     {
         super.act(delta);
-        if(Gdx.input.isKeyPressed(Input.Keys.X)) {
-            main.setState("DevMode");
-            this.destroy();
+        if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.X)) {
+            showPinDialog();
             return;
         }
-        if(Gdx.input.isKeyPressed(Input.Keys.ENTER))
+        if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.ENTER))
         {
             main.setState("beforeGame");
             this.destroy();
@@ -790,10 +761,78 @@ class Startmenu extends Menu
         randomtext.act(delta);
         credits.act(delta);
            //1903080120100509014090190200140903080200101201205019
+    }
 
+    Window pinWindow;
+    TextField pinField;
+    boolean pinDialogVisible = false;
+    final String DEV_PIN = "1234";
 
+    private void showPinDialog() {
+        if (pinDialogVisible) return;
+        pinDialogVisible = true;
+        pinWindow = new Window("", Main.skin);
+        pinWindow.setModal(true);
+        pinWindow.setMovable(false);
+        pinWindow.setResizable(false);
+        pinWindow.setSize(400, 200);
+        pinWindow.setPosition(ScreenWidth/2f - 200, ScreenHeight/2f - 100);
 
+        Label label = new Label("Bitte PIN eingeben:", Main.skin);
+        label.setAlignment(Align.center);
+        label.setFontScale(1.5f);
+        pinWindow.add(label).colspan(2).pad(20);
+        pinWindow.row();
 
+        pinField = new TextField("", Main.skin);
+        pinField.setPasswordMode(true);
+        pinField.setPasswordCharacter('*');
+        pinField.setMaxLength(10);
+        pinField.setSize(260, 40); // Größer
+        pinField.getStyle().font.getData().setScale(2f); // Text größer
+        pinField.getStyle().messageFont = pinField.getStyle().font; // Gleiche Schriftgröße für Message
+        pinField.getStyle().messageFontColor = Color.RED; // Fehlermeldung rot
+        pinWindow.add(pinField).colspan(2).width(260).height(40).pad(16);
+        pinWindow.row();
+        final Startmenu menu=this;
+        TextButton okButton = new TextButton("OK", Main.skin);
+        TextButton cancelButton = new TextButton("Abbrechen", Main.skin);
+        okButton.getLabel().setFontScale(1.4f);
+        cancelButton.getLabel().setFontScale(1.4f);
+        okButton.setSize(100, 50);
+        cancelButton.setSize(100, 50);
+        okButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (DEV_PIN.equals(pinField.getText())) {
+                    pinWindow.remove();
+                    pinDialogVisible = false;
+                    main.setState("DevMode");
+                    menu.destroy();
+                } else {
+                    pinField.setText("");
+                    pinField.setMessageText("Falscher PIN!");
+                    pinField.setDisabled(true); // Feld deaktivieren, damit Fehlermeldung sichtbar bleibt
+                    pinField.setDisabled(false);
+                }
+            }
+        });
+        cancelButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                pinWindow.remove();
+                pinDialogVisible = false;
+            }
+        });
+        pinWindow.add(okButton).width(120).height(60).pad(10);
+        pinWindow.add(cancelButton).width(120).height(60).pad(10);
+        Main.uiStage.addActor(pinWindow);
+        Gdx.input.setInputProcessor(Main.uiStage);
+        pinField.setText("");
+        pinField.setMessageText("");
+        pinField.setFocusTraversal(false);
+        pinField.setCursorPosition(pinField.getText().length());
+        pinField.setDisabled(false); // Immer aktiv beim Öffnen
     }
 }
 
