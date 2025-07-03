@@ -827,7 +827,6 @@ class Startmenu extends Menu
         pinWindow.add(okButton).width(120).height(60).pad(10);
         pinWindow.add(cancelButton).width(120).height(60).pad(10);
         Main.uiStage.addActor(pinWindow);
-        Gdx.input.setInputProcessor(Main.uiStage);
         pinField.setText("");
         pinField.setMessageText("");
         pinField.setFocusTraversal(false);

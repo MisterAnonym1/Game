@@ -11,12 +11,13 @@ public class DataCenter
     private static int enemysKilled;
     float damageInLastSecond;
     private static int levelnumber=0;
-    private static double timeplayed=0;
+    private static double timeplayed;
     DataCenter(Main main)
     {
         this.main=main;
         level=main.currentlevel;
         player=main.Player;
+        setTimeplayed(Main.invManager.getValueByKey("Playtime"));
     }
     public boolean areEnemysRemaining()
     {
@@ -67,6 +68,9 @@ public class DataCenter
     }
     public static void resetTimeplayed() {
         timeplayed=0;
+    }
+    public static void setTimeplayed(double timeplayed) {
+        DataCenter.timeplayed = timeplayed;
     }
 
     void act(float delta)

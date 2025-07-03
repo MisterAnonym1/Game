@@ -133,6 +133,7 @@ public class Main implements ApplicationListener {
          updateEntitys(delta);
 
          checkplayercollision();
+         Player.stayinWorldbounds();
           //ocam.position.lerp(new Vector3(Player.getCenterX(),Player.getCenterY(),1),0.1f);
           /*if( new Vector2( ocam.position.x - Player.getCenterX(),ocam.position.y - Player.getCenterY()).len()>=99999 )
           {
@@ -568,7 +569,7 @@ public class Main implements ApplicationListener {
         dataCenter.level=currentlevel;
 
         if(Player != null) {
-            ///+xPlayer.setWorldbounds(0, currentlevel.getLength(), 0, currentlevel.getHeight());
+            Player.setWorldbounds(-64, MyTile.columnToX(currentlevel.getLength())-64, MyTile.rowToY(currentlevel.getHeight()),0 );
             Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
         }
 
