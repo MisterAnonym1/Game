@@ -27,6 +27,7 @@ public class Testentity extends Gegner {
     boolean evil;
     float soundcountdown;
     float strivingx,strivingy;
+
     Testentity(float x, float y,boolean aggressive, Main log) {
         super(x, y, log, new TextureRegion(new Texture("slime_move.png"), 1, 1, 80, 72));
         speed = 100;
@@ -176,7 +177,7 @@ public class Testentity extends Gegner {
 
     @Override
     void onDeath() {
-        if(aggressive){
+        if(aggressive&&!exploded){
             spawnCoins();
         }
         Level.deleteList.add(this);

@@ -34,6 +34,7 @@ abstract class Gegner extends Entity
     boolean inview = false;
     Vector2 savedVector= new Vector2(0,0);
     Animation<TextureRegion> explosionAnimation;
+    boolean exploded=false;
 
     public enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair, repositioning }
 
@@ -74,6 +75,7 @@ void reset()
         queue.clear();
         targettile = null;
         attackStatus = AttackStatus.inactive;
+        exploded=false;
     }
 
 
@@ -398,6 +400,7 @@ void reset()
         }
         applyknockbackOn(player, 230);
         player.damageby(damage);
+        exploded=true;
         onDeath();
     }
 

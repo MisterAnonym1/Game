@@ -778,7 +778,7 @@ class Startmenu extends Menu
     Window pinWindow;
     TextField pinField;
     boolean pinDialogVisible = false;
-    final String DEV_PIN = "1234";
+    final String DEV_PIN = "TheBoyz";
 
     private void showPinDialog() {
         if (pinDialogVisible) return;
@@ -818,7 +818,7 @@ class Startmenu extends Menu
         okButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (DEV_PIN.equals(pinField.getText())) {
+                if (DEV_PIN.toLowerCase().equals(pinField.getText().toLowerCase())) {
                     pinWindow.remove();
                     pinDialogVisible = false;
                     pinField.getStyle().font.getData().setScale(1f); // Text normal groß

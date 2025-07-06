@@ -44,7 +44,6 @@ public class Carrot extends Gegner
 
     @Override
     void onDeath() {
-        super.onDeath();
         playAnimation(deadAnimation);
         status=EntityStatus.dead;
         final Carrot car=this;
