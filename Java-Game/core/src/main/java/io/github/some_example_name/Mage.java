@@ -12,8 +12,6 @@ class Mage extends Gegner
         speed = 60;
         maxhealth = 100;
         curhealth = 100;
-        hitboxOffsetX = 30;
-        hitboxOffsetY = 5;
         //setSize(50,50);
         //hitbox = new Rectangle(getCenterX() - hitboxOffsetX, getCenterY() - hitboxOffsetY, 50, 35);
         //hitbox.setAlpha(0);

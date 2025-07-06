@@ -152,7 +152,7 @@ void reset()
 
     void followPath(float delta)
     {
-        if(goalfields.size() <= 0)
+        if(goalfields.size() == 0)
         {
             pathCountdown=Math.min(pathCountdown,.3f);
             return;
@@ -162,7 +162,7 @@ void reset()
 
             goalfields.remove(0);
 
-            if(goalfields.size() <= 0) //keine Felder mehr zum Folgen
+            if(goalfields.size() == 0) //keine Felder mehr zum Folgen
             {
                 pathCountdown=0;// neuen Pfad berechnen
                 return;
@@ -197,7 +197,7 @@ void reset()
 
     }
 
-    void setPath(MyTile start, MyTile target, Vector2 vec)
+    void setPath(MyTile start, MyTile target)
     {
 
         visitedfields.clear();
@@ -231,7 +231,7 @@ void reset()
         else {
 
             goalfields.clear();
-            while (currenttile.previoustile != null)//Felder zum Start zurück verfolgen
+            while (currenttile.previoustile != null)//Felder zum Start zurückverfolgen
             {
 
                 goalfields.add(0, currenttile);
@@ -254,17 +254,13 @@ void reset()
             //line of sight
             attackdelay=0;
         }
-    };
+    }
 
     @Override
     public void draw(Batch batch, float delta) {
         batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
         animationstateTime += delta;
-        if(movement.angleDeg()>90&&movement.angleDeg()<270)
-        {
-            ismirrored=false;
-        }
-        else{ismirrored=true;}
+        ismirrored= !(movement.angleDeg() > 90) || !(movement.angleDeg() < 270);
         if (currentAnimation==null){batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
         }
         else {
@@ -285,7 +281,7 @@ void reset()
 
         movement = new Vector2(-getCenterX() + player.getCenterX(), -getCenterY() + player.getCenterY());
         if(movement.len() >= mindistance && movement.len() <= maxdistance) {
-            setPath(curlevel.getnotwallTile( getCenterX(),getCenterY() ), curlevel.getnotwallTile(player.getCenterX(), player.getCenterY()), movement);
+            setPath(curlevel.getnotwallTile( getCenterX(),getCenterY() ), curlevel.getnotwallTile(player.getCenterX(), player.getCenterY()));
 
           }
 
@@ -339,21 +335,21 @@ void reset()
         if (getdistance(player)<= 20) {
             player.damageby(30);
         }
-    };
+    }
     public void bombattack(){
         if (getdistance(player)<= 20) {
             explosionAnimation = Animator.getAnimation("Se_Player_ja.jpg",3,2,1,5,0.2f);
             player.damageby(50);
             this.destroy();
         }
-    };
+    }
     public void fireballattack(){
 
             Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
             vec.setLength(this.getHeight()/2);
             Level.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec));
 
-    };
+    }
     public void dashattack () {
         final float savedspeed=speed;
         speed=320;
@@ -381,7 +377,7 @@ void reset()
     {
         Vector2 vec= new Vector2(hitbox.width/3f,0);
         vec.rotateDeg(angleoffset);
-        for(int i=0; i<=360-angle;i+=angle)
+        for(float i=0; i<=360-angle;i+=angle)
         {
             Level.projectiles.add( new FireBall(getHitboxCenterX()+vec.x,getHitboxCenterY()+vec.y,new Vector2(vec.x,vec.y)));
             vec.rotateDeg(angle);
@@ -444,7 +440,7 @@ void reset()
                 {
 
                     float elapsed = 0;
-                    float duration = jumpheight/250; // Dauer in Sekunden
+                    final float duration = jumpheight/250; // Dauer in Sekunden
                     @Override
                     public boolean act(float delta) {
                         elapsed += delta;

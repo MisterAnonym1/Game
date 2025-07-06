@@ -44,6 +44,7 @@ public class Carrot extends Gegner
 
     @Override
     void onDeath() {
+        super.onDeath();
         playAnimation(deadAnimation);
         status=EntityStatus.dead;
         final Carrot car=this;
@@ -55,6 +56,7 @@ public class Carrot extends Gegner
                 public boolean act(float delta) {
                     //setColor(1,1,1,0);
                     Level.deleteList.add(car);
+                    spawnCoins();
                     return true;
                 }
             }

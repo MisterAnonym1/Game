@@ -23,7 +23,6 @@ El_Karltoffel.png
 El_Karltoffel_Gescailt.png
 Explosions.png
 Fire.png
-Fireball.png
 Fireball00/FB001.png
 Fireball00/FB002.png
 Fireball00/FB003.png
@@ -52,7 +51,6 @@ Pointers/06.png
 Pointers/Pointer.png
 potato.png
 red_arrow_PNG60.png
-sand.png
 sand2.png
 Seatile_.png
 Se_Player_ja.jpg
@@ -68,7 +66,13 @@ story-box.png
 story-boxV2.png
 teleporter V3.png
 Test Karte 2.tmx
-TPall2.png
+Tileset_Grass.png
+Tileset_Ground.png
+Tileset_Road.png
+Tileset_Wall.png
+Tileset_Water.png
+Tileset_watersides.png
+Tileset_watersides2.png
 ui/font-list.fnt
 ui/font-subtitle.fnt
 ui/font-window.fnt

@@ -30,7 +30,9 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     Revtext textbox;//erschafft eine Textbox, <---dein ernst? ich kann selber sehen
     static float ScreenWidth=1024;
     static float ScreenHeight=576;
-    void showRestartConfirmation() {
+    void showRestartConfirmation(Main main) {
+        if (main.inPopUpWindow) return; // Verhindert mehrfaches Öffnen
+        main.inPopUpWindow=true;
         final Window confirmWindow = new Window("", Main.skin);
         confirmWindow.setModal(true);
         confirmWindow.setMovable(false);
@@ -57,6 +59,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         yesButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                main.inPopUpWindow=false;
                 confirmWindow.remove();
                 main.setState("restart");
             }
@@ -65,6 +68,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 confirmWindow.remove();
+                main.inPopUpWindow=false; // Fenster schließen und Pop-up-Status zurücksetzen
             }
         });
 
@@ -73,6 +77,8 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         Main.uiStage.addActor(confirmWindow);
     }
      static void showQuitConfirmation(Main main) {
+        if (main.inPopUpWindow) return; // Verhindert mehrfaches Öffnen
+        main.inPopUpWindow= true; // Verhindert mehrfaches Öffnen
         final Window confirmWindow = new Window("", Main.skin);
         confirmWindow.setModal(true);
         confirmWindow.setMovable(false);
@@ -108,6 +114,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 confirmWindow.remove();
+                main.inPopUpWindow=false; // Fenster schließen und Pop-up-Status zurücksetzen
             }
         });
 
@@ -117,6 +124,8 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     }
 
     public void showCreditsWindow() {
+        if (main.inPopUpWindow) return; // Verhindert mehrfaches Öffnen
+        main.inPopUpWindow = true; // Verhindert mehrfaches Öffnen
         Window creditsWindow = new Window("", Main.skin); // Kein Titel im Fensterkopf
         creditsWindow.setModal(true);
         creditsWindow.setMovable(false);
@@ -145,6 +154,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 creditsWindow.remove();
+                main.inPopUpWindow=false;
             }
         });
         creditsWindow.add(closeButton).padBottom(20).padTop(10).width(180).height(60);
@@ -172,7 +182,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         if(mainl.DevMode){delay=0;}
         main = mainl;
         loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.05f);
-        toFront();
+        main.Player.coindisplay.setZIndex(Integer.MAX_VALUE-1);
     }
     void setfinished()
     {
@@ -196,6 +206,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
             frame.getTexture().dispose();
             break;
         }
+        main.Player.coindisplay.toFront();
         remove();
 
     }
@@ -346,7 +357,7 @@ class WinScreen extends Menu
 
         knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 100, 3,Color.CORAL,Color.RED );
         knopf.getLabel().setFontScale(2f); // nur Schrift 2x größer
-        knopf.setOnUp(()->showRestartConfirmation());
+        knopf.setOnUp(()->showRestartConfirmation(main));
         Main.uiStage.addActor(knopf);
 
         exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f-215, 100, 3,Color.ROYAL,Color.BLACK );
@@ -489,6 +500,7 @@ class NewLevelScreen extends Menu {
         table.add(closeBtn).colspan(4).center().padTop(30).width(220).height(60);
         skillWindow.add(table).expand().fill();
         Main.uiStage.addActor(skillWindow);
+        main.Player.coindisplay.toFront();
     }
 
     private void addSkillRow(Table table, Upgrade upgrade) {
@@ -788,8 +800,10 @@ class Startmenu extends Menu
         pinField.setPasswordMode(true);
         pinField.setPasswordCharacter('*');
         pinField.setMaxLength(10);
+
         pinField.setSize(260, 40); // Größer
-        pinField.getStyle().font.getData().setScale(2f); // Text größer
+       pinField.getStyle().font.getData().setScale(2.5f); // Text größer
+
         pinField.getStyle().messageFont = pinField.getStyle().font; // Gleiche Schriftgröße für Message
         pinField.getStyle().messageFontColor = Color.RED; // Fehlermeldung rot
         pinWindow.add(pinField).colspan(2).width(260).height(40).pad(16);
@@ -807,19 +821,20 @@ class Startmenu extends Menu
                 if (DEV_PIN.equals(pinField.getText())) {
                     pinWindow.remove();
                     pinDialogVisible = false;
+                    pinField.getStyle().font.getData().setScale(1f); // Text normal groß
                     main.setState("DevMode");
                     menu.destroy();
+
                 } else {
                     pinField.setText("");
                     pinField.setMessageText("Falscher PIN!");
-                    pinField.setDisabled(true); // Feld deaktivieren, damit Fehlermeldung sichtbar bleibt
-                    pinField.setDisabled(false);
                 }
             }
         });
         cancelButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                pinField.getStyle().font.getData().setScale(1f); // Text normal groß
                 pinWindow.remove();
                 pinDialogVisible = false;
             }
@@ -831,7 +846,6 @@ class Startmenu extends Menu
         pinField.setMessageText("");
         pinField.setFocusTraversal(false);
         pinField.setCursorPosition(pinField.getText().length());
-        pinField.setDisabled(false); // Immer aktiv beim Öffnen
     }
 }
 
@@ -896,6 +910,10 @@ class DevMenu extends Menu
                main.deltaFactor/=1f+delta;
 
            }
+           if (Gdx.input.isKeyJustPressed(Input.Keys.M) ) {
+               Level.objects.add(new Coin(main.Player.getHitboxCenterX(), main.Player.getHitboxCenterY(), 50));
+
+           }
            if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {
                main.debugging = !main.debugging;
 
@@ -907,10 +925,10 @@ class DevMenu extends Menu
                showQuitConfirmation(main);
            }
            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
-               showRestartConfirmation();
+               showRestartConfirmation(main);
            }
            if(Gdx.input.isKeyJustPressed(Input.Keys.H)) {
-               main.Player.sethealth(main.Player.maxhealth, false);
+               main.Player.sethealth(main.Player.maxhealth);
            }
            if(Gdx.input.isKeyJustPressed(Input.Keys.C)) {
                main.Player.collisionOn=!main.Player.collisionOn;

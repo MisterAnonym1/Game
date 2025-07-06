@@ -208,3 +208,19 @@ class PopUpText extends OwnText {
         super.draw(batch, outlinealpha);
     }
 }
+
+class Displaytext extends OwnText
+{
+    String key;
+    Displaytext(String text, float leftx, float y, int size, Color color, Color outlineColor,boolean centered,String invkey)
+    {
+        super(text,leftx,y,size,color,outlineColor,centered);
+        key=invkey;
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        setText(key+": "+Main.invManager.getValueByKey(key));
+    }
+}

@@ -14,11 +14,8 @@ import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
 
 enum Gamestate { startmenu, paused, playing, dead, dialouge, loading }
@@ -26,6 +23,7 @@ public class Main implements ApplicationListener {
     ArrayList<MyTile> loadedwalls = new ArrayList<>();
     ShapeRenderer shape;
     Music music;
+    boolean inPopUpWindow=false;
     //TiledMap map;
     static Cursor bettercursor;
     String predeterminedDeathmessage= "you died of dumb";
@@ -75,6 +73,7 @@ public class Main implements ApplicationListener {
         music.setVolume(.17f); // .2f ist das selbe wie 0.2f
         music.play();
         loadSounds();
+        loadTilesets();
         dataCenter=new DataCenter(this);
         shape.setAutoShapeType(true);
 
@@ -102,7 +101,7 @@ public class Main implements ApplicationListener {
 
     private void input() {
         float delta = Gdx.graphics.getDeltaTime();
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+        if(gamestate!=Gamestate.dialouge&&gamestate!=Gamestate.loading&& Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             Menu.showQuitConfirmation(this);
         }
 
@@ -200,7 +199,7 @@ public class Main implements ApplicationListener {
         uiStage.draw();
         if(gamestate==Gamestate.dialouge)
         {
-            dialougnpc.act(delta);
+            dialougnpc.act(Gdx.graphics.getDeltaTime());
             dialougnpc.drawInConversation(uiStage.getBatch());
         }
 
@@ -239,7 +238,10 @@ public class Main implements ApplicationListener {
                 levelnummer++;
                 showLevel(this.levelnummer);
                 System.out.println("delta: "+Gdx.graphics.getDeltaTime()+"\n");
-                uiStage.addActor(new LoadingScreen(this));
+                LoadingScreen screen =new LoadingScreen(this);
+                uiStage.addActor(screen);
+                screen.toFront();
+                Player.setZIndex(Integer.MAX_VALUE-1);
                 gamestate=Gamestate.playing;
                 break;
             case "paused" :
@@ -292,8 +294,7 @@ public class Main implements ApplicationListener {
                 invManager.resetInventory();
                 gamestate = Gamestate.startmenu;
                 uiStage.clear();
-                uiStage.addActor(Player.healthbar);
-                uiStage.addActor(Player.speechbox);
+               Player.reAddUiElements();
                 uiStage.addActor(new Startmenu(this));
                 DataCenter.resetTimeplayed();
                 break;
@@ -331,6 +332,7 @@ public class Main implements ApplicationListener {
             //enti.additionalForce.clamp(0,enti.additionalForce.len()-30/**weight*/);
             enti.additionalForce.setLength(0);
             enti.collides = true;
+            //enti.damageby(40*Gdx.graphics.getDeltaTime());
             ///break; // <--maybe wäre so besser
         }
     }
@@ -408,7 +410,6 @@ public class Main implements ApplicationListener {
             }
                 if(Player.isattacking)
                 {
-                    int d=0;
                     if(Player.handleAttack(gegner)) {
                         continue;
                     }
@@ -443,16 +444,22 @@ public class Main implements ApplicationListener {
 
     void updateNpcs()
     {
+        boolean setText=false;
         for (NPC npc : currentlevel.npcs)
         {
             if(Player.inradiusof(npc, 182)) {
                 npc.inradius=true;
+                setText=true;
                 if(Gdx.input.isKeyJustPressed(Input.Keys.E))
                 {
                 dialougnpc = npc;
                 setState("dialouge");
                 break;}
             }else{npc.inradius=false;}
+        }
+        if(setText)
+        {
+            //Player.speechbox.
         }
     }
 
@@ -557,6 +564,8 @@ public class Main implements ApplicationListener {
 
     void showLevel(int level) {
 
+        if(level==0){deltaFactor=0;}
+
         // aktuell sichtbares Level zerstören
         if(currentlevel != null) {
             currentlevel.destroy();
@@ -600,6 +609,15 @@ public class Main implements ApplicationListener {
         SoundManager.load("sheep", "baeh-sheep.wav");
         //SoundManager.load("sheep-hurt", "sheep-hurt.wav");
         SoundManager.load("coin_pickup", "dading.mp3");
+    }
+
+    void loadTilesets() {
+        //TileManager.load("walls", "Tileset_Wall.png", 64, 64);
+        TileManager.load("ground", "Tileset_Ground.png", 12, 11);
+        TileManager.load("grass", "Tileset_Grass.png", 8, 8);
+        TileManager.load("wall", "Tileset_Wall.png", 16, 16);
+        TileManager.load("water--","Tileset_watersides.png",3,3);
+        TileManager.load("water","Tileset_watersides2.png",3,3);
     }
 
 

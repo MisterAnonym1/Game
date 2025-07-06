@@ -289,15 +289,15 @@ class Level {
 
     public MyTile getdefaultTile(int column, int row)
     {
-       return  new MyTile(column,row, new TextureRegion(new Texture("Ph.Boden_Tile_1.png")), false);
+      return new MyTile(column, row, TileManager.getTile("grass",MathUtils.random(0,31)), false);
     }
 
 
     private MyTile createTile(int column, int row, char tilechar) {
         switch (tilechar) {
             case ' ':
-                int randomn = MathUtils.random(1, 20);
-                if(randomn <= 2)
+                int randomn = MathUtils.random(0, 31);
+                /*if(randomn <= 2)
                 { return newtileNotwall(column, row, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
 
                 if(randomn <= 4)
@@ -308,14 +308,71 @@ class Level {
                 if(randomn <= 8)
                 { return newtileNotwall(column, row, new TextureRegion(new Texture("Ph.Boden_Tile_2.png"))); }
 
-                /*else*/return new MyTile(column, row, "Ph.Boden_Tile_1.png", false);
-
+                /*else*///return new MyTile(column, row, "Ph.Boden_Tile_1.png", false);*/
+                return new MyTile(column, row, TileManager.getTile("grass",randomn), false);
 
             case '#':
-                return new MyTile(column, row, "own Watertile 2.png", true);
+                // Nachbarn prüfen, um die passende tilenumber zu bestimmen
+                boolean wallTop = isWall(column, row - 1);
+                boolean wallRight = isWall(column + 1, row);
+                boolean wallBottom = isWall(column, row + 1);
+                boolean wallLeft = isWall(column - 1, row);
+                ArrayList<TextureRegion> aditex=new ArrayList<>();
+                /*int tilenumber = 113; // Standardwert--> einzelne Wand
+
+                aditex.add(TileManager.getTile("grass",  MathUtils.random(0, 3)));
+                // Beispiel-Logik für verschiedene Wandtypen:
+                if (wallTop && wallBottom && wallLeft && !wallRight) {
+                    tilenumber = 42;
+                }
+                else if (wallTop && wallBottom && !wallLeft && !wallRight) {
+                    tilenumber = 25; // Vertikale Wand
+                }
+                else if (wallTop && wallBottom && !wallLeft && wallRight) {
+                    tilenumber = 41;
+                }
+
+                else if (!wallTop && !wallBottom && wallLeft && wallRight) {
+                    tilenumber = 97; // Horizontale Wand
+                } else if (wallTop && !wallBottom && wallLeft && wallRight) {
+                    tilenumber = 113; // Wand mit Nachbar oben
+                } else if (!wallTop && wallBottom && wallLeft && wallRight) {
+                    tilenumber = 97;
+                } else if (wallTop && !wallBottom && !wallLeft && wallRight) {
+                    tilenumber = 65; // Wand mit Nachbar links
+                } else if (wallTop && !wallBottom && wallLeft && !wallRight) {
+                    tilenumber = 67; // Wand mit Nachbar rechts
+                }
+                else if (!wallTop && wallBottom && !wallLeft && wallRight) {
+                    tilenumber = 49; // Wand mit Nachbar links
+                } else if (!wallTop && wallBottom && wallLeft && !wallRight) {
+                    tilenumber = 51; // Wand mit Nachbar rechts
+                }*/
+                int tilenumber = 0; // Standardwert--> einzelne Wand
+
+                // Beispiel-Logik für verschiedene Wandtypen:
+                if (wallTop && !wallBottom && wallLeft && !wallRight) {
+                    tilenumber = 1;
+                } else if (wallTop && !wallBottom && !wallLeft && wallRight) {
+                    tilenumber = 2;
+                }else
+                if (!wallTop && wallBottom && !wallLeft && wallRight) {
+                    tilenumber = 3;
+                }
+                else if (!wallTop && wallBottom && wallLeft && !wallRight) {
+                    tilenumber = 4;
+                }
+
+
+
+                MyTile walltile=new MyTile(column, row, TileManager.getTile("water", tilenumber), true,tilenumber);
+                //walltile.setAdditionallTextures(aditex);
+                return walltile;
+
+                //return new MyTile(column, row, "own Watertile 2.png", true);
             case '@':
                 setPlayerPosition(MyTile.columnToX(column),MyTile.rowToY(row));
-                return new MyTile(column, row, "Ph.Boden_Tile_1.png", false);
+                break;
             case 'n' :
                 npcs.add(new NPC(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
                 return getdefaultTile(column,row) ;
@@ -348,7 +405,7 @@ class Level {
                 gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(row) ));
                 break;
             case 'h' :
-                npcs.add(new Trader(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 0,0.3f,logic));
+                npcs.add(new Trader(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 1,0.3f,logic));
                 break;
             case 'g' :
                 gegnerliste.add(new Testentity(MyTile.columnToX(column), MyTile.rowToY(row), true,logic));
@@ -357,6 +414,18 @@ class Level {
                 return getdefaultTile(column,row) ;
         }
         return getdefaultTile(column,row) ;
+    }
+
+    // Hilfsmethode, um zu prüfen, ob an einer Position eine Wand ist
+    private boolean isWall(int column, int row) {
+        if (row >= 0 && row < rows.length && column >= 0 && column < getMaxRowLength()) {
+            try {
+                return rows[row].charAt(column) == '#';
+            } catch (Exception e) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

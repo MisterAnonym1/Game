@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Rectangle;
 
+import java.util.ArrayList;
+
 
 public class MyTile extends Sprite {
     int column;
@@ -21,13 +23,19 @@ public class MyTile extends Sprite {
     MyTile southNeighbour;
     MyTile westNeighbour;
     boolean obstructed;
+    int number=-1;
+    ArrayList<TextureRegion> additionallTextures = new ArrayList<>();
     public MyTile(int column, int row, String filepath, boolean hasHitbox) {
         this(column, row, TextureCache.getRegion(filepath), hasHitbox);
+        if(filepath=="own Watertile 2.png")
+        {
+            setColor(new Color(0.5f,0.5f,0.3f,1));
+        }
     }
 
-    public MyTile(int column, int row, TextureRegion texreg, boolean hasHitbox,boolean iswall){
-        this(column, row, texreg, hasHitbox);
-        if (iswall){setToWall();}
+    public MyTile(int column, int row, TextureRegion region, boolean hasHitbox,int num){
+        this(column, row, region, hasHitbox);
+        number=num;
     }
     public MyTile(int column, int row, TextureRegion texreg, boolean hasHitbox) {
         super(texreg);
@@ -43,6 +51,9 @@ public class MyTile extends Sprite {
             hitbox = new Polygon(vertices);
             hitbox.setPosition(getX(), getY());
         }
+    }
+    void setAdditionallTextures(ArrayList<TextureRegion> additionallTextures) {
+        this.additionallTextures = additionallTextures;
     }
     void setToWall()
     {
@@ -60,7 +71,11 @@ public class MyTile extends Sprite {
 
     @Override
     public void draw(Batch batch, float delta) {
+            for (TextureRegion tex : additionallTextures) {
+                batch.draw(tex, getX(), getY(), getWidth(), getHeight());
+            }
         super.draw(batch);
+
     }
 
     void drawHitbox(ShapeRenderer shape) {

@@ -33,6 +33,7 @@ class Player extends Entity
     Viewport viewport;
     Vector2 attackline;
     StorySpeechBox speechbox;
+    Displaytext coindisplay;
     Player(float x, float y, Viewport view) {
 
 
@@ -53,8 +54,9 @@ class Player extends Entity
         speechbox.toBack();
         speechbox.setVisible(false);
 
-
-        //scale(1f);
+        coindisplay=new Displaytext("Coins:"+Main.invManager.getValueByKey("Coins"),20,570,28,Color.YELLOW,Color.BLACK,false,"Coins");
+        Main.uiStage.addActor(coindisplay);
+        coindisplay.setZIndex(Integer.MAX_VALUE-1);//ist wie toFront()
 
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.15f);
@@ -156,7 +158,13 @@ class Player extends Entity
         healthbar.healTo(health);
     }
 
-
+    void reAddUiElements()
+    {
+        Main.uiStage.addActor(healthbar);
+        Main.uiStage.addActor(speechbox);
+        Main.uiStage.addActor(coindisplay);
+        coindisplay.setZIndex(Integer.MAX_VALUE-1);//ist wie toFront()
+    }
 
 
 

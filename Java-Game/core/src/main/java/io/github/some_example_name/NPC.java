@@ -20,6 +20,7 @@ public class NPC extends Entity
     Revtext text;
     Texture backround;
     String backroundfilepath;
+    String name="???";
     int currentline;
     int scriptIndex;
     int maxline;
@@ -38,8 +39,8 @@ public class NPC extends Entity
         this.scriptIndex = scriptindex;
         line = 0;
         maxline = Script.npcscript[scriptIndex][0].length;;
-        hitboxOffsetX = 25;
-        hitboxOffsetY = 35;
+        //hitboxOffsetX = 25;
+        //hitboxOffsetY = 35;
 
 
         Array<Texture> frames = new Array<>();
@@ -150,6 +151,16 @@ public class NPC extends Entity
         nextline();
 
     }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        if(backround!=null)
+        {
+            backround.dispose();
+        }
+    }
+
     void nextline()
     {
         if(line < maxline)
@@ -199,17 +210,12 @@ class NpcData
         coins = Main.invManager.getValueByKey("Coins");
         knopf = new AdvancedTextButton("Moneten sind toll!",1024/2f, 150, 3, com.badlogic.gdx.graphics.Color.SCARLET, Color.BLACK );
         knopf.getLabel().setFontScale(2f); // 1.5x größer
-        //hintergrund = new Sprite(new Texture(fileBackground));
-        //hintergrund.setPosition(log.viewport.getScreenX(), log.viewport.getScreenY());
+        knopf.setOnUp(()->onButtonPress());
+        name= "Trader";
+
     }
 
 
-    void interact(){
-        //inConversation = true;
-        onPress();
-        System.out.println("Entered trader menu succesfully");
-        //nextline();
-    }
 
     @Override
     public void drawInConversation(Batch batch){
@@ -218,10 +224,8 @@ class NpcData
         if(inConversation){
             batch.draw(backround, 0,0, viewport.getWorldWidth(), viewport.getWorldHeight());
             batch.draw(texture,1024/2.0f-hitbox.getWidth(), 0+576/2.0f-hitbox.getHeight(),getOriginX(),getOriginY(),getWidth(),getHeight(),getScaleX()*2,getScaleY()*2,getRotation());
-            knopf.draw(batch,getColor().a);
-            Main.uiStage.addActor(knopf);
-            knopf.setOnUp(()->onButtonPress());
             text.draw(batch,1);
+           knopf.draw(batch,1);
         }
         batch.end();
     }
@@ -232,11 +236,18 @@ class NpcData
          knopf.remove();
      }
 
+     @Override
+     void onPress() {
+         super.onPress();
+         Main.uiStage.addActor(knopf);
+         System.out.println("Entered trader menu succesfully");
+     }
+
      void onButtonPress() {
          //knopf.onClick();
          if(coins > 5){
          coins = coins-5;
-         knopf.setOnUp(()->Main.invManager.setValueByKey("Coins", coins));
+         Main.invManager.setValueByKey("Coins", coins);
          }
      }
 

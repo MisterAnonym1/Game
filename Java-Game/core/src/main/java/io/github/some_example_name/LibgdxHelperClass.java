@@ -113,6 +113,33 @@ public class LibgdxHelperClass {
         return walkAnimation;
 
     }
+
+     static public TextureRegion[] getRegionList(String sheet_path, int sheet_cols, int sheet_rows)
+     {
+
+         Animation<TextureRegion> walkAnimation; // Must declare frame type (TextureRegion)
+
+         Texture walkSheet = new Texture(Gdx.files.internal(sheet_path));
+         // Use the split utility method to create a 2D array of TextureRegions. This is
+         // possible because this sprite sheet contains frames of equal size and they are
+         // all aligned.
+         TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / sheet_cols, walkSheet.getHeight() / sheet_rows);
+
+         // Place the regions into a 1D array in the correct order, starting from the top
+         // left, going across first. The Animatio n constructor requires a 1D array.
+         TextureRegion[] walkFrames = new TextureRegion[sheet_cols * sheet_rows];
+         int index = 0;
+         for (int i = 0; i < sheet_rows; i++) {
+             for (int j = 0; j < sheet_cols; j++) {
+                 walkFrames[index++] = tmp[i][j];
+             }
+         }
+
+
+         return walkFrames;
+
+     }
+
      static public Animation<TextureRegion> getAnimation(TextureRegion sheet, int sheet_cols, int sheet_rows, float frameDuration)
      {
          int firstFrameisOne1=1;

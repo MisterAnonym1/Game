@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
 public class Teleporter extends TextureActor
 {
-    static TextureRegion spriteSheet = new TextureRegion( new Texture("TPall2.png"));
+    static TextureRegion spriteSheet = new TextureRegion( new Texture("teleporter V3.png"));
     enum TelState {activ, inactiv,onstand};
     TextureRegion[]textures;
     TelState state= TelState.inactiv;
@@ -82,7 +82,10 @@ public class Teleporter extends TextureActor
                                 System.out.println("Time: "+DataCenter.getformatedTimeplayed());
                             }
                             else{
-                                Main.uiStage.addActor(new NewLevelScreen(main));}
+                                NewLevelScreen scren=new NewLevelScreen(main);
+                                Main.uiStage.addActor(scren);
+                                main.Player.coindisplay.toFront();
+                            }
                             activate();
                             return true;
                         }

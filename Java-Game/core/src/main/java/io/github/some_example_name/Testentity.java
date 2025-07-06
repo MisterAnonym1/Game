@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -38,7 +39,7 @@ public class Testentity extends Gegner {
         strivingy=spawny;
         inview = true;
         scale(1f);
-        soundcountdown= MathUtils.random(10f,40);
+        soundcountdown= MathUtils.random(0f,40);
         sheet = new TextureRegion(new Texture("HappySheep_All.png"));
         defaultAnimation = new Animation<>(0.2f-MathUtils.random(0f, 0.02f), sheet.split(sheet.getRegionWidth() / 8, sheet.getRegionHeight() / 2)[0]);
         jumpAnimation = Animator.getAnimation("HappySheep_All.png", 8, 2, 9, 14, 0.11f-MathUtils.random(0f, 0.02f));
@@ -188,16 +189,20 @@ public class Testentity extends Gegner {
     }
 
     @Override
+    public void drawShadow(ShapeRenderer shape) {
+
+    }
+
+    @Override
     public void act(float delta) {
         super.act(delta);
         soundcountdown-= delta;
+        if(!inradiusof(player,900)){
+            return;
+        }
         if(soundcountdown <= 0) {
             soundcountdown = MathUtils.random(10f, 40);
             SoundManager.play("sheep", 0.3f, (aggressive?.8f:1f)+ MathUtils.random(-0.1f, 0.1f));
-        }
-        if(!inradiusof(player,900)){
-            //playAnimation(defaultAnimation);
-            return;
         }
         if (aggressive)
         {engagePlayer(delta);}

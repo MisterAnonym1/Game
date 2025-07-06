@@ -15,9 +15,7 @@ public class TreassureChest extends Trader{
 
     }
 
-    void open(){
-        interact();
-    }
+
 
     @Override
     public void onLeave() {

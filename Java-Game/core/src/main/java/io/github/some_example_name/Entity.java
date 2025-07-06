@@ -1,18 +1,15 @@
 package io.github.some_example_name;
 
 
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g3d.particles.values.MeshSpawnShapeValue;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -27,7 +24,7 @@ class Entity extends TextureActor
 {
     float maxhealth, curhealth;
     float speed, directionline=0,shadowscale=1;
-    boolean  ismoving, isattacking;
+    boolean  ismoving;
     Vector2 movement;
     Vector2 additionalForce;
     float spawnx;
@@ -83,11 +80,7 @@ void reset()
     public void draw(Batch batch, float delta) {
         batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
         animationstateTime += delta;
-        if(movement.angleDeg()>90&&movement.angleDeg()<270)
-        {
-            ismirrored=false;
-        }
-        else{ismirrored=true;}
+        ismirrored= !(movement.angleDeg() > 90) || !(movement.angleDeg() < 270);
         if (currentAnimation==null){batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY(),getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
         }
         else {
@@ -113,7 +106,7 @@ void reset()
 
     void centerAtActor(Entity other)
     {
-       setPosition(other.getX()+other.hitbox.width/2-getWidth()/2,other.getY()+other.hitbox.height/2-getHeight()/2);
+        centerAt(other.getHitboxCenterX(),other.getHitboxCenterY());
     }
     void sethealth(float health, boolean ignoremax)
     //ignoriert den als Limit für die Max Health gesetzten Wert und setzt maxhealth = health als maximale Health
@@ -180,15 +173,10 @@ void reset()
 
     void setWorldbounds(Rectangle rec)
     {
-        if(worldbounds != null) {
-        }
         worldbounds = rec;
     }
     void setWorldbounds(float minX, float maxX, float minY, float maxY)
     {
-        if(worldbounds != null) {
-
-        }
         worldbounds = new Rectangle(minX, minY, maxX - minX, maxY - minY);
 
     }
