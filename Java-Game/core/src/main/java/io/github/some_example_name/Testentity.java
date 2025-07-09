@@ -181,6 +181,7 @@ public class Testentity extends Gegner {
             spawnCoins();
         }
         Level.deleteList.add(this);
+        deathEffect();
     }
 
     @Override

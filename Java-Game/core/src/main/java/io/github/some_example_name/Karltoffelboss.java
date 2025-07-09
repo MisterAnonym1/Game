@@ -1,7 +1,9 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
@@ -11,12 +13,13 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import static java.lang.Float.NaN;
 
 public class Karltoffelboss extends Boss{
-    int recenthits=0;
+    int recenthits=0;                                                                                                                   //101-112
+    Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,107,112,0.08f);
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
-        speed = 200;
+        speed = 250;
         weight=20;
-        sethealth(1000,true);
+        sethealth(1500,true);
         scale(0.3f);
         setPosition(x,y);
         setBossName("KARLTOFFEL DER SCHRECKLICHE");
@@ -40,7 +43,7 @@ public class Karltoffelboss extends Boss{
     @Override
     void reset() {
         super.reset();
-        speed=200;
+        speed=250;
         //collisionOn=false;
     }
 
@@ -60,11 +63,11 @@ public class Karltoffelboss extends Boss{
         recenthits++;
         if (attackStatus != AttackStatus.dash&&recenthits>=3)
         {
+            recenthits-= MathUtils.random(1,2);
             addAction(Actions.sequence(Actions.delay((float) (Math.random()*0.15)), new Action() {
                 @Override
                 public boolean act(float delta) {
                     shockwaveAttack(0.3f,120);
-                    recenthits-= MathUtils.random(1,2);
                     return true;
                 }
             }));
@@ -122,16 +125,23 @@ public class Karltoffelboss extends Boss{
 
 
             if (attackStatus == AttackStatus.inactive) {
-                if (attackdelay2 >= 15) {
+                if (attackdelay2 >= 5) {///15
 
-                    if (getdistance(spawnx,spawny)<=100) {
+                    if (getdistance(spawnx,spawny)<=150) {
 
                         if(getdistance(player)>=250){
                         attackdelay2 = 0;
                         attackdelay = 0;
                         fireStormattack();
-                        recenthits=0;}
-                        else{shockwaveAttack(0.3f,150);
+                        invincible=true;
+                        recenthits=0;
+                            PartikelSprite deathpar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,false);
+                            deathpar.setSize(hitbox.width*3f,hitbox.height*3f);
+                            deathpar.centerAt(getHitboxCenterX(),getHitboxCenterY());
+                            deathpar.delay=10;
+                            Level.particles.add(deathpar);
+                        }
+                        else{shockwaveAttack(0.3f,100);
                             recenthits= Math.max(recenthits-1,0);}
 
                     }
@@ -160,6 +170,7 @@ public class Karltoffelboss extends Boss{
                     attackStatus = AttackStatus.inactive;
                     attackdelay2 = 0;
                     attackdelay = 0;
+                    invincible=false;
                 }
                 if (attackdelay >= 0.08f) {
                     fireballringattack(45, (float) Math.random() * 10f + attackdelay2 / 10 * 180);
@@ -169,7 +180,7 @@ public class Karltoffelboss extends Boss{
                 if(collides)
                 {
                     attackStatus = AttackStatus.inactive;
-                    speed=200;
+                    speed=250;
                 }
                 else{
                 ismoving=true;

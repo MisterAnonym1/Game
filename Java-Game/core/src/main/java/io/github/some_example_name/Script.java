@@ -74,7 +74,7 @@ public class Script {
             "Hello there!",
             "HINTER DIR!!     ist dein Ruecken :O",
             "Druecke einen Knopf.",
-            "                       \n                                                                                                  \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
+            "                                                         \n                                                                \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
             "Nur Mut!",
             "Was echt ist, entscheidest du.",
             "Bereit oder nicht...",

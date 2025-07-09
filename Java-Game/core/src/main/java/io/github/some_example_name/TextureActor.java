@@ -186,16 +186,18 @@ public class TextureActor extends Actor
     }
     @Override
     public void setSize(float width, float height) {
+
         if(getWidth()==0||getHeight()==0||getWidth()==NaN||getHeight()==NaN)
         {
             hitbox.setSize(width,height);
             super.setSize(width, height);
             return;
         }
-        //hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
+
         float factorw=width/getWidth();
         float factorh =height/getHeight();
-        hitbox.setSize((float) (hitbox.getWidth()* factorw), (float) (hitbox.getHeight()*factorh));
+
+        hitbox.setSize( hitbox.getWidth()* factorw, hitbox.getHeight()*factorh);
         hitboxOffsetX*=factorw;
         hitboxOffsetY*= factorh;
         super.setSize(width, height);

@@ -2,12 +2,16 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -208,8 +212,21 @@ class NpcData
         super(x, y, filepath, fileBackground, lineindex, scale, log);
         addAction(Actions.delay(1));
         coins = Main.invManager.getValueByKey("Coins");
-        knopf = new AdvancedTextButton("Moneten sind toll!",1024/2f, 150, 3, com.badlogic.gdx.graphics.Color.SCARLET, Color.BLACK );
+        text.centery-=25;
+
+        Pixmap buttonPixmap = LibgdxHelperClass.createRoundedRect(200, 60, 20, Color.WHITE);
+        Texture buttonTex = new Texture(buttonPixmap);
+        Drawable button = new TextureRegionDrawable(new TextureRegion(buttonTex));
+        TextButton.TextButtonStyle style = new TextButton.TextButtonStyle();
+        style.up = button;
+        style.down = button;// gedrückt etwas dunkler
+        style.font = new BitmapFont();
+        style.fontColor = Color.BLACK;
+
+        knopf = new AdvancedTextButton("Moneten sind toll!",1024/2f, 150, 2.5f, Color.BLUE, Color.WHITE);
+        knopf.setStyle(style);
         knopf.getLabel().setFontScale(2f); // 1.5x größer
+        knopf.getLabel().setColor(Color.BLUE);
         knopf.setOnUp(()->onButtonPress());
         name= "Trader";
 

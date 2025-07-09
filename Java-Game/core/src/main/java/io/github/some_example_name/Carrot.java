@@ -56,6 +56,7 @@ public class Carrot extends Gegner
                     //setColor(1,1,1,0);
                     Level.deleteList.add(car);
                     spawnCoins();
+
                     return true;
                 }
             }

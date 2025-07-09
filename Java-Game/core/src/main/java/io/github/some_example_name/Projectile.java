@@ -47,6 +47,13 @@ class PartikelSprite extends TextureActor
     PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation,boolean playOnce) {
         this(centerx, centery, animation, playOnce ? animation.getAnimationDuration() : Integer.MAX_VALUE); // Default delay if not specified
     }
+
+    @Override
+    public void destroy() {
+        clear();
+        remove();
+    }
+
     @Override
     public void act(float delta)
     {

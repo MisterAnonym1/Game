@@ -214,7 +214,9 @@ public class Main implements ApplicationListener {
         switch(newState) {
             case "startmenu" :
                 gamestate = Gamestate.startmenu;
-                uiStage.addActor(new Startmenu(this));
+                BootingScreen boscreen=new BootingScreen(this);
+                uiStage.addActor(boscreen);
+                boscreen.toFront();
                 levelnummer=invManager.getValueByKey("Level")-1;
 
                 break;

@@ -45,7 +45,6 @@ abstract class Gegner extends Entity
     Gegner(float x, float y, Main logic, TextureRegion texture)
     {
         super(x, y, texture, logic.Player);
-        speed = 100;
         curlevel = logic.currentlevel;
         this.logic = logic;
         maxhealth = 100;
@@ -148,7 +147,6 @@ void reset()
             ismoving = true;
             movement=getDistanceVector(player);
             if(movement.len()>=minDistance){
-            //movement.setLength(Math.min(movement.len(),delta*maxspeed));
             updatemovement(movement,delta);}
     }
 
@@ -411,12 +409,12 @@ void reset()
         //collisionOn=false;
         invincible=true;
         savedVector= new Vector2(player.getHitboxCenterX() - getHitboxCenterX(),  player.hitbox.y-hitbox.y);
+        final float maxspeed = speed;
        speed=savedVector.len()/jumpheight*250f/2-5;
         float startValue =1f; // Startwert für shadowscale
         float endValue = (float) Math.exp( -jumpheight/450f); // Endwert für shadowscale, abhängig von jumpheight
         float startValue2 =endValue;
         float endValue2 = 1f;
-        final float maxspeed = speed;
         addAction(Actions.sequence(
             Actions.parallel(
 

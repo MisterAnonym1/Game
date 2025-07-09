@@ -2,14 +2,102 @@ package io.github.some_example_name;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.Random;
+
 public class LibgdxHelperClass {
+    public static Pixmap createRoundedRect(int width, int height, int radius, Color color) {
+        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        pixmap.setBlending(Pixmap.Blending.None);
+        pixmap.setColor(color);
+
+        // Ecken
+        pixmap.fillCircle(radius, radius, radius);
+        pixmap.fillCircle(width - radius - 1, radius, radius);
+        pixmap.fillCircle(radius, height - radius - 1, radius);
+        pixmap.fillCircle(width - radius - 1, height - radius - 1, radius);
+
+        // Kanten
+        pixmap.fillRectangle(radius, 0, width - 2 * radius, height);
+        pixmap.fillRectangle(0, radius, width, height - 2 * radius);
+
+        return pixmap;
+    }
+    public static Pixmap generateFuturisticTriangleBackground(int width, int height, int triangleCount) {
+        Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
+        pixmap.setBlending(Pixmap.Blending.None);
+
+        // Hintergrundfarbe (dunkles Blau / Schwarz-Blau)
+        pixmap.setColor(0.05f, 0.1f, 0.15f, 1f);
+        pixmap.fill();
+
+        Random random = new Random();
+
+        for (int i = 0; i < triangleCount; i++) {
+            // Zufällige Punkte für das Dreieck
+            int x1 = random.nextInt(width);
+            int y1 = random.nextInt(height);
+            int x2 = x1 + random.nextInt(80) - 50;
+            int y2 = y1 + random.nextInt(80) - 50;
+            int x3 = x1 + random.nextInt(80) - 50;
+            int y3 = y1 + random.nextInt(80) - 50;
+
+            // Leuchtfarbe mit leichtem Transparenz-Effekt
+            Color glow = new Color(
+                    0.3f + random.nextFloat() * 0.5f, // R
+                    0.7f + random.nextFloat() * 0.3f, // G
+                    1f,                               // B
+                    0.07f + random.nextFloat() * 0.15f // Alpha
+            );
+            pixmap.setColor(glow);
+            pixmap.fillTriangle(x1, y1, x2, y2, x3, y3);
+        }
+
+        return pixmap;
+    }
+
 }
+ /*class TriangleBackgroundRenderer {
+    private final ShaderProgram shader;
+    private final Mesh mesh;
+    private float time = 0f;
+
+    public TriangleBackgroundRenderer(int triangleCount) {
+        ShaderProgram.pedantic = false;
+        shader = new ShaderProgram(VERT_SHADER, FRAG_SHADER);
+
+        float[] vertices = new float[triangleCount * 3 * 2]; // 3 Punkte × 2 Koordinaten (x,y) pro Dreieck
+        Random rand = new Random();
+        for (int i = 0; i < vertices.length; i++) {
+            vertices[i] = rand.nextFloat() * 2f - 1f; // Normalisierte Koordinaten zwischen -1 und 1
+        }
+
+        mesh = new Mesh(true, vertices.length / 2, 0,
+                new VertexAttribute(VertexAttributes.Usage.Position, 2, "a_position"));
+        mesh.setVertices(vertices);
+    }
+
+    public void render(float delta) {
+        time += delta;
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        //shader.bind();
+        //shader.setUniformf("u_time", time);
+        mesh.render( null,GL20.GL_TRIANGLES);
+
+    }
+
+    public void dispose() {
+        mesh.dispose();
+        //shader.dispose();
+    }
+}*/
+
  class MathHelper//eigene Klasse von mir zum regeln von sachen
 {
     static  boolean isLineIntersectingRectangle(float x1, float y1, float x2, float y2, Rectangle rect) {

@@ -56,7 +56,7 @@ class Player extends Entity
 
         coindisplay=new Displaytext("Coins:"+Main.invManager.getValueByKey("Coins"),20,570,28,Color.YELLOW,Color.BLACK,false,"Coins");
         Main.uiStage.addActor(coindisplay);
-        coindisplay.setZIndex(Integer.MAX_VALUE-1);//ist wie toFront()
+        coindisplay.setZIndex(Integer.MAX_VALUE-10);//ist wie toFront()
 
         texture.flip(true,false);
         walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.15f);

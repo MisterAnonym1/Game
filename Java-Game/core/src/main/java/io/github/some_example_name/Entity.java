@@ -39,6 +39,7 @@ class Entity extends TextureActor
     Animation<TextureRegion> defaultAnimation;
     Animation<TextureRegion> walkAnimation;
     Animation<TextureRegion> currentAnimation; //Variable zum speichern der letzten abgespielten animation
+     Animation<TextureRegion> smokeAnimation=Animator.getAnimation("Smoke5.png",11,15,68,75,0.08f);
     public enum EntityStatus { inactiv, idle, engaging,dead }
 
     Entity(float x, float y, TextureRegion tex, Player player)
@@ -168,6 +169,16 @@ void reset()
     void onDeath()
     {
         Level.deleteList.add(this);
+        deathEffect();
+    }
+    void deathEffect()
+    {
+        final float cx= getHitboxCenterX();
+        final float cy= getHitboxCenterY();
+        PartikelSprite deathpar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAnimation,true);
+        deathpar.setSize(hitbox.width*3f,hitbox.height*3f);
+        deathpar.centerAt(cx,cy);
+        Level.particles.add(deathpar);
     }
 
 

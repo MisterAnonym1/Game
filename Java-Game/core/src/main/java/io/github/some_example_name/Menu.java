@@ -164,13 +164,81 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 
 
 
-
 }
+
+
+
+
+class BootingScreen extends Menu
+{
+    boolean finished = false;
+    Texture backround;
+    Texture backround2;
+    BootingScreen(Main mainl)
+    {
+
+        super();
+        main = mainl;
+        Pixmap pixmap = LibgdxHelperClass.generateFuturisticTriangleBackground(800, 600, 200);
+        backround=new Texture("whitebase.png");
+        backround2=new Texture(pixmap);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.3f, 100, 0.0f,"GARDEN SLAYER");
+        textbox.setColor(new Color(0.15f, 0.5f, 0.15f,0),null);
+        delay=7f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
+        textbox.addAction(Actions.sequence(
+                Actions.fadeIn(3,Interpolation.slowFast),
+                Actions.delay(3),
+                Actions.fadeOut(1)));
+        toFront();
+
+    }
+    void setfinished()
+    {finished = true;}
+
+    @Override
+    public void draw(Batch batch, float alpha) {
+        batch.setColor(0,0,0,1);
+        //batch.setColor(0.5f,0.5f,0.5f,1);
+        //batch.draw(backround,0,0,ScreenWidth,ScreenHeight);
+        batch.draw(backround,0,0,ScreenWidth,ScreenHeight);
+        textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
+    }
+
+    void destroy()
+    {
+        Main.uiStage.addActor(new Startmenu(main));
+        remove();
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)||Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            setfinished();
+        }
+        textbox.act(delta);
+        if(delay > 0) {
+            delay-=delta;
+            if(delay<=0)
+            {
+                setfinished();
+            }
+        }
+        if(finished)destroy();
+
+
+    }
+}
+
+
+
 
  class LoadingScreen extends Menu
 {
     Animation<TextureRegion> loading;
     boolean finished_loading = false;
+    Texture backround;
+
     LoadingScreen(Main mainl)
     {
 
@@ -181,6 +249,8 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         if(mainl.DevMode){delay=0;}
         main = mainl;
+        backround=new Texture("whitebase.png");
+
         loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.05f);
         main.Player.coindisplay.setZIndex(Integer.MAX_VALUE-1);
     }
@@ -191,8 +261,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
 
     @Override
     public void draw(Batch batch, float alpha) {
-        ScreenUtils.clear(Color.WHITE);
-        textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
+        batch.draw(backround,0,0,ScreenWidth,ScreenHeight);        textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion currentFrame = loading.getKeyFrame(animationstateTime, true);
         batch.draw(currentFrame,getX()+ ScreenWidth/2f-200, getY()+ ScreenHeight/2f-80,getOriginX(),getOriginY(),400,300,getScaleX(),getScaleY(),getRotation());
@@ -674,8 +743,8 @@ class Startmenu extends Menu
     TextureRegion hintergrund;
     SpriteButton credits;
     Revtext randomtext;
-    boolean inmatrix;
     Matrix matrix;
+    String[] easterEggMessages;
     Startmenu(Main gamel)
     {
         super();
@@ -687,11 +756,11 @@ class Startmenu extends Menu
 
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
         String message=Script.startmenuscript[ran];
+        message= increaseEasterEggProbability(message);
         //message="Now with 10% more bugs!!";
         randomtext = new Revtext(ScreenWidth/2f, 320, 40, 0.03f,message);
         checkmessage(message);
-        //randomtext.setBorderColor(Color.black, 1);
-        //randomtext.setBorderWidth(6);
+
 
         credits = new SpriteButton(675, 60, "Credits Button V1.png",2);
         credits.setOnUp( ()->showCreditsWindow());
@@ -702,7 +771,7 @@ class Startmenu extends Menu
     @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.setColor(1,1,1,1);
-        if(inmatrix){matrix.actAndDraw(batch,Gdx.graphics.getDeltaTime());}
+        //if(inmatrix){matrix.actAndDraw(batch,Gdx.graphics.getDeltaTime());}
         batch.draw(hintergrund, getX(), getY(),0,ScreenHeight, 1024,576,1,1,getRotation());
         textbox.draw(batch,1);
         randomtext.draw(batch,1);
@@ -717,7 +786,23 @@ class Startmenu extends Menu
     }
 
 
-
+    String increaseEasterEggProbability(String mess)
+    {
+        easterEggMessages= new String[]{"I was a player once... \nnow I'm just code.", "Das haettest du nicht sehen sollen...",
+                "Now with 10% more bugs!!"};
+        boolean alreadyEgg=false;
+        for (int i = 0; i < easterEggMessages.length; i++) {
+            if(mess.equals(easterEggMessages[i]))
+            {
+                alreadyEgg=true;
+            }
+        }
+        if(!alreadyEgg&&Math.random()<0.2f)
+        {
+        mess=easterEggMessages[MathUtils.random(0,easterEggMessages.length-1)];
+        }
+        return mess;
+    }
 
 
     void checkmessage(String mes)
@@ -726,15 +811,16 @@ class Startmenu extends Menu
         {
             case "I was a player once... \nnow I'm just code." :
 
-            case "Das hättest du nicht sehen sollen..." :
-                inmatrix=true;
+            case "Das haettest du nicht sehen sollen..." :
                 matrix= new Matrix(main.viewport);
+                main.uiStage.addActor(matrix);
+                matrix.toBack();
                 SequenceAction sequence = new SequenceAction(
                     Actions.rotateBy(-42,0.5F,Interpolation.elastic),
                     Actions.rotateBy(18,0.9f,Interpolation.circleIn),
                     //Actions.moveBy(0, -150, 0.5f, Interpolation.linear), // Langsam starten
-                    Actions.moveBy(0, -350, 0.9f, Interpolation.pow2),  // Schneller
-                    Actions.moveBy(0, -250, 0.3f, Interpolation.exp5)   );
+                    Actions.moveBy(0, -600, 1.2f, Interpolation.pow2)
+                      );
                 addAction(sequence);
                 break;
             case "This is not a bug, it is a feature.":

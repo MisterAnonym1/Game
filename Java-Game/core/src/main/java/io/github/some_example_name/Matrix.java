@@ -3,12 +3,13 @@ package io.github.some_example_name;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 
-public class Matrix {
+public class Matrix extends Actor {
     GlyphLayout layout;
     BitmapFont font;
     String string="B#}][{ÆYA0Ø¢|+/ 0*+¡¢£¤¥¦¿ABCDEFB#}][{ÆYA0Ø¢|+/ 0*+¡¢£¤¥¦¿ABCDEF";
@@ -45,21 +46,21 @@ public class Matrix {
 
 
     }
-    public void actAndDraw( Batch batch, float delta) {
+    @Override
+    public void act(float delta) {
         //String str="";
         for (VerticalRevtext rev:texts)
         {
             rev.act(delta);
-            rev.draw(batch);
             //str+=rev.nummer+" ";
         }
-
-        /*
-        revtext.setMaintext(str);
-        revtext.skip();
-        revtext.act(delta);
-        revtext.draw(batch);
-        */
+    }
+    @Override
+    public void draw(Batch batch,float alpha) {
+        for (VerticalRevtext rev:texts)
+        {
+            rev.draw(batch);
+        }
     }
 }
 

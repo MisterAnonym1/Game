@@ -254,7 +254,7 @@ class Level {
                  }
                 catch(Exception e)
                 {
-                   tilechar='#';
+                   tilechar=' ';
                 }
                 MyTile tile = createTile(column, row, tilechar);
                 tiles[row][column] = tile;
