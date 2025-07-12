@@ -29,6 +29,7 @@ Fireball00/FB004.png
 Fireball00/FB005.png
 Forest sun backround.png
 HappySheep_All.png
+Karltoffelzwischenform.png
 libgdx.png
 Lines.txt
 Loadingsheet.png
@@ -57,6 +58,7 @@ sheep-hurt.wav
 slime_move.png
 small shockwave.png
 Smoke5.png
+Smoke7.png
 speech-bubble/speech1.png
 speech-bubble/speech2.png
 speech-bubble/speech3.png
