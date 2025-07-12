@@ -5,17 +5,15 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
-
+import java.util.Collections;
+import java.util.Comparator;
 
 
 class Level {
@@ -24,6 +22,7 @@ class Level {
     String[] rows;
     MyTile[][] tiles;
     MyTile[] walls;
+    private final ArrayList<TextureActor> renderQueue = new ArrayList<>();
     static ArrayList<Teleporter>  teleporters= new ArrayList<>();
     static ArrayList<Testentity> testentitys= new ArrayList<>();
     static ArrayList<Gegner> gegnerliste= new ArrayList<>();
@@ -150,24 +149,36 @@ class Level {
         for (Teleporter teleporter : teleporters) {
             teleporter.draw(batch,delta);
         }
-        for(TextureActor object: objects) {
-            object.draw(batch,delta);
+
+        renderQueue.clear();
+        renderQueue.addAll(objects);
+        renderQueue.addAll(npcs);
+        renderQueue.addAll(testentitys);
+        renderQueue.addAll(gegnerliste);
+        // **Sortieren nach Y-Koordinate (kleinster zuerst)**
+        Collections.sort(renderQueue, Comparator.comparing(obj -> -obj.hitbox.y));
+        for(TextureActor actor : renderQueue) {
+            actor.draw(batch, delta);
         }
-        for (NPC npc : npcs) {
-            npc.draw(batch,delta);
-        }
-        for (Testentity testi : testentitys) {
-            testi.draw(batch,delta);
-        }
-        for (Gegner gegner : gegnerliste) {
-            gegner.draw(batch,delta);
-        }
-        logic.Player.draw(batch,shape, delta==0?Gdx.graphics.getDeltaTime():delta,1.0f);
+        logic.Player.draw(batch,shape, delta==0?Gdx.graphics.getDeltaTime():delta);
+
         for (Projectile projec : projectiles) {
             projec.draw(batch,delta);
         }
         for(PartikelSprite particle : particles) {
             particle.draw(batch,delta);
+        }
+        // | Gegner im Sprung (mit Y-Offset)
+        // V
+        ArrayList<Gegner> gegnerMitOffset = new ArrayList<>();
+        for (Gegner geg : gegnerliste) {
+            if (geg.textureYoffset >0) {
+                gegnerMitOffset.add(geg);
+            }
+        }
+        gegnerMitOffset.sort(Comparator.comparing(geg -> geg.textureYoffset));
+        for (Gegner geg : gegnerMitOffset) {
+            geg.draw(batch, delta);
         }
 
 

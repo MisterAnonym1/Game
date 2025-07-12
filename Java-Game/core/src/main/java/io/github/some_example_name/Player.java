@@ -29,11 +29,13 @@ class Player extends Entity
     Animation<TextureRegion> frontAttackAnimation;
     Animation<TextureRegion> backAttackAnimation;
     Animation<TextureRegion> deadAnimation;
+    Animation<TextureRegion> runSmoke;
     boolean isattacking;
     Viewport viewport;
     Vector2 attackline;
     StorySpeechBox speechbox;
     Displaytext coindisplay;
+    float smokedelay;
     Player(float x, float y, Viewport view) {
 
 
@@ -42,7 +44,7 @@ class Player extends Entity
         player=this;
         weight = 0.5f;
         viewport=view;
-        this.speed = 250;
+        this.speed = 220;
         curhealth = 100;
         maxhealth = 100;
         healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
@@ -59,12 +61,14 @@ class Player extends Entity
         coindisplay.setZIndex(Integer.MAX_VALUE-10);//ist wie toFront()
 
         texture.flip(true,false);
-        walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.15f);
+        walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.1f);
         defaultAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,1,6,0.12f);
         sideAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,13,18,0.08f);
         frontAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,25,30,0.08f);
         backAttackAnimation=Animator.getAnimation("Warrior_Blue.png", 6,8,37,42,0.08f);
         deadAnimation=Animator.getAnimation("Dead.png", 7,2,1,14,0.082f);
+
+        runSmoke=Animator.getAnimation("Smoke5.png",11,15,154,164,0.08f);
 
         upgradeManager = new UpgradeManager(this);
         upgradeManager.addnewPlayerUpgrade("Health", "Increases the maximum health of the player", (forlevel) -> forlevel * 10, (level) -> {
@@ -104,10 +108,10 @@ class Player extends Entity
         return new Vector2(other.getHitboxCenterX() - getHitboxCenterX(), other.getHitboxCenterY() - hitbox.y).len();
     }
 
-    public void draw(Batch batch,ShapeRenderer shape,float delta, float parentAlpha) {
+    public void draw(Batch batch,ShapeRenderer shape,float delta) {
         if(status==EntityStatus.dead){playAnimation(deadAnimation);}
 
-        batch.setColor(getColor().r,getColor().g,getColor().b,parentAlpha*getColor().a);
+        batch.setColor(getColor().r,getColor().g,getColor().b,getColor().a);
         animationstateTime += delta; // Accumulate elapsed animation time
         TextureRegion currentFrame = currentAnimation.getKeyFrame(animationstateTime, status==EntityStatus.dead? false:true);
 
@@ -187,10 +191,10 @@ class Player extends Entity
 
         if(player.currentAnimation==player.sideAttackAnimation){
             if(MathHelper.isAngleOutOfBounds(line,directionline,40)){return false;}
-            line.setLength(85);}
+            line.setLength(Main.DevMode?1000:85);}
         else{
             if(MathHelper.isAngleOutOfBounds(line,directionline,50)){return false;}
-            line.setLength(65);
+            line.setLength(Main.DevMode?1000:65);
         }
         if(Main.DevMode)
         {
@@ -317,6 +321,17 @@ class Player extends Entity
             if (ismoving) {
 
                 playAnimation(walkAnimation);
+                walkAnimation.setFrameDuration(25/speed);
+                smokedelay+=deltatime;
+                if(smokedelay>25/speed*3)
+                {
+                    smokedelay=0;
+                    /*PartikelSprite par=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),runSmoke,true);
+                    //par.setSize(hitbox.width,hitbox.height*0.1f);
+                    par.scaleBy(2);
+                    par.centerAt(getHitboxCenterX(),hitbox.y+par.getHeight()/2);
+                    Level.particles.add(par);*/
+                }
                 if (Math.round(vecup.angleDeg())>95&&Math.round(vecup.angleDeg())<265) {
                     flip(true);
                 }

@@ -13,8 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import static java.lang.Float.NaN;
 
 public class Karltoffelboss extends Boss{
-    int recenthits=0;                                                                                                                   //101-112
-    Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,107,112,0.08f);
+    int recenthits=0;                                                                                                                   //99-109
+    static Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,99,109,0.08f);
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
         speed = 250;
@@ -125,7 +125,7 @@ public class Karltoffelboss extends Boss{
 
 
             if (attackStatus == AttackStatus.inactive) {
-                if (attackdelay2 >= 5) {///15
+                if (attackdelay2 >= 12) {///15
 
                     if (getdistance(spawnx,spawny)<=150) {
 
@@ -135,10 +135,9 @@ public class Karltoffelboss extends Boss{
                         fireStormattack();
                         invincible=true;
                         recenthits=0;
-                            PartikelSprite deathpar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,false);
-                            deathpar.setSize(hitbox.width*3f,hitbox.height*3f);
-                            deathpar.centerAt(getHitboxCenterX(),getHitboxCenterY());
-                            deathpar.delay=10;
+                            PartikelSprite deathpar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,true);
+                            deathpar.setSize(hitbox.width*1.8f,hitbox.height*1.8f);
+                            deathpar.centerAt(getHitboxCenterX()-10,getHitboxCenterY()+20);
                             Level.particles.add(deathpar);
                         }
                         else{shockwaveAttack(0.3f,100);

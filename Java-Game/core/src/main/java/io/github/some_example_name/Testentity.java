@@ -92,7 +92,7 @@ public class Testentity extends Gegner {
 
     @Override
     public void removeFromLevel() {
-        if(aggressive){
+        if(evil){
            Level.gegnerliste.remove(this);
         }
         else{
@@ -177,7 +177,7 @@ public class Testentity extends Gegner {
 
     @Override
     void onDeath() {
-        if(aggressive&&!exploded){
+        if(evil&&!exploded){
             spawnCoins();
         }
         Level.deleteList.add(this);

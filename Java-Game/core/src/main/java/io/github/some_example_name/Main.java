@@ -3,6 +3,7 @@ package io.github.some_example_name;//package com.Game2;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
@@ -23,6 +24,7 @@ public class Main implements ApplicationListener {
     ArrayList<MyTile> loadedwalls = new ArrayList<>();
     ShapeRenderer shape;
     Music music;
+    InputMultiplexer multiplexer; //für mehrere InputVerarbeiter
     boolean inPopUpWindow=false;
     //TiledMap map;
     static Cursor bettercursor;
@@ -81,7 +83,11 @@ public class Main implements ApplicationListener {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         setState("startmenu");
-        Gdx.input.setInputProcessor(uiStage);
+        multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(uiStage); // deine UI
+        Gdx.input.setInputProcessor(multiplexer);
+
+        //Gdx.input.setInputProcessor(uiStage);
     }
 
     @Override
@@ -108,6 +114,7 @@ public class Main implements ApplicationListener {
 
         if(DevMode)
         {
+
             //Wurde ins DevMenu verlegt
         }
 
@@ -222,6 +229,7 @@ public class Main implements ApplicationListener {
                 break;
             case "DevMode" :
                 DevMode = true;
+                multiplexer.addProcessor(new ZoomInputProcessor(ocam)); // dein Zoom
                 if(levelnummer==0) {
                     levelnummer = -1; }
 
@@ -296,7 +304,7 @@ public class Main implements ApplicationListener {
                 invManager.resetInventory();
                 gamestate = Gamestate.startmenu;
                 uiStage.clear();
-               Player.reAddUiElements();
+                Player.reAddUiElements();
                 uiStage.addActor(new Startmenu(this));
                 DataCenter.resetTimeplayed();
                 break;

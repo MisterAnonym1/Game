@@ -73,6 +73,7 @@ Tileset_Wall.png
 Tileset_Water.png
 Tileset_watersides.png
 Tileset_watersides2.png
+triangle.frag.glsl
 triangle.vert.glsl
 ui/font-list.fnt
 ui/font-subtitle.fnt

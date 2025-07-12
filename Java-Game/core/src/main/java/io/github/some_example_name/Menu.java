@@ -174,6 +174,7 @@ class BootingScreen extends Menu
     boolean finished = false;
     Texture backround;
     Texture backround2;
+    TriangleBackgroundRenderer background = new TriangleBackgroundRenderer(200);
     BootingScreen(Main mainl)
     {
 
@@ -198,9 +199,10 @@ class BootingScreen extends Menu
     @Override
     public void draw(Batch batch, float alpha) {
         batch.setColor(0,0,0,1);
-        //batch.setColor(0.5f,0.5f,0.5f,1);
-        //batch.draw(backround,0,0,ScreenWidth,ScreenHeight);
+
         batch.draw(backround,0,0,ScreenWidth,ScreenHeight);
+        //batch.setColor(1f,0.5f,0.5f,1);
+        //background.render(Gdx.graphics.getDeltaTime());
         textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
     }
 
@@ -781,6 +783,7 @@ class Startmenu extends Menu
 
     public void destroy() {
       hintergrund.getTexture().dispose();
+      if(matrix!=null){matrix.remove();}
       remove();
       credits.remove();
     }
@@ -846,8 +849,13 @@ class Startmenu extends Menu
     {
         super.act(delta);
         if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.X)) {
+            if(!Main.DevMode){
             showPinDialog();
+            return;}
+            main.setState("DevMode");
+            this.destroy();
             return;
+
         }
         if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.ENTER))
         {

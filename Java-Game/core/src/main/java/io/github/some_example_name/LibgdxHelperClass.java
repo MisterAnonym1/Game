@@ -2,6 +2,7 @@ package io.github.some_example_name;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 
@@ -63,14 +64,14 @@ public class LibgdxHelperClass {
     }
 
 }
- /*class TriangleBackgroundRenderer {
+ class TriangleBackgroundRenderer {
     private final ShaderProgram shader;
     private final Mesh mesh;
     private float time = 0f;
 
     public TriangleBackgroundRenderer(int triangleCount) {
         ShaderProgram.pedantic = false;
-        shader = new ShaderProgram(VERT_SHADER, FRAG_SHADER);
+        shader = new ShaderProgram("triangle.vert.glsl", "triangle.frag.glsl");
 
         float[] vertices = new float[triangleCount * 3 * 2]; // 3 Punkte × 2 Koordinaten (x,y) pro Dreieck
         Random rand = new Random();
@@ -86,17 +87,17 @@ public class LibgdxHelperClass {
     public void render(float delta) {
         time += delta;
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        //shader.bind();
-        //shader.setUniformf("u_time", time);
-        mesh.render( null,GL20.GL_TRIANGLES);
+        shader.bind();
+        shader.setUniformf("u_time", time);
+        mesh.render( shader,GL20.GL_TRIANGLES);
 
     }
 
     public void dispose() {
         mesh.dispose();
-        //shader.dispose();
+        shader.dispose();
     }
-}*/
+}
 
  class MathHelper//eigene Klasse von mir zum regeln von sachen
 {
@@ -303,3 +304,54 @@ public class LibgdxHelperClass {
     }
 }
 
+ class ZoomInputProcessor extends InputAdapter {
+    private final OrthographicCamera camera;
+
+    private float initialDistance = -1;
+    private float initialZoom = -1;
+
+    public ZoomInputProcessor(OrthographicCamera camera) {
+        this.camera = camera;
+    }
+
+    @Override
+    public boolean scrolled(float amountX, float amountY) {
+        // Mausrad-Zoom (amountY ist auf Desktop relevant)
+        camera.zoom += amountY * 0.1f;
+        clampZoom();
+        return true;
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        // Zoom-Start bei 2 Fingern
+        if (Gdx.input.isTouched(0) && Gdx.input.isTouched(1)) {
+            initialDistance = getTouchDistance();
+            initialZoom = camera.zoom;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if (Gdx.input.isTouched(0) && Gdx.input.isTouched(1)) {
+            float currentDistance = getTouchDistance();
+            if (initialDistance > 0) {
+                float ratio = initialDistance / currentDistance;
+                camera.zoom = initialZoom * ratio;
+                clampZoom();
+            }
+        }
+        return false;
+    }
+
+    private float getTouchDistance() {
+        Vector2 touch1 = new Vector2(Gdx.input.getX(0), Gdx.input.getY(0));
+        Vector2 touch2 = new Vector2(Gdx.input.getX(1), Gdx.input.getY(1));
+        return touch1.dst(touch2);
+    }
+
+    private void clampZoom() {
+        camera.zoom = MathUtils.clamp(camera.zoom, 0.2f, 5f);
+    }
+}
