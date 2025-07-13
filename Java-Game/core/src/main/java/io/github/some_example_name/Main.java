@@ -546,6 +546,11 @@ public class Main implements ApplicationListener {
                 {
                     ((Coin) object).onTouch(Player);
                 }
+                else if(object instanceof Healing_potato)
+                {
+                    ((Healing_potato) object).collect(Player);
+                }
+
                 /*else if(object instanceof Door)
                 {
                     ((Door) object).onStand();
@@ -584,7 +589,7 @@ public class Main implements ApplicationListener {
         invManager.setValueByKey("Playtime", (int)DataCenter.getTimeplayed());
         invManager.setValueByKey("Level", level);
         DataCenter.setLevelnumber(level);
-        currentlevel = new Level(LevelList.levels[level],this);
+        currentlevel = new Level(LevelList.levels[Math.min(level,LevelList.levels.length-1)],this);
         currentlevel.load();
         dataCenter.level=currentlevel;
 

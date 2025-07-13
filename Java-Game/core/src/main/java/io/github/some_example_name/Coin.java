@@ -46,3 +46,4 @@ public class Coin extends PartikelSprite {
         }
     }
 }
+

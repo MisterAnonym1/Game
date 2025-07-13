@@ -1,6 +1,6 @@
-#Coins 150
+#Coins 370
 #Potions 0
 #Armor 50
 #Sword 1
 #Playtime 155
-#Level 7
+#Level 8

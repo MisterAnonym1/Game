@@ -15,6 +15,7 @@ import static java.lang.Float.NaN;
 public class Karltoffelboss extends Boss{
     int recenthits=0;
     double aggressionLevel;
+    float potatodelay=0;
     static Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,99,109,0.08f);
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
@@ -82,7 +83,15 @@ public class Karltoffelboss extends Boss{
     @Override
     void damagePlayer(float damage) {
         super.damagePlayer(damage);
-        aggressionLevel-= damage*0.5f;
+        aggressionLevel-= damage;
+        if(potatodelay<=0&& player.curhealth<player.maxhealth/2f&&  aggressionLevel<120)
+        {
+            for (int i = 0; i < MathUtils.random(4,7); i++) {
+                Level.objects.add(new Healing_potato(spawnx+MathUtils.random(-400,400), spawny+MathUtils.random(-400,400), MathUtils.random(5,10)));
+            }
+            potatodelay=20;
+        }
+
     }
 
     @Override
@@ -101,6 +110,7 @@ public class Karltoffelboss extends Boss{
     public void engagePlayer(float delta) {
         //aggressionLevel=(aggressionLevel+ delta*50.0*0.15)/(1.0+delta*0.15);
         aggressionLevel += Math.clamp(50-aggressionLevel,-5*delta,5*delta);
+        potatodelay-=delta;
         if(attackStatus == AttackStatus.inair)
         {
                 ismoving=true;
