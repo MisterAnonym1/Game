@@ -184,7 +184,7 @@ class Player extends Entity
     boolean handleAttack(Entity enti)
     {
         if(gegnerhitliste.contains(enti)){return false;}
-
+        if(enti.invincible){return false;}
          Vector2 line =new Vector2(enti.getHitboxCenterX() - getHitboxCenterX(), enti.getHitboxCenterY() - getHitboxCenterY());
         if(line.len()>(Main.DevMode?1000:85)+enti.hitbox.getWidth()/2){return false;}
         //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}

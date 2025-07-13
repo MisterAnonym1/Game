@@ -13,7 +13,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import static java.lang.Float.NaN;
 
 public class Karltoffelboss extends Boss{
-    int recenthits=0;                                                                                                                   //99-109
+    int recenthits=0;
+    double aggressionLevel;
     static Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,99,109,0.08f);
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
@@ -22,6 +23,7 @@ public class Karltoffelboss extends Boss{
         sethealth(1500,true);
         scale(0.3f);
         setPosition(x,y);
+        aggressionLevel=100;
         setBossName("KARLTOFFEL DER SCHRECKLICHE");
         bossTitel.setColor(Color.YELLOW);
         positionChanged();
@@ -44,7 +46,7 @@ public class Karltoffelboss extends Boss{
     void reset() {
         super.reset();
         speed=250;
-        //collisionOn=false;
+        aggressionLevel=50;
     }
 
     @Override
@@ -59,8 +61,10 @@ public class Karltoffelboss extends Boss{
 
     @Override
     boolean damageby(float damage) {
-        if(invincible){return false;}
+        if(invincible||attackStatus==AttackStatus.inair||attackStatus== AttackStatus.shockwave||attackStatus== AttackStatus.projectile_storm){return false;}
         recenthits++;
+        aggressionLevel+=damage*0.5f;
+
         if (attackStatus != AttackStatus.dash&&recenthits>=3)
         {
             recenthits-= MathUtils.random(1,2);
@@ -76,20 +80,27 @@ public class Karltoffelboss extends Boss{
     }
 
     @Override
+    void damagePlayer(float damage) {
+        super.damagePlayer(damage);
+        aggressionLevel-= damage*0.5f;
+    }
+
+    @Override
     void onPlayertouch() {
         super.onPlayertouch();
+        System.out.println();
         if(attackStatus == AttackStatus.dash) {
             Vector2 knockback = player.getDistanceVector(getHitboxCenterX(), hitbox.y).scl(-1);
             knockback.setLength(160);
             player.setAdditionalForce(knockback);
-            player.damageby(15);
-            collisionOn=true;
-            //invincible = true;
+            damagePlayer(15);
             attackStatus = AttackStatus.inactive;
         }
     }
 
     public void engagePlayer(float delta) {
+        //aggressionLevel=(aggressionLevel+ delta*50.0*0.15)/(1.0+delta*0.15);
+        aggressionLevel += Math.clamp(50-aggressionLevel,-5*delta,5*delta);
         if(attackStatus == AttackStatus.inair)
         {
                 ismoving=true;
@@ -104,7 +115,7 @@ public class Karltoffelboss extends Boss{
                 logic.randomcamerashake(100*delta,100*delta);
             }
 
-            if(collisionOn&&player.collisionOn&& attackdelay<=0.25f) {
+            if(invincible&&player.collisionOn&& attackdelay<=0.25f) {
 
                 float ellipseDistance= (float) (1.3*Math.pow(getHitboxCenterX()-player.getHitboxCenterX(),2)+4*Math.pow(hitbox.y-player.hitbox.y,2));
                 if ( ellipseDistance<Math.pow(300,2)*attackdelay/0.3f) {
@@ -115,17 +126,19 @@ public class Karltoffelboss extends Boss{
                     if (damage == NaN ||Float.isInfinite(damage)) {
                         damage = 100;
                     }
-                    player.damageby(damage);
-                    collisionOn=false;
+                    damagePlayer(damage);
+                    invincible=false;
                 }
             }
         }
         else{
             attackdelay2 += delta;
-
+            if (aggressionLevel>150&&attackStatus!=AttackStatus.projectile_storm) {
+                attackdelay2+= delta*aggressionLevel/100;
+            }
 
             if (attackStatus == AttackStatus.inactive) {
-                if (attackdelay2 >= 12) {///15
+                if (attackdelay2 >= 15) {///15
 
                     if (getdistance(spawnx,spawny)<=150) {
 
@@ -188,9 +201,14 @@ public class Karltoffelboss extends Boss{
 
             }
             else if (attackStatus == AttackStatus.repositioning) {
-                if(getdistance(spawnx,spawny)>100)
+
+                 if(getdistance(spawnx,spawny)>100)
                 {
-                   updatemovement(getDistanceVector(spawnx, spawny), delta);
+                    if(aggressionLevel>180) {shockwavejump(0.3f,150,spawnx,spawny);
+                        System.out.println("jumping");
+                    }
+                    else{
+                   updatemovement(getDistanceVector(spawnx, spawny), delta);}
                 }
                 else {attackStatus = AttackStatus.inactive;
                      attackdelay = 0;

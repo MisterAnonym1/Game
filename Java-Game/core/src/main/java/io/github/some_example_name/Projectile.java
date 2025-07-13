@@ -151,13 +151,14 @@ class Projectile extends PartikelSprite
 class FireBall extends Projectile
 {
     static float speed=370;
-
+    Gegner origin;
     static Animation<TextureRegion> explosion=Animator.getAnimation("Explosions.png",9,1,1,9,0.1f); //Variable zum speichern der letzten abgespielten animation
-    FireBall(float x,float y, Vector2 vel)
+    FireBall(float x,float y, Vector2 vel, Gegner origin)
     {
         super(x,y,"potato.png",vel,20);
         movement.setLength(speed);
         scale(2.5f);
+        this.origin = origin;
     }
     @Override
     void reducemovement(float delta)
@@ -179,10 +180,14 @@ class FireBall extends Projectile
 
     @Override
     void onHit(Entity enti) {
+        if(enti==origin){return;}
         FireBall fireBall = this;
         movement.setLength(0);
         collisionOn=false;
-        enti.damageby(damage);
+        if(enti instanceof Player) {
+            origin.damagePlayer(damage);
+        }else{
+        enti.damageby(damage);}
         addAction(Actions.after(Actions.delay(0.5f)) );
         addAction(Actions.after(new Action() {
             @Override

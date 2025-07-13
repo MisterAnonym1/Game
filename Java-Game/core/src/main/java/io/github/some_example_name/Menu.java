@@ -882,9 +882,10 @@ class Startmenu extends Menu
     @Override
     public void act(float delta)
     {
-        super.act(delta);
+
         delay+=delta;
         if(delay<1.4f){return;} // Warte 1.4 Sekunden bevor die Tasten abgefragt werden
+        super.act(delta);
         if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.X)) {
             if(!Main.DevMode){
             showPinDialog();

@@ -446,6 +446,7 @@ public class Main implements ApplicationListener {
             }
 
 
+
         }
 
         updateNpcs();
