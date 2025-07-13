@@ -48,12 +48,12 @@ public class Carrot extends Gegner
         status=EntityStatus.dead;
         final Carrot car=this;
         clearActions();
+        setColor(1,1,1,1);
         addAction(Actions.sequence(
             Actions.delay(0.65f),
             new Action() {
                 @Override
                 public boolean act(float delta) {
-                    //setColor(1,1,1,0);
                     Level.deleteList.add(car);
                     spawnCoins();
 

@@ -186,7 +186,7 @@ class Player extends Entity
         if(gegnerhitliste.contains(enti)){return false;}
 
          Vector2 line =new Vector2(enti.getHitboxCenterX() - getHitboxCenterX(), enti.getHitboxCenterY() - getHitboxCenterY());
-        if(line.len()>(Main.DevMode?85:1000)+enti.hitbox.getWidth()/2){return false;}
+        if(line.len()>(Main.DevMode?1000:85)+enti.hitbox.getWidth()/2){return false;}
         //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}
 
         if(player.currentAnimation==player.sideAttackAnimation){

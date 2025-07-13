@@ -655,6 +655,7 @@ public class Main implements ApplicationListener {
         for (TextureRegion reg : FireBall.explosion.getKeyFrames()) {
             reg.getTexture().dispose();
         }
+        OwnText.generator.dispose();
 
     }
     public static void setToDefaultCursor()

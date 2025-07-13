@@ -21,16 +21,16 @@ public class OwnText extends Actor {
    Color outlineColor;
     GlyphLayout layout;
     int size;
+    static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("MountainKing-font.ttf"));
+    static FreeTypeFontParameter parameter = new FreeTypeFontParameter();
     public OwnText(String text, float x, float y, int size, Color color, Color outlineColor) {
         this(text, x, y, size, color, outlineColor, true);
     }
-    public OwnText(String text, float leftx, float y, int size, Color color, Color outlineColor,boolean centered) {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("MountainKing-font.ttf"));
-        FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+    public OwnText(String text, float leftx, float y, int size, Color color, Color outlineColor,boolean centered) {;
         parameter.size = size; // Schriftgröße
         this.size=size;
         font = generator.generateFont(parameter);
-        generator.dispose();
+        //generator.dispose();
         //this.font = new BitmapFont(); // Standard-Schriftart ohne TTF-Import
         this.text = text;
         layout = new GlyphLayout();
@@ -123,6 +123,10 @@ public class OwnText extends Actor {
         // Originalfarbe des Textes
         font.setColor(getColor());
         font.draw(batch, text, getX(), getY());
+    }
+    public void draw(Batch batch,float outlinealpha, float alpha) {
+        setColor(getColor().r, getColor().g, getColor().b, alpha);
+        draw(batch,outlinealpha);
     }
 
     public void dispose() {

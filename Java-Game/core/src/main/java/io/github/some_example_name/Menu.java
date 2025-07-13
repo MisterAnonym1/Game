@@ -6,10 +6,12 @@ import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
+import com.badlogic.gdx.scenes.scene2d.actions.AddAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -174,23 +176,49 @@ class BootingScreen extends Menu
     boolean finished = false;
     Texture backround;
     Texture backround2;
+    TextureActor logo;
+    Label skipMessage;
+    OwnText studioText;
     TriangleBackgroundRenderer background = new TriangleBackgroundRenderer(200);
-    BootingScreen(Main mainl)
-    {
+    BootingScreen(Main mainl) {
 
         super();
+        setZIndex(Integer.MAX_VALUE-1);
         main = mainl;
         Pixmap pixmap = LibgdxHelperClass.generateFuturisticTriangleBackground(800, 600, 200);
-        backround=new Texture("whitebase.png");
-        backround2=new Texture(pixmap);
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.3f, 100, 0.0f,"GARDEN SLAYER");
-        textbox.setColor(new Color(0.15f, 0.5f, 0.15f,0),null);
-        delay=7f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
-        textbox.addAction(Actions.sequence(
-                Actions.fadeIn(3,Interpolation.slowFast),
-                Actions.delay(3),
-                Actions.fadeOut(1)));
-        toFront();
+        skipMessage = new Label("Press Space to skip", Main.skin);
+        skipMessage.setFontScale(4f);
+        skipMessage.setPosition(ScreenWidth / 2f - skipMessage.getWidth()*2, ScreenHeight/2);
+        skipMessage.setColor(0.5f,0.5f,0.5f,1);
+        studioText=new OwnText("The Boyz Deluxe Studios",ScreenWidth / 2f, ScreenHeight / 2f * 0.4f, 50, new Color(0.7f, 0.9f, 0.7f, 1),null);
+        backround = new Texture("whitebase.png");
+        backround2 = new Texture(pixmap);
+        logo=new TextureActor("Boys_logo.jpg");
+        logo.centerAt(ScreenWidth / 2f, ScreenHeight / 1.65f);
+        logo.setColor(1,1,1,0);
+        logo.toFront();
+        textbox = new Revtext(ScreenWidth / 2f, ScreenHeight / 2f * 1.3f, 140, 0.0f, "GARDEN SLAYER");
+        textbox.setColor(new Color(0.15f, 0.5f, 0.15f, 0), null);
+        delay = 0f;
+        Action logoAction=Actions.run(()->{logo.addAction(Actions.sequence(
+                Actions.delay(1.5f),
+                Actions.fadeIn(2, Interpolation.slowFast),
+                Actions.delay(2.5f),
+                Actions.fadeOut(2),
+                Actions.removeActor()
+
+        ));});
+        Action textAction=Actions.run(() -> {textbox.addAction(Actions.sequence(
+                Actions.fadeIn(3, Interpolation.slowFast),
+                Actions.delay(2.5f),
+                Actions.parallel(Actions.fadeOut(1),Actions.run(() -> {
+                            this.destroy();
+                        }
+                ))
+
+        ));});
+        addAction(Actions.sequence(logoAction,Actions.delay(7.3f), textAction));
+
 
     }
     void setfinished()
@@ -198,36 +226,40 @@ class BootingScreen extends Menu
 
     @Override
     public void draw(Batch batch, float alpha) {
-        batch.setColor(0,0,0,1);
-
+        batch.setColor(0,0,0,getColor().a);
         batch.draw(backround,0,0,ScreenWidth,ScreenHeight);
-        //batch.setColor(1f,0.5f,0.5f,1);
-        //background.render(Gdx.graphics.getDeltaTime());
+        skipMessage.draw(batch,(delay<=1.5f?(delay<=1f?0.6f+delay*2:1.5f-delay):0)*getColor().a);
         textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
+        logo.setColor(logo.getColor().r,logo.getColor().g,logo.getColor().b,logo.getColor().a*getColor().a);
+        logo.draw(batch,1);
+        studioText.draw(batch,1,logo.getColor().a*getColor().a);
+
     }
 
     void destroy()
     {
+        setfinished();
         Main.uiStage.addActor(new Startmenu(main));
-        remove();
+        toFront();
+        addAction(Actions.sequence(
+                Actions.delay(0.9f),
+                Actions.fadeOut(0.5f),
+                Actions.run(() -> {
+                    remove();
+                })
+        ));
+
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
-        if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)||Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            setfinished();
+        delay+= delta;
+        if(!finished&&(Gdx.input.isKeyJustPressed(Input.Keys.ENTER)||Gdx.input.isKeyJustPressed(Input.Keys.SPACE))) {
+            destroy();
         }
         textbox.act(delta);
-        if(delay > 0) {
-            delay-=delta;
-            if(delay<=0)
-            {
-                setfinished();
-            }
-        }
-        if(finished)destroy();
-
+        logo.act(delta);
 
     }
 }
@@ -290,6 +322,7 @@ class BootingScreen extends Menu
             delay-=delta;
         }
         if(main.gamestate==Gamestate.playing && delay <= 0) {
+            setfinished();
             destroy();
             //main.Player.healthbar.setVisible(true);
         }
@@ -616,6 +649,8 @@ class NewLevelScreen extends Menu {
                         costLabel.setText(upgrade.getCost(val+2) +" Münzen");
                     }
                     updateAllSkillCostLabels();
+                    main.Player.coindisplay.toFront();
+
                 }
             }
         });
@@ -747,15 +782,15 @@ class Startmenu extends Menu
     Revtext randomtext;
     Matrix matrix;
     String[] easterEggMessages;
-    Startmenu(Main gamel)
+    Startmenu(Main mainl)
     {
         super();
-        main = gamel;
+        main = mainl;
         setPosition(0,0);
         hintergrund = new TextureRegion(new Texture("misty-forest-background.png"));
         textbox = new Revtext(ScreenWidth/2f, 400, 65, 0.04f,"Press \"Enter\" to start");
         textbox.setColor(Color.SKY);
-
+        delay=0;
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
         String message=Script.startmenuscript[ran];
         message= increaseEasterEggProbability(message);
@@ -848,6 +883,8 @@ class Startmenu extends Menu
     public void act(float delta)
     {
         super.act(delta);
+        delay+=delta;
+        if(delay<1.4f){return;} // Warte 1.4 Sekunden bevor die Tasten abgefragt werden
         if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.X)) {
             if(!Main.DevMode){
             showPinDialog();
@@ -863,6 +900,7 @@ class Startmenu extends Menu
             this.destroy();
             return;
         }
+
         textbox.act(delta);
         randomtext.act(delta);
         credits.act(delta);

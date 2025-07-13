@@ -186,6 +186,7 @@ public class Testentity extends Gegner {
 
     @Override
     boolean damageby(float damage) {
+       SoundManager.stop("sheep");
         SoundManager.play("sheep",0.4f,0.95f);
         return super.damageby(damage);
     }
