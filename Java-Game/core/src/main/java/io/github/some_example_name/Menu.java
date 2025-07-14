@@ -32,7 +32,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
     Revtext textbox;//erschafft eine Textbox, <---dein ernst? ich kann selber sehen
     static float ScreenWidth=1024;
     static float ScreenHeight=576;
-    void showRestartConfirmation(Main main) {
+   static void showRestartConfirmation(Main main) {
         if (main.inPopUpWindow) return; // Verhindert mehrfaches Öffnen
         main.inPopUpWindow=true;
         final Window confirmWindow = new Window("", Main.skin);
@@ -143,7 +143,7 @@ public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erscha
         creditsWindow.row();
 
         Label creditsLabel = new Label(
-                "Game made by: The Boys Deluxe \nGrafik: ...\nMusic: I stole it (joke)\nSpecial Thanks: Frau Bauereisen\n" ,
+                "Game made by: The Boys Deluxe \nGrafik: Our own and from the Internet\nMusic: I stole it (joke)\nMountain king Font by Michael W. Moss: --\n https://www.fontspace.com/mountain-king-font-f119642\nSounds: sheep.wav by Gitanki -- https://freesound.org/s/172712/\nNorwegian sheep by michaelperfect -- https://freesound.org/s/710296/ \nSpecial Thanks: Frau Bauereisen\n" ,
                 Main.skin);
         creditsLabel.setAlignment(Align.center);
         creditsLabel.setFontScale(1.6f);
@@ -1077,12 +1077,7 @@ class DevMenu extends Menu
                    main.Player.speed=400;}
                else{main.Player.speed=250;}
            }
-           if (Gdx.input.isKeyPressed(Input.Keys.Y)) {
-               main.ocam.zoom -= 0.5f*delta;
-           }
-           if (Gdx.input.isKeyPressed(Input.Keys.H)) {
-               main.ocam.zoom += 0.5f*delta;
-           }
+
            //---STRG
        }
 

@@ -107,8 +107,12 @@ public class Main implements ApplicationListener {
 
     private void input() {
         float delta = Gdx.graphics.getDeltaTime();
-        if(gamestate!=Gamestate.dialouge&&gamestate!=Gamestate.loading&& Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            Menu.showQuitConfirmation(this);
+        if(gamestate!=Gamestate.dialouge&&gamestate!=Gamestate.loading) {
+            if( Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
+            Menu.showQuitConfirmation(this);}
+            else if(Gdx.input.isKeyJustPressed(Input.Keys.R)&&Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
+                Menu.showRestartConfirmation(this);
+            }
         }
 
 
