@@ -149,9 +149,12 @@ class Level {
         for (Teleporter teleporter : teleporters) {
             teleporter.draw(batch,delta);
         }
+        for(TextureActor object: objects) {
+            object.draw(batch,delta);
+        }
 
         renderQueue.clear();
-        renderQueue.addAll(objects);
+        //renderQueue.addAll(objects);
         renderQueue.addAll(npcs);
         renderQueue.addAll(testentitys);
         renderQueue.addAll(gegnerliste);

@@ -1,28 +1,10 @@
-2000
-Healthbar _/
-Spieler _/
-Tile _/
-Entity_/
-Animations_/
-Testentitys_/
-Schlange_/
-Mage_/
-Particle_/
-Projectile_/
-Gegner_/
-Revtext_/
-Waffe_/
-Script_/
-Level
-NPCs
 
-Shadow und die ganzen Renderer fixen
-
-Buttons
-Menus
-Gamelogic
-Levelliste
-
+Attack bessern
+Skill Speicherung fixen
+Karltoffel verbessern (auch  Textur)
+MAge machen
+KArltoffel Rankenangriff
+better Tiles
 
 
 HitPolygone anschauen

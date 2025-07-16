@@ -7,7 +7,6 @@ public class Upgrade {
     private String name;
     private String description;
     private int powerlevel=0;
-    ///CostFunction costFunction = this::getCost;
     CostFunction costFunction;
     ApplyFunction applyfunction;
     public Upgrade(String name, String description, CostFunction cost,ApplyFunction applyfun) {

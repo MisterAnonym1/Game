@@ -36,7 +36,7 @@ abstract class Gegner extends Entity
     Animation<TextureRegion> explosionAnimation;
     boolean exploded=false;
 
-    public enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair, repositioning }
+    enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair, repositioning }
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -353,6 +353,8 @@ void reset()
 
     }
     public void dashattack () {
+        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
+
         final float savedspeed=speed;
         speed=320;
         attackStatus=AttackStatus.dash;
@@ -376,6 +378,7 @@ void reset()
     }
     void fireballringattack(float angle,float angleoffset) //
     {
+        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
         Vector2 vec= new Vector2(hitbox.width/3f,0);
         vec.rotateDeg(angleoffset);
         for(float i=0; i<=360-angle;i+=angle)
@@ -386,6 +389,7 @@ void reset()
     }
     void fireStormattack()
     {
+        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
         attackStatus=AttackStatus.projectile_storm;
     }
 
@@ -403,14 +407,23 @@ void reset()
         onDeath();
     }
 
-    void shockwaveAttack(float waveduration, float jumpheight) {
+    void shockwavejump(float waveduration, float jumpheight, float cx, float cy) {
+        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive";
+        if(attackStatus==attackStatus.projectile_storm)
+        {
+            System.out.println("status in jump: "+attackStatus);
+        }
+        if(attackStatus==AttackStatus.shockwave|| attackStatus==AttackStatus.inair) {
+            assert true : "Already in shockwavejump"; // Debugging purpose
+            System.out.println(" no assert Already in shockwavejump");
+            return; // bereits in der Aktion
+        }
         final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
-        attackdelay=0;
         attackStatus = AttackStatus.inair;
         invincible=true;
-        savedVector= new Vector2(player.getHitboxCenterX() - getHitboxCenterX(),  player.hitbox.y-hitbox.y);
-        final float maxspeed = speed;
-       speed=savedVector.len()/jumpheight*250f/2-5;
+        savedVector= new Vector2(cx - getHitboxCenterX(),  cy-hitbox.y);
+        final float originalspeed = speed;
+        speed=savedVector.len()/jumpheight*250f/2-5;
         float startValue =1f; // Startwert für shadowscale
         float endValue = (float) Math.exp( -jumpheight/450f); // Endwert für shadowscale, abhängig von jumpheight
         float startValue2 =endValue;
@@ -435,9 +448,7 @@ void reset()
                 }),
 
             Actions.parallel(
-
-                //Actions.moveBy(0, -jumpheight, jumpheight/250, Interpolation.linear),
-                new Action()
+                    new Action()
                 {
 
                     float elapsed = 0;
@@ -457,8 +468,6 @@ void reset()
             new Action() {
                 @Override
                 public boolean act(float delta) {
-                    invincible=true;
-                   speed=maxspeed;
                     Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
                     wave.scaleBy(0.8f);
                     Level.objects.add(wave);
@@ -471,13 +480,12 @@ void reset()
             new Action() {
                 @Override
                 public boolean act(float delta) {
-                    attackStatus = AttackStatus.inactive;
+                    speed=originalspeed;
+                        System.out.println("inv false-> past: "+attackStatus);
+                    System.out.println("inv false-> current:"+currentStatus);
                     invincible=false;
                     logic.resetCameraOffset();
-                    if(currentStatus==AttackStatus.projectile_storm||currentStatus==AttackStatus.inair||currentStatus==AttackStatus.repositioning){
-                    //attackdelay2=0;
-                        attackStatus = currentStatus;
-                    }
+                    attackStatus = currentStatus;
                     return true;}}
 
         ));
@@ -485,85 +493,13 @@ void reset()
 
     }
 
-    void shockwavejump(float waveduration, float jumpheight,float centerx, float centery) {
-        final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
-        attackdelay=0;
-        attackStatus = AttackStatus.inair;
-        invincible=true;
-        savedVector= new Vector2(centerx - getHitboxCenterX(),  centery-hitbox.y);
-        final float maxspeed = speed;
-        speed=savedVector.len()/jumpheight*250f/2-5;
-        float startValue =1f; // Startwert für shadowscale
-        float endValue = (float) Math.exp( -jumpheight/450f); // Endwert für shadowscale, abhängig von jumpheight
-        float startValue2 =endValue;
-        float endValue2 = 1f;
-        addAction(Actions.sequence(
-                Actions.parallel(
-
-                        new Action()
-                        {
-                            float elapsed = 0;
-                            float duration = jumpheight/250; // Dauer in Sekunden
-                            @Override
-                            public boolean act(float delta) {
-                                elapsed += delta;
-                                float progress = Math.min(elapsed / duration, 1f);
-                                float interpolated = Interpolation.fastSlow.apply(progress);
-                                // Benutze 'interpolated' für deinen zeitlichen Verlauf, z.B.:
-                                textureYoffset=(jumpheight)*interpolated;
-                                shadowscale = startValue + (endValue - startValue) * interpolated;
-                                return elapsed >= duration;
-                            }
-                        }),
-
-                Actions.parallel(
-
-                        //Actions.moveBy(0, -jumpheight, jumpheight/250, Interpolation.linear),
-                        new Action()
-                        {
-
-                            float elapsed = 0;
-                            final float duration = jumpheight/250; // Dauer in Sekunden
-                            @Override
-                            public boolean act(float delta) {
-                                elapsed += delta;
-                                float progress = Math.min(elapsed / duration, 1f);
-                                float interpolated = Interpolation.slowFast.apply(progress);
-                                // Benutze 'interpolated' für deinen zeitlichen Verlauf, z.B.:
-                                textureYoffset=jumpheight+(0-jumpheight)*interpolated;
-                                shadowscale = startValue2 + (endValue2 - startValue2) * interpolated;
-                                return elapsed >= duration;
-                            }
-                        }
-                ),
-                new Action() {
-                    @Override
-                    public boolean act(float delta) {
-                        speed=maxspeed;
-                        Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
-                        wave.scaleBy(0.8f);
-                        Level.objects.add(wave);
-                        attackStatus = AttackStatus.shockwave;
-                        shadowscale=1f;
-                        return true;}},
-
-                Actions.delay(waveduration),
-
-                new Action() {
-                    @Override
-                    public boolean act(float delta) {
-                        attackStatus = AttackStatus.inactive;
-                        invincible=false;
-                        logic.resetCameraOffset();
-                        if(currentStatus==AttackStatus.inair||currentStatus==AttackStatus.repositioning){
-                            //attackdelay2=0;
-                            attackStatus = currentStatus;
-                        }
-                        return true;}}
-
-        ));
-
-
+    void shockwaveAttack(float waveduration, float jumpheight) {
+        if(attackStatus==AttackStatus.shockwave|| attackStatus==AttackStatus.inair) {
+            assert true : "Already in shockwavejump/attack"; // Debugging purpose
+            System.out.println(" no assert Already in shockwaveAttack");
+            return; // bereits in der Aktion
+        }
+        shockwavejump(waveduration, jumpheight, player.getHitboxCenterX(), player.hitbox.y);
     }
 
 

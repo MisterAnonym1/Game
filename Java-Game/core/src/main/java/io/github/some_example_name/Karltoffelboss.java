@@ -62,11 +62,13 @@ public class Karltoffelboss extends Boss{
 
     @Override
     boolean damageby(float damage) {
-        if(invincible||attackStatus==AttackStatus.inair||attackStatus== AttackStatus.shockwave||attackStatus== AttackStatus.projectile_storm){return false;}
+        if(invincible||attackStatus==AttackStatus.inair){
+            assert attackStatus==AttackStatus.inair&&!invincible : "Karltoffel should be invincible";
+            return false;}
         recenthits++;
         aggressionLevel+=damage*0.5f;
 
-        if (attackStatus != AttackStatus.dash&&recenthits>=3)
+        if (attackStatus != AttackStatus.dash&&attackStatus!=AttackStatus.repositioning &&recenthits>=3)
         {
             recenthits-= MathUtils.random(1,2);
             addAction(Actions.sequence(Actions.delay((float) (Math.random()*0.15)), new Action() {
@@ -109,7 +111,7 @@ public class Karltoffelboss extends Boss{
 
     public void engagePlayer(float delta) {
         //aggressionLevel=(aggressionLevel+ delta*50.0*0.15)/(1.0+delta*0.15);
-        aggressionLevel += Math.clamp(50-aggressionLevel,-5*delta,5*delta);
+        aggressionLevel += MathUtils.clamp(50-aggressionLevel,-5*delta,5*delta);
         potatodelay-=delta;
         if(attackStatus == AttackStatus.inair)
         {
@@ -117,7 +119,6 @@ public class Karltoffelboss extends Boss{
                 updatemovement(savedVector, delta);
                 return;
         }
-        //player.getdistance(getHitboxCenterX(), hitbox.y)<400
         attackdelay += delta;
         if (attackStatus == AttackStatus.shockwave) {
 
@@ -140,43 +141,30 @@ public class Karltoffelboss extends Boss{
                     invincible=false;
                 }
             }
+
         }
         else{
             attackdelay2 += delta;
             if (aggressionLevel>150&&attackStatus!=AttackStatus.projectile_storm) {
-                attackdelay2+= delta*aggressionLevel/100;
+                attackdelay2+= delta*aggressionLevel/200;
             }
 
             if (attackStatus == AttackStatus.inactive) {
-                if (attackdelay2 >= 15) {///15
-
-                    if (getdistance(spawnx,spawny)<=150) {
-
-                        if(getdistance(player)>=250){
-                        attackdelay2 = 0;
-                        attackdelay = 0;
-                        fireStormattack();
-                        invincible=true;
-                        recenthits=0;
-                            PartikelSprite deathpar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,true);
-                            deathpar.setSize(hitbox.width*1.8f,hitbox.height*1.8f);
-                            deathpar.centerAt(getHitboxCenterX()-10,getHitboxCenterY()+20);
-                            Level.particles.add(deathpar);
-                        }
-                        else{shockwaveAttack(0.3f,100);
-                            recenthits= Math.max(recenthits-1,0);}
-
-                    }
-                    else{
-                    attackStatus=AttackStatus.repositioning;}
-
-                }else if (getdistance(player) >= 400) {
-                    //shockwaveAttack(0.3f,150);
-                    dashattack();
-                    recenthits=0;
+                if (attackdelay2 >= 13) {///15
+                    attackStatus=AttackStatus.repositioning;
                 }
+                else if (getdistance(player) >= 400)
+                {
+                    if(Math.random() < 1f-aggressionLevel/280f) {
+                        dashattack();
+                    }
+                    else
+                    {
+                        shockwaveAttack(0.3f, 150);
+                    }
+                    recenthits=0;
 
-
+                }
 
                 if (attackdelay >= 2)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
                 {
@@ -186,8 +174,13 @@ public class Karltoffelboss extends Boss{
                         recenthits= Math.max(recenthits-1,0);
                     }
                 }
+
             }
-            else if(attackStatus==AttackStatus.projectile_storm){
+            else if(attackStatus==AttackStatus.projectile_storm)
+            {
+                if (!invincible) {
+                    System.out.println("args not invincible");
+                }
                 if (attackdelay2 >= 10) {
                     attackStatus = AttackStatus.inactive;
                     attackdelay2 = 0;
@@ -198,7 +191,8 @@ public class Karltoffelboss extends Boss{
                     fireballringattack(45, (float) Math.random() * 10f + attackdelay2 / 10 * 180);
                     attackdelay = 0;
                 }
-            } else if (attackStatus==AttackStatus.dash) {
+            } else if (attackStatus==AttackStatus.dash)
+            {
                 if(collides)
                 {
                     attackStatus = AttackStatus.inactive;
@@ -210,18 +204,31 @@ public class Karltoffelboss extends Boss{
                 updatemovement(savedVector, delta);}
 
             }
-            else if (attackStatus == AttackStatus.repositioning) {
+            else if (attackStatus == AttackStatus.repositioning)
+            {
 
                  if(getdistance(spawnx,spawny)>100)
                 {
-                    if(aggressionLevel>180) {shockwavejump(0.3f,150,spawnx,spawny);
-                        System.out.println("jumping");
+                   if(aggressionLevel>180) {shockwavejump(0.3f,150,spawnx,spawny);
+                        System.out.println("jumping to center");
                     }
                     else{
                    updatemovement(getDistanceVector(spawnx, spawny), delta);}
                 }
-                else {attackStatus = AttackStatus.inactive;
-                     attackdelay = 0;
+                else {
+                         if(getdistance(player)>=250){
+                             attackdelay2 = 0;
+                             attackdelay = 0;
+                             fireStormattack();
+                             invincible=true;
+                             recenthits=0;
+                             PartikelSprite smokepar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,true);
+                             smokepar.setSize(hitbox.width*1.8f,hitbox.height*1.8f);
+                             smokepar.centerAt(getHitboxCenterX()-10,getHitboxCenterY()+20);
+                             Level.particles.add(smokepar);
+                         }
+                         else{shockwaveAttack(0.3f,100);
+                             recenthits= Math.max(recenthits-1,0);}
                 }
 
             }
