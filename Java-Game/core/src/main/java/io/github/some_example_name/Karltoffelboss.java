@@ -14,7 +14,7 @@ import static java.lang.Float.NaN;
 
 public class Karltoffelboss extends Boss{
     int recenthits=0;
-    double aggressionLevel;
+    double aggressionLevel=70;
     float potatodelay=0;
     static Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,99,109,0.08f);
     Karltoffelboss(float x, float y, Main logic){
@@ -24,7 +24,6 @@ public class Karltoffelboss extends Boss{
         sethealth(1500,true);
         scale(0.3f);
         setPosition(x,y);
-        aggressionLevel=100;
         setBossName("KARLTOFFEL DER SCHRECKLICHE");
         bossTitel.setColor(Color.YELLOW);
         positionChanged();
@@ -47,7 +46,8 @@ public class Karltoffelboss extends Boss{
     void reset() {
         super.reset();
         speed=250;
-        aggressionLevel=50;
+        aggressionLevel=70;
+        potatodelay=0;
     }
 
     @Override
@@ -86,10 +86,10 @@ public class Karltoffelboss extends Boss{
     void damagePlayer(float damage) {
         super.damagePlayer(damage);
         aggressionLevel-= damage;
-        if(potatodelay<=0&& player.curhealth<player.maxhealth/2f&&  aggressionLevel<120)
+        if(potatodelay<=0&& player.curhealth<player.maxhealth/2f&&  aggressionLevel<140)
         {
             for (int i = 0; i < MathUtils.random(4,7); i++) {
-                Level.objects.add(new Healing_potato(spawnx+MathUtils.random(-400,400), spawny+MathUtils.random(-400,400), MathUtils.random(5,10)));
+                Level.objects.add(new Healing_potato(spawnx+MathUtils.random(-400,400), spawny+MathUtils.random(-400,400), MathUtils.random(10,20)));
             }
             potatodelay=20;
         }

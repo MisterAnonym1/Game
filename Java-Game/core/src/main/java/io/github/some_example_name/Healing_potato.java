@@ -9,22 +9,25 @@ public class Healing_potato extends TextureActor {
     public Healing_potato(float x, float y,int healingamount) {
         super("healing-potato.png");
         healingAmount = healingamount;
-        setColor(0.75f, 0.95f, 0.75f, 1f);
+        setColor(0.95f, 0.95f, 0.95f, 0f);
         centerAt(x,y);
+        setOrigin( x-getX(),y-getY());
        scaleBy(1.5f);
+       addAction(Actions.fadeIn(0.3f));
        addAction(Actions.forever(
                Actions.parallel(
             Actions.sequence(
-                Actions.scaleTo(1.5f, 1.5f, 0.5f),
-                Actions.scaleTo(1.4f, 1.4f, 0.5f)
+                Actions.scaleTo(1.6f+healingAmount/20f, 1.6f+healingAmount/20f, 0.5f),
+                Actions.scaleTo(1.4f+healingAmount/20f, 1.4f+healingAmount/20f, 0.5f)
             ),
             Actions.sequence(
-                 Actions.color(Color.WHITE, 0.5f),
+                 Actions.color(new Color(0.9f, 1f, 0.9f, 1f), 0.5f),
                     Actions.color(new Color(0.75f, 0.95f, 0.75f, 1f), 0.5f)
                )
         )));
         initializeHitbox();
         collisionOn = true;
+        act((float) Math.random());
     }
     public Healing_potato(float x, float y) {
         this(x, y, 5);
