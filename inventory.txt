@@ -2,5 +2,5 @@
 #Potions 0
 #Armor 50
 #Sword 1
-#Playtime 48
-#Level 7
+#Playtime 53
+#Level 8

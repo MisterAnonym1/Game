@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -16,18 +17,28 @@ public class Karltoffelboss extends Boss{
     int recenthits=0;
     double aggressionLevel=70;
     float potatodelay=0;
+    Level level;
+    TextureRegion[] textureRegions= TextureRegion.split(new Texture("Karltoffel-sheet.png"), 324, 411)[0];
     static Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,99,109,0.08f);
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
+        level=logic.currentlevel;
+        //texture=textureRegions[0];
         speed = 250;
         weight=20;
         sethealth(1500,true);
         scale(0.3f);
         setPosition(x,y);
+        setOrigin(x-hitbox.x,y-hitbox.y);
         setBossName("KARLTOFFEL DER SCHRECKLICHE");
         bossTitel.setColor(Color.YELLOW);
         positionChanged();
         collisionOn=true;
+        status= EntityStatus.inactiv;
+        addAction(Actions.sequence(Actions.delay(1.5f),
+                Actions.run(() -> {
+                    status = EntityStatus.engaging;
+                })));
     }
 
     @Override
@@ -39,6 +50,12 @@ public class Karltoffelboss extends Boss{
 
     @Override
     public void draw(Batch batch, float delta) {
+        if(invincible){
+            setScale(1.1f);
+            batch.setColor(Color.CYAN);
+            batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+            setScale(1f);
+        }
         super.draw(batch, delta);
     }
 
@@ -48,6 +65,11 @@ public class Karltoffelboss extends Boss{
         speed=250;
         aggressionLevel=70;
         potatodelay=0;
+        status= EntityStatus.inactiv;
+        addAction(Actions.sequence(Actions.delay(1.5f),
+                Actions.run(() -> {
+                    status = EntityStatus.engaging;
+                })));
     }
 
     @Override
@@ -57,8 +79,10 @@ public class Karltoffelboss extends Boss{
 
     public void act(float delta){
         super.act(delta);
-        engagePlayer(delta);
-    };
+        if(status==EntityStatus.engaging) {
+            engagePlayer(delta);
+        }
+    }
 
     @Override
     boolean damageby(float damage) {
@@ -89,7 +113,7 @@ public class Karltoffelboss extends Boss{
         if(potatodelay<=0&& player.curhealth<player.maxhealth/2f&&  aggressionLevel<140)
         {
             for (int i = 0; i < MathUtils.random(4,7); i++) {
-                Level.objects.add(new Healing_potato(spawnx+MathUtils.random(-400,400), spawny+MathUtils.random(-400,400), MathUtils.random(10,20)));
+                Level.objects.add(new Healing_potato(getHitboxCenterX()+MathUtils.random(-400,400), getHitboxCenterY()+MathUtils.random(-400,400), MathUtils.random(10,20), level));
             }
             potatodelay=20;
         }
@@ -220,6 +244,7 @@ public class Karltoffelboss extends Boss{
                              attackdelay2 = 0;
                              attackdelay = 0;
                              fireStormattack();
+                             texture=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
                              invincible=true;
                              recenthits=0;
                              PartikelSprite smokepar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,true);

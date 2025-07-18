@@ -470,6 +470,7 @@ void reset()
                 public boolean act(float delta) {
                     Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
                     wave.scaleBy(0.8f);
+                    attackdelay=0;
                     Level.objects.add(wave);
                     attackStatus = AttackStatus.shockwave;
                     shadowscale=1f;

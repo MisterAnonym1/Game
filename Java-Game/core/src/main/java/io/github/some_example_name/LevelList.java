@@ -149,8 +149,7 @@ public class LevelList { //Hier werden alle Level gespeichert
 
                     },
                     {
-                            "####################",
-                            "#                   #",
+                            "#####################",
                             "#                   #",
                             "#                   #",
                             "#                   #",
@@ -168,10 +167,9 @@ public class LevelList { //Hier werden alle Level gespeichert
                             "#                   #",
                             "#                   #",
                             "#                   #",
-                            "#                   #",
                             "#       @           #",
                             "#                   #",
-                            "####################"
+                            "#####################"
                     }
             };
 

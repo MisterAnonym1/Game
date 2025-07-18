@@ -526,7 +526,7 @@ class HealthBar extends Actor {
     }
     void healTo(float health)
     {
-        currentHealth = health;
+        currentHealth = Math.min(health,maxHealth);
         h2.setWidth(maxLaenge * currentHealth / maxHealth);
     }
     void heal(float healamount)

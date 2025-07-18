@@ -31,6 +31,7 @@ Fireball00/FB005.png
 Forest sun backround.png
 HappySheep_All.png
 healing-potato.png
+Karltoffel-sheet.png
 Karltoffelzwischenform.png
 libgdx.png
 Lines.txt

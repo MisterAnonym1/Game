@@ -388,7 +388,7 @@ public class Main implements ApplicationListener {
         for (Testentity enti : currentlevel.testentitys)
         {
 
-            if(Player.isattacking)
+            if(Player.isAttacking())
             {
                     if(Player.handleAttack(enti)) {
                         continue;
@@ -422,7 +422,7 @@ public class Main implements ApplicationListener {
             {
                 continue;
             }
-                if(Player.isattacking)
+                if(Player.isAttacking())
                 {
                     if(Player.handleAttack(gegner)) {
                         continue;
@@ -499,7 +499,7 @@ public class Main implements ApplicationListener {
                     continue;
                 }
 
-                if(Player.isattacking)
+                if(Player.isAttacking())
                 {
                     if(Player.handleAttack(prc,false)) {
                         prc.onHit();

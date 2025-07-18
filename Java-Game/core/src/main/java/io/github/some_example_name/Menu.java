@@ -24,12 +24,12 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import java.util.function.Consumer;
 
 
-public class Menu extends Actor { //Hier werden alle Menüs verwaltet und erschaffen
+public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
     float animationstateTime;
-    boolean onscreen = false;//ob ein Screen gerade aktiv ist oder nicht
+    boolean onscreen = false;
     float delay=1;
     Main main;
-    Revtext textbox;//erschafft eine Textbox, <---dein ernst? ich kann selber sehen
+    Revtext textbox;
     static float ScreenWidth=1024;
     static float ScreenHeight=576;
    static void showRestartConfirmation(Main main) {
