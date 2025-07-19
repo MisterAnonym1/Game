@@ -23,7 +23,7 @@ public class Karltoffelboss extends Boss{
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
         level=logic.currentlevel;
-        //texture=textureRegions[0];
+        updateNewTexture(textureRegions[0]);
         speed = 250;
         weight=20;
         sethealth(1500,true);
@@ -131,6 +131,15 @@ public class Karltoffelboss extends Boss{
             damagePlayer(15);
             attackStatus = AttackStatus.inactive;
         }
+    }
+    void updateNewTexture(TextureRegion textureRegion) {
+        if (textureRegion != null) {
+            texture = textureRegion;
+            setWidth(textureRegion.getRegionWidth());
+            setHeight(textureRegion.getRegionHeight());
+            setOrigin(getWidth() / 2, getHeight() / 2);
+        }
+
     }
 
     public void engagePlayer(float delta) {

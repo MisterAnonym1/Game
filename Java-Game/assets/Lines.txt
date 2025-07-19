@@ -1,7 +1,7 @@
 
 Healing potato verschönern_/
 Attack bessern_/
-Skill Speicherung fixen
+Skill Speicherung fixen_/
 Karltoffel verbessern (auch  Textur)
 MAge machen
 KArltoffel Rankenangriff

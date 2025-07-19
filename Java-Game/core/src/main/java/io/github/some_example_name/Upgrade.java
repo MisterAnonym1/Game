@@ -36,6 +36,7 @@ public class Upgrade {
 
     public void setPowerlevel(int powerlevel) {
         this.powerlevel = powerlevel;
+        Main.invManager.setValueByKey("Upgrade_" + getName(), powerlevel);
     }
 
     public int getLevel() {
@@ -44,6 +45,7 @@ public class Upgrade {
 
     public void upgrade() {
         powerlevel++;
+        Main.invManager.setValueByKey("Upgrade_" + getName(), powerlevel);
     }
     public void apply() {
         applyfunction.apply(getLevel());
@@ -68,8 +70,11 @@ class PlayerUpgrade extends Upgrade {
         applyfunction.apply(getLevel());
     }
 
-
-
+    @Override
+    public void setPowerlevel(int powerlevel) {
+        super.setPowerlevel(powerlevel);
+        apply();
+    }
 }
 
 @FunctionalInterface
@@ -100,6 +105,11 @@ class UpgradeManager {
     }
     public void addnewPlayerUpgrade(String name, CostFunction cost, ApplyFunction applyfun) {
         upgrades.add(new PlayerUpgrade(name, "", cost, applyfun, player));
+    }
+    public void addnewPlayerUpgrade(String name,String description, CostFunction cost, ApplyFunction applyfun, int startinglevel) {
+        PlayerUpgrade upgrd= new PlayerUpgrade(name, description, cost, applyfun, player);
+        upgrd.setPowerlevel(startinglevel);
+        upgrades.add(upgrd);
     }
     public void addnewPlayerUpgrade(String name,String description, CostFunction cost, ApplyFunction applyfun) {
         upgrades.add(new PlayerUpgrade(name, description, cost, applyfun, player));

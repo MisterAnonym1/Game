@@ -43,7 +43,7 @@ class Player extends Entity
         player=this;
         weight = 0.5f;
         viewport=view;
-        this.speed = 220;
+        this.speed = 215;
         curhealth = 100;
         maxhealth = 100;
         healthbar = new HealthBar(20, 20, maxhealth, 1f, 0.8f,Main.uiStage.getViewport());
@@ -64,9 +64,9 @@ class Player extends Entity
         walkAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,7,12,0.1f);
         defaultAnimation= Animator.getAnimation("Warrior_Blue.png",6,8,1,6,0.12f);
 
-        sideAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,14,18,0.085f);
-        frontAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,26,30,0.085f);
-        backAttackAnimation=Animator.getAnimation("Warrior_Blue.png", 6,8,38,42,0.085f);
+        sideAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,14,18,0.092f);
+        frontAttackAnimation=Animator.getAnimation("Warrior_Blue.png",6,8,26,30,0.092f);
+        backAttackAnimation=Animator.getAnimation("Warrior_Blue.png", 6,8,38,42,0.092f);
         deadAnimation=Animator.getAnimation("Dead.png", 7,2,1,14,0.082f);
 
         runSmoke=Animator.getAnimation("Smoke5.png",11,15,154,164,0.08f);
@@ -75,13 +75,13 @@ class Player extends Entity
         upgradeManager.addnewPlayerUpgrade("Health", "Increases the maximum health of the player", (forlevel) -> forlevel * 10, (level) -> {
             maxhealth = 100+level * 10;
             healthbar.setMaxHealth(maxhealth);
-        });
+        }, Main.invManager.getValueByKey("Upgrade_Health"));
         upgradeManager.addnewPlayerUpgrade("Speed", "Increases the speed of the player", (forlevel) -> forlevel * 5, (level) -> {
             speed = 250 + level * 20;
-        });
+        },Main.invManager.getValueByKey("Upgrade_Speed"));
         upgradeManager.addnewPlayerUpgrade("Damage", "Increases the damage of the player's weapon", (forlevel) -> 5+forlevel *15 , (level) -> {
             weapon.damage= 40+level * 5;
-        });
+        },Main.invManager.getValueByKey("Upgrade_Damage"));
     }
 
     @Override
@@ -188,7 +188,6 @@ class Player extends Entity
         if(enti.invincible){return false;}
          Vector2 line =new Vector2(enti.getHitboxCenterX() - getHitboxCenterX(), enti.getHitboxCenterY() - getHitboxCenterY());
         if(line.len()>(Main.DevMode?1000:85)+enti.hitbox.getWidth()/2){return false;}
-        //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}
 
         if(player.currentAnimation==player.sideAttackAnimation){
             if(MathHelper.isAngleOutOfBounds(line,directionline,40)){return false;}
@@ -201,9 +200,7 @@ class Player extends Entity
         {
             line.setLength(1000);
         }
-        //line.add(new Vector2(getCenterX(),getCenterY()));
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),enti.hitbox)){return false;}
-        //System.out.println(line.x+getHitboxCenterX()+"X "+line.y+getHitboxCenterY()+"Y");
         gegnerhitliste.add(enti);
         knockbackFromPlayer(enti,200);
         if(enti.damageby(weapon.damage)) {
@@ -219,7 +216,6 @@ class Player extends Entity
         if(gegnerhitliste.contains(actor)){return false;}
         Vector2 line =new Vector2(actor.getHitboxCenterX() - getHitboxCenterX(), actor.getHitboxCenterY() - getHitboxCenterY());
         if(line.len()>(Main.DevMode?1000:85)+actor.hitbox.getWidth()/2){return false;}
-        //if(line.angleDeg()>(directionline+50+360)%360||line.angleDeg()<(directionline-50+360)%360){return false;}
 
         if(player.currentAnimation==player.sideAttackAnimation){
             if(MathHelper.isAngleOutOfBounds(line,directionline,40)){return false;}
