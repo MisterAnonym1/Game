@@ -230,7 +230,7 @@ class BootingScreen extends Menu
         batch.draw(backround,0,0,ScreenWidth,ScreenHeight);
         skipMessage.draw(batch,(delay<=1.5f?(delay<=1f?0.6f+delay*2:1.5f-delay):0)*getColor().a);
         textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
-        logo.setColor(logo.getColor().r,logo.getColor().g,logo.getColor().b,logo.getColor().a*getColor().a);
+        logo.setColor(logo.getColor().r,logo.getColor().g,logo.getColor().b,Math.min(logo.getColor().a,getColor().a)*getColor().a);
         logo.draw(batch,1);
         studioText.draw(batch,1,logo.getColor().a*getColor().a);
 
@@ -238,6 +238,7 @@ class BootingScreen extends Menu
 
     void destroy()
     {
+        if(finished) return; // Verhindert mehrfaches Zerstören
         setfinished();
         Main.uiStage.addActor(new Startmenu(main));
         toFront();

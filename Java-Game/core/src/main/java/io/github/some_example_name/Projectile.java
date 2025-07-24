@@ -240,3 +240,57 @@ class Shockwave extends PartikelSprite {
        Level.objects.remove(this);
     }
 }
+
+
+class WeedyBall extends Projectile
+{
+    static float speed=400;
+    Gegner origin;
+    static Animation<TextureRegion>  projectileAnimation= Animator.getAnimation("Rettich-sheet.png",7,6,15,15,1f);
+    WeedyBall(float x,float y, Vector2 vel, Gegner origin)
+    {
+        super(x,y,projectileAnimation,vel,5);
+        movement.setLength(speed);
+        scale(1.6f);
+        this.origin = origin;
+        centerAt(x,y);
+    }
+    @Override
+    void reducemovement(float delta)
+    {
+        //movement.x+=(2*delta);
+        //movement.y+=(2*delta);
+    }
+
+    /*@Override
+    public void draw(Batch batch, float delta) {
+        batch.setColor(getColor().r,getColor().g,getColor().b,1);
+        if(hasActions()){
+            animationstateTime += delta; // Accumulate elapsed animation time
+            TextureRegion currentFrame = projectileAnimation.getKeyFrame(animationstateTime, false);
+            batch.draw(currentFrame,getCenterX()-getWidth()*2,getCenterY()-getHeight()*2,getOriginX(),getOriginY(),getWidth()*4,getHeight()*4,getScaleX(),getScaleY(),getRotation());}
+        else{super.draw(batch,delta);}
+
+    }*/
+
+    @Override
+    void onHit(Entity enti) {
+        if(enti==origin){return;}
+        if(enti instanceof Player) {
+            origin.damagePlayer(damage);
+        }else{
+            enti.damageby(damage);}
+        Level.deleteList.add(this);
+
+
+
+
+    }
+
+    @Override
+    void initializeHitbox() {
+        hitboxOffsetX=2;
+        hitboxOffsetY=6;
+        hitbox = new Rectangle(getX() - hitboxOffsetX, getY() - hitboxOffsetY, getWidth()/4.4f, getHeight()/4.4f);
+    }
+}

@@ -54,6 +54,7 @@ Pointers/06.png
 Pointers/Pointer.png
 potato.png
 red_arrow_PNG60.png
+Rettich-sheet.png
 sand2.png
 Seatile_.png
 Se_Player_ja.jpg

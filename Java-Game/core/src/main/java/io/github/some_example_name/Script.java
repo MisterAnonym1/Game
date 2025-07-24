@@ -56,7 +56,7 @@ public class Script {
             "Enter the Void",
             "Reality not included",
             "Now with 10% more bugs!!",///+++++
-            "Für Bedeutungslosigkeit  und Wahnsinn!",
+            "Fuer Bedeutungslosigkeit  und Wahnsinn!",
             "Moege der Irrsinn uns leiten!", //++++++
             "Are ya ready son?",
             "Grass is green",

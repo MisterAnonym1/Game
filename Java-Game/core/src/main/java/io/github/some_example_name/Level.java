@@ -37,7 +37,7 @@ class Level {
     int doorsnummer;
     float xcoplayer;
     float ycoplayer;
-
+    float leveltime=0f;
     Level(String[] rows, Main mainlogic) {
         this.rows = rows;
         this.logic = mainlogic;
@@ -98,11 +98,16 @@ class Level {
 
 
     public void act(float delta) {
+         leveltime+=delta;
+
         for (Testentity testi : testentitys) {
             testi.act(delta);
         }
-        for (Gegner gegner : gegnerliste) {
-            gegner.act(delta);
+        if(leveltime>0.6f)
+        {
+            for (Gegner gegner : gegnerliste) {
+               gegner.act(delta);
+            }
         }
         for(TextureActor object: objects) {
             object.act(delta);
@@ -110,7 +115,7 @@ class Level {
         for (Projectile projec : projectiles) {
             projec.act(delta);
         }
-        indicators.act(delta);
+        indicators.act();
         for( PartikelSprite particle : particles) {
             particle.act(delta);
         }
@@ -416,7 +421,7 @@ class Level {
                 }
                 break;
             case 'm' :
-                gegnerliste.add(new Mage(logic,MyTile.columnToX(column), MyTile.rowToY(row) ));
+                gegnerliste.add(new Mage(MyTile.columnToX(column), MyTile.rowToY(row),logic ));
                 break;
             case 'h' :
                 npcs.add(new Trader(MyTile.columnToX(column), MyTile.rowToY(row), "Al Assad.png", "own Watertile 2.png", 1,0.3f,logic));
@@ -446,9 +451,11 @@ class Level {
     void reload() {
         destroy();
         load();
+        leveltime=0;
     }
     void resetObjects()//resets Entities and Player
     {
+        leveltime=0;
         for (Testentity testi : testentitys) {
             testi.reset();
         }

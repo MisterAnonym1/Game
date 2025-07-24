@@ -10,10 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 public class Carrot extends Gegner
 {
 
-    //Animation<TextureRegion> walkAnimation;
     Animation<TextureRegion> spinattackAnimation;
-    //Animation<TextureRegion> defaultAnimation;
-    //Animation<TextureRegion> currentAnimation; //Variable zum speichern der letzten abgespielten animation-> in Entity
+     //Variable zum speichern der letzten abgespielten animation-> in Entity
     Animation<TextureRegion> deadAnimation;
     Animation<TextureRegion> damageAnimation;
     Carrot( float x, float y, Main logic) {
@@ -138,6 +136,7 @@ public class Carrot extends Gegner
         }
 
     }
+
     public void spinattack()
     {
         playAnimation(spinattackAnimation);

@@ -72,7 +72,7 @@ public class Main implements ApplicationListener {
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
         //renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         music.setLooping(true);
-        music.setVolume(.17f); // .2f ist das selbe wie 0.2f
+        music.setVolume(.0017f); // .2f ist das selbe wie 0.2f
         music.play();
         loadSounds();
         loadTilesets();
@@ -600,6 +600,7 @@ public class Main implements ApplicationListener {
         if(Player != null) {
             Player.setWorldbounds(-64, MyTile.columnToX(currentlevel.getLength())-64, MyTile.rowToY(currentlevel.getHeight()),0 );
             Player.setPosition(currentlevel.xcoplayer, currentlevel.ycoplayer);
+            Player.sethealth(Player.maxhealth);
         }
 
         // Nummer des Levels anzeigen (altes feature):

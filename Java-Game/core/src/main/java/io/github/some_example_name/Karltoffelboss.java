@@ -23,7 +23,7 @@ public class Karltoffelboss extends Boss{
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
         level=logic.currentlevel;
-        updateNewTexture(textureRegions[0]);
+        //updateNewTexture(textureRegions[0]);
         speed = 250;
         weight=20;
         sethealth(1500,true);
@@ -98,7 +98,14 @@ public class Karltoffelboss extends Boss{
             addAction(Actions.sequence(Actions.delay((float) (Math.random()*0.15)), new Action() {
                 @Override
                 public boolean act(float delta) {
-                    shockwaveAttack(0.3f,120);
+                    if(Math.random() < 1f-aggressionLevel/200f){
+                        shockwaveAttack(0.3f,120);
+                    }
+                    else{
+                        Vector2 vector = getDistanceVector(spawnx, spawny).add(getDistanceVector(player).scl(-1));
+                        dash(vector,200,1.5f);
+                    }
+
                     return true;
                 }
             }));

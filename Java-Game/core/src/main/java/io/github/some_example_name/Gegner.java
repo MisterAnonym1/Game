@@ -36,7 +36,7 @@ abstract class Gegner extends Entity
     Animation<TextureRegion> explosionAnimation;
     boolean exploded=false;
 
-    enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair, repositioning }
+    enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair, repositioning,standingfire }
 
     Gegner(float x, float y, Main logic, String filepath) {
         this(x, y,  logic,new TextureRegion(new Texture(filepath)));
@@ -365,6 +365,44 @@ void reset()
                     @Override
                     public boolean act(float delta) {
                         attackStatus=AttackStatus.inactive;
+                        speed=savedspeed;
+                        return true;
+                    }
+                }
+        ));
+    }
+    public void dash(float targetx, float targety,float dspeed, float maxduration) {
+        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
+
+        final float savedspeed=speed;
+        speed=dspeed;
+        attackStatus=AttackStatus.dash;
+        savedVector=getDistanceVector(targetx, targety);
+        addAction(Actions.sequence(
+                Actions.delay(maxduration),
+                new Action() {
+                    @Override
+                    public boolean act(float delta) {
+                        attackStatus=AttackStatus.inactive;
+                        speed=savedspeed;
+                        return true;
+                    }
+                }
+        ));
+    }
+    public void dash(Vector2 direction,float dspeed, float maxduration) {
+        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
+        final AttackStatus currentStatus = attackStatus; // Aktuellen Status speichern
+        final float savedspeed=speed;
+        speed=dspeed;
+        attackStatus=AttackStatus.dash;
+        savedVector=direction;
+        addAction(Actions.sequence(
+                Actions.delay(maxduration),
+                new Action() {
+                    @Override
+                    public boolean act(float delta) {
+                        attackStatus=currentStatus;
                         speed=savedspeed;
                         return true;
                     }
