@@ -403,6 +403,7 @@ void reset()
                     @Override
                     public boolean act(float delta) {
                         attackStatus=currentStatus;
+                        attackStatus=AttackStatus.inactive;
                         speed=savedspeed;
                         return true;
                     }

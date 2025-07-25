@@ -11,6 +11,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+import java.lang.reflect.Array;
+
 import static java.lang.Float.NaN;
 
 public class Karltoffelboss extends Boss{
@@ -18,15 +20,15 @@ public class Karltoffelboss extends Boss{
     double aggressionLevel=70;
     float potatodelay=0;
     Level level;
+    TextureRegion zwischenform=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
     TextureRegion[] textureRegions= TextureRegion.split(new Texture("Karltoffel-sheet.png"), 324, 411)[0];
     static Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,99,109,0.08f);
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
         level=logic.currentlevel;
-        //updateNewTexture(textureRegions[0]);
         speed = 250;
         weight=20;
-        sethealth(1500,true);
+        sethealth(1400,true);
         scale(0.3f);
         setPosition(x,y);
         setOrigin(x-hitbox.x,y-hitbox.y);
@@ -50,13 +52,12 @@ public class Karltoffelboss extends Boss{
 
     @Override
     public void draw(Batch batch, float delta) {
-        if(invincible){
-            setScale(1.1f);
-            batch.setColor(Color.CYAN);
-            batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
-            setScale(1f);
+        if(attackStatus==AttackStatus.projectile_storm) {
+            batch.draw(zwischenform,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth()/1.2f:getWidth()/1.2f,getHeight(),getScaleX(),getScaleY(),getRotation());
         }
-        super.draw(batch, delta);
+        else{
+        batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        }
     }
 
     @Override
@@ -103,7 +104,7 @@ public class Karltoffelboss extends Boss{
                     }
                     else{
                         Vector2 vector = getDistanceVector(spawnx, spawny).add(getDistanceVector(player).scl(-1));
-                        dash(vector,200,1.5f);
+                        dash(vector,200,0.8f);
                     }
 
                     return true;
@@ -206,13 +207,26 @@ public class Karltoffelboss extends Boss{
 
                 }
 
-                if (attackdelay >= 2)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
+                if (attackdelay >= 1.8f)// sobald das attackdelay auf 2 ist sind 2 sekunden vergangen und ein Feuerball wird geschossen
                 {
+                    if(getdistance(player) <= 170) {
+                        attackdelay-=0.5f;
+                        if (Math.random() < 0.4f*delta)
+                        {
+                            Vector2 vector;
+                            if(aggressionLevel>360+MathUtils.random(0,80)) {
+                                 vector = getDistanceVector(spawnx, spawny).add(getDistanceVector(player).scl(-1));
+                            }else{vector= getDistanceVector(spawnx, spawny).add(getDistanceVector(player).scl(-20));}
+                            dash(vector,180,0.5f);
+
+                        }
+
+                    }else{
                     attackdelay = 0;
-                    if (getdistance(player) <= 500 && getdistance(player) >= 100) {
+                    if (getdistance(player) <= 800) {
                         fireballringattack(45, (float) Math.random() * 35f);
                         recenthits= Math.max(recenthits-1,0);
-                    }
+                    }}
                 }
 
             }
@@ -260,7 +274,7 @@ public class Karltoffelboss extends Boss{
                              attackdelay2 = 0;
                              attackdelay = 0;
                              fireStormattack();
-                             texture=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
+                             //texture=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
                              invincible=true;
                              recenthits=0;
                              PartikelSprite smokepar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,true);
