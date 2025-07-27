@@ -360,3 +360,22 @@ class Perzeptron
          return  answer>0;
      }
 }
+
+
+//Brute Force alle elemente einer List miteinander matchen (nicht doppelt)
+        for (int i = 1; i < entities.size(); i++) {
+            for (int j = i; j < entities.size(); j++) {
+                entities.get(j) vs entities.get(j-i);
+            }
+        }
+        //verständlichere Variante:
+
+                for (int i = 0; i < entities.size(); i++) {
+                    for (int j = i + 1; j < entities.size(); j++) {
+                         entities.get(j) vs entities.get(i);
+                    }
+                }
+
+
+    }
+

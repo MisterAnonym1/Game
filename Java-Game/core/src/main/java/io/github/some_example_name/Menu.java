@@ -899,6 +899,7 @@ class Startmenu extends Menu
         if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.ENTER))
         {
             main.setState("beforeGame");
+            Main.DevMode=false;
             this.destroy();
             return;
         }

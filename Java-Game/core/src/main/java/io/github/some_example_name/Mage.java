@@ -89,8 +89,7 @@ class Mage extends Gegner
 
         //Projectile expose = new FireBall(getCenterX(),getCenterY(),  distancevec,this);
         Projectile expose = new WeedyBall(getHitboxCenterX(),getHitboxCenterY(),  distancevec,this);
-        //expose.scale(1);
-        expose.setdamage(20);
+
         logic.currentlevel.projectiles.add(expose);
 
     }
@@ -122,7 +121,9 @@ class Mage extends Gegner
                         }
                     }
                     playAnimation(defaultAnimation);
-                }
+                    ismoving=false;
+                    updatemovement(movement,delta);
+            }
                 else
                 {
                     attackStatus = AttackStatus.repositioning;
@@ -150,8 +151,6 @@ class Mage extends Gegner
 
             followPath(delta);
             playAnimation(walkAnimation);
-
-
         }
 
         /*if(!inradiusof(player,1000)){

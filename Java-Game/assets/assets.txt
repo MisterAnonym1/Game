@@ -63,10 +63,10 @@ slime_move.png
 small shockwave.png
 Smoke5.png
 Smoke7.png
-speech-bubble/speech1.png
-speech-bubble/speech2.png
-speech-bubble/speech3.png
-speech-bubble/speech4.png
+speech1.png
+speech2.png
+speech3.png
+speech4.png
 steel-weapons.png
 story-box.png
 story-boxV2.png

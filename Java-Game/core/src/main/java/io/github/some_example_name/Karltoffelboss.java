@@ -52,8 +52,9 @@ public class Karltoffelboss extends Boss{
 
     @Override
     public void draw(Batch batch, float delta) {
+        batch.setColor(getColor());
         if(attackStatus==AttackStatus.projectile_storm) {
-            batch.draw(zwischenform,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth()/1.2f:getWidth()/1.2f,getHeight(),getScaleX(),getScaleY(),getRotation());
+            batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth()/1.2f:getWidth()/1.2f,getHeight(),getScaleX(),getScaleY(),getRotation());
         }
         else{
         batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());

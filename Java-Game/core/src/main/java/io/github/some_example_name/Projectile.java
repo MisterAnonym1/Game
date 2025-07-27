@@ -8,6 +8,9 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+import java.util.HashMap;
+import java.util.Map;
+
 class PartikelSprite extends TextureActor
 {
     float delay;
@@ -88,7 +91,7 @@ class Projectile extends PartikelSprite
 {
 
     Vector2 movement;
-    int damage = 0;
+    int damage = 20;
     boolean collisionOn=true,isacting =false;
     static float hitboxalpha = 0;;
     Projectile(float x, float y, String filepath, Vector2 velocity)
@@ -98,7 +101,6 @@ class Projectile extends PartikelSprite
 
         movement = velocity;
         //move(movement.x, movement.y);
-        setdamage(20);
     }
     Projectile(float centerx, float centery, String filepath, Vector2 velocity, int dmg)
     {
@@ -232,6 +234,27 @@ class Shockwave extends PartikelSprite {
 
 
     public void onTouch(Entity enti) {
+        String s="IVXLCDM";
+        Map<Character,Integer> map= new HashMap<>();
+
+        map.put('I',1);
+        map.put('V',5);
+        map.put('X',10);
+        map.put('L',50);
+        map.put('C',100);
+        map.put('D',500);
+        map.put('M',1000);
+        int output=0;
+        int lastnum=0;
+        s.replaceAll(s.substring(0,s.length()),"");
+        loop: for(int i=0;i<s.length();i++)
+        {
+            int cur=map.get(s.charAt(i));
+
+            output+=(cur<lastnum? -cur:cur);
+            lastnum=cur;
+            break loop;
+        }
 
     }
 
@@ -249,7 +272,7 @@ class WeedyBall extends Projectile
     static Animation<TextureRegion>  projectileAnimation= Animator.getAnimation("Rettich-sheet.png",7,6,15,15,1f);
     WeedyBall(float x,float y, Vector2 vel, Gegner origin)
     {
-        super(x,y,projectileAnimation,vel,5);
+        super(x,y,projectileAnimation,vel,8);
         movement.setLength(speed);
         scale(1.6f);
         this.origin = origin;
