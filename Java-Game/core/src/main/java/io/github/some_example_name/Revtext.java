@@ -19,7 +19,7 @@ public class Revtext extends OwnText {
     float centerx, centery;
 
     public Revtext(float centerx, float centery, int fontsize, float chardelay, String mainText) {
-        super("", centerx, centery, fontsize, Color.WHITE, null);
+        super("", centerx, centery, fontsize, Color.WHITE, Color.BLACK);
         centered = true;
         this.centerx = centerx;
         this.centery = centery;

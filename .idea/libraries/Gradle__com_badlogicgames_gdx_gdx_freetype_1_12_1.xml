@@ -5,6 +5,8 @@
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-freetype/1.12.1/d5826997b0cfa595a72889610fadb18405056c1c/gdx-freetype-1.12.1.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.badlogicgames.gdx/gdx-freetype/1.12.1/bda1d1fe81b75d197e30b22b6069d19d55e00835/gdx-freetype-1.12.1-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

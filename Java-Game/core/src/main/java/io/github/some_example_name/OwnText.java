@@ -28,6 +28,12 @@ public class OwnText extends Actor {
     }
     public OwnText(String text, float leftx, float y, int size, Color color, Color outlineColor,boolean centered) {;
         parameter.size = size; // Schriftgröße
+        if( outlineColor!=null){
+        parameter.borderWidth = 2f+size/33;
+        parameter.borderColor = outlineColor;
+        }else{
+            parameter.borderWidth = 0f;
+        }
         this.size=size;
         font = generator.generateFont(parameter);
         //generator.dispose();
@@ -110,10 +116,10 @@ public class OwnText extends Actor {
             float offset = 1.4f+size/33; // Randdicke
             font.setColor(outlineColor.r, outlineColor.g, outlineColor.b, getColor().a * outlinealpha);
 
-            font.draw(batch, text, getX() - offset, getY());
+            /*font.draw(batch, text, getX() - offset, getY());
             font.draw(batch, text, getX() + offset, getY());
             font.draw(batch, text, getX(), getY() - offset);
-            font.draw(batch, text, getX(), getY() + offset);
+            font.draw(batch, text, getX(), getY() + offset);*/
 
             /*font.draw(batch, text, getX() + offset, getY()- offset);
             font.draw(batch, text, getX() - offset, getY()+ offset);

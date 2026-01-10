@@ -401,6 +401,9 @@ class Level {
             case 'k' :
                 gegnerliste.add(new Karltoffelboss(MyTile.columnToX(column), MyTile.rowToY(row),logic));
                 break;
+            case 'p' :
+                objects.add(new Healing_potato(MyTile.columnToX(column), MyTile.rowToY(row), MathUtils.random(8,16),this));
+                break;
             case '=' :
                 /*for (int j = 0; j <8 ; j++) {
                 for (int i = 0; i <8 ; i++) {
@@ -516,13 +519,25 @@ class Level {
     }
      private MyTile getnotwallTile(int column, int row) {
         if (row >= 0 && row < tiles.length && column >= 0 && column < tiles[row].length) {
-            if(tiles[row][column].obstructed){return null;}
+            if(tiles[row][column]!=null && tiles[row][column].obstructed){return null;}
             return tiles[row][column];
         }
         return null;
     }
+
+    private MyTile getwallTile(int column, int row) {
+        if (row >= 0 && row < tiles.length && column >= 0 && column < tiles[row].length) {
+            if(tiles[row][column]==null || !tiles[row][column].obstructed){return null;}
+            return tiles[row][column];
+        }
+        return null;
+    }
+
     MyTile getnotwallTile(float x, float y){
             return  getnotwallTile(MyTile.xToColumn(x),MyTile.yToRow(y));
+    }
+    MyTile getwallTile(float x, float y){
+        return  getwallTile(MyTile.xToColumn(x),MyTile.yToRow(y));
     }
 
     private int getMaxRowLength() {

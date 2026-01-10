@@ -20,8 +20,8 @@ public class Karltoffelboss extends Boss{
     double aggressionLevel=70;
     float potatodelay=0;
     Level level;
-    TextureRegion zwischenform=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
-    TextureRegion[] textureRegions= TextureRegion.split(new Texture("Karltoffel-sheet.png"), 324, 411)[0];
+    //TextureRegion zwischenform=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
+    //TextureRegion[] textureRegions= TextureRegion.split(new Texture("Karltoffel-sheet.png"), 324, 411)[0];
     static Animation<TextureRegion> smokeAuraAnimation= Animator.getAnimation("Smoke5.png",11,15,99,109,0.08f);
     Karltoffelboss(float x, float y, Main logic){
         super(x, y, logic,"El_Karltoffel.png");
@@ -47,18 +47,18 @@ public class Karltoffelboss extends Boss{
     void initializeHitbox() {
         hitboxOffsetX = 5;
         hitboxOffsetY = 30;
-        hitbox = new Rectangle(getX(), getX(), getWidth()/3, getHeight()/1.5f);
+        hitbox = new Rectangle(getX(), getY(), getWidth()/3, getHeight()/1.5f);
     }
 
     @Override
     public void draw(Batch batch, float delta) {
         batch.setColor(getColor());
-        if(attackStatus==AttackStatus.projectile_storm) {
+        /*if(attackStatus==AttackStatus.projectile_storm) {
             batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth()/1.2f:getWidth()/1.2f,getHeight(),getScaleX(),getScaleY(),getRotation());
         }
-        else{
+        else{*/
         batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
-        }
+
     }
 
     @Override
@@ -89,8 +89,8 @@ public class Karltoffelboss extends Boss{
     @Override
     boolean damageby(float damage) {
         if(invincible||attackStatus==AttackStatus.inair){
-            assert attackStatus==AttackStatus.inair&&!invincible : "Karltoffel should be invincible";
-            return false;}
+            return false;
+        }
         recenthits++;
         aggressionLevel+=damage*0.5f;
 
@@ -154,7 +154,7 @@ public class Karltoffelboss extends Boss{
     public void engagePlayer(float delta) {
         //aggressionLevel=(aggressionLevel+ delta*50.0*0.15)/(1.0+delta*0.15);
         aggressionLevel += MathUtils.clamp(50-aggressionLevel,-5*delta,5*delta);
-        potatodelay-=delta;
+        potatodelay -= delta;
         if(attackStatus == AttackStatus.inair)
         {
                 ismoving=true;
@@ -176,7 +176,7 @@ public class Karltoffelboss extends Boss{
                     knockback.setLength(160);
                     player.setAdditionalForce(knockback);
                     float damage = (float) (Math.min(Math.pow(300, 2) / ellipseDistance,100));
-                    if (damage == NaN ||Float.isInfinite(damage)) {
+                    if (Float.isNaN(damage) ||Float.isInfinite(damage)) {
                         damage = 100;
                     }
                     damagePlayer(damage);

@@ -2,16 +2,17 @@ package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public class Healing_potato extends TextureActor {
     int healingAmount;
-    public Healing_potato(float x, float y,int healingamount, Level level) {
+    public Healing_potato(float x, float y,int healingAmount, Level level) {
         super("healing-potato.png");
-        healingAmount = healingamount;
+        this.healingAmount = healingAmount;
         setColor(0.95f, 0.95f, 0.95f, 0f);
         centerAt(x,y);
-        if(level.getnotwallTile(x,y)== null) {
+        if(level.getwallTile(x,y)!= null) {
             // If the tile is a wall, we don't want to spawn the potato here
             removeFromLevel();
             return;
@@ -22,8 +23,8 @@ public class Healing_potato extends TextureActor {
        addAction(Actions.after(Actions.forever(
                Actions.parallel(
             Actions.sequence(
-                Actions.scaleTo(1.6f+healingAmount/20f, 1.6f+healingAmount/20f, 0.5f),
-                Actions.scaleTo(1.4f+healingAmount/20f, 1.4f+healingAmount/20f, 0.5f)
+                Actions.scaleTo(1.6f+ this.healingAmount /20f, 1.6f+ this.healingAmount /20f, 0.5f),
+                Actions.scaleTo(1.4f+ this.healingAmount /20f, 1.4f+ this.healingAmount /20f, 0.5f)
             ),
             Actions.sequence(
                  Actions.color(new Color(0.9f, 1f, 0.9f, 1f), 0.5f),
@@ -35,7 +36,7 @@ public class Healing_potato extends TextureActor {
         act((float) Math.random());
     }
     public Healing_potato(float x, float y,Level level) {
-        this(x, y, 5,level);
+        this(x, y,  MathUtils.random(10,20),level);
     }
 
     @Override

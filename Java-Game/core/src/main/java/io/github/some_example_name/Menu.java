@@ -280,7 +280,7 @@ class BootingScreen extends Menu
         super();
         int ran = MathUtils.random(0, Script.loadingscreenscript.length - 1);
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.65f, 40, 0.01f,Script.loadingscreenscript[ran]);
-        textbox.setColor(new Color(0.2f, 0.2f, 0.7f,1),null);
+        textbox.setColor(new Color(0.4f, 0.4f, 0.9f,1),null);
         delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         if(mainl.DevMode){delay=0;}
         main = mainl;

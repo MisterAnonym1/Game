@@ -35,6 +35,8 @@ abstract class Gegner extends Entity
     Vector2 savedVector= new Vector2(0,0);
     Animation<TextureRegion> explosionAnimation;
     boolean exploded=false;
+    // Guard to prevent overlapping jumps
+    boolean performingJump = false;
 
     enum AttackStatus {inactive, dash, strike,exploding,spin,projectile_storm, shockwave, inair, repositioning,standingfire }
 
@@ -353,63 +355,63 @@ void reset()
 
     }
     public void dashattack () {
-        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
-
-        final float savedspeed=speed;
-        speed=320;
-        attackStatus=AttackStatus.dash;
-        savedVector=getDistanceVector(player);
+        // Nur starten, wenn aktuell kein anderer Angriff läuft
+        if (attackStatus != AttackStatus.inactive) return;
+        final float savedspeed = speed;
+        speed = 320;
+        attackStatus = AttackStatus.dash;
+        savedVector = getDistanceVector(player);
         addAction(Actions.sequence(
                 Actions.delay(1.5f),
                 new Action() {
                     @Override
                     public boolean act(float delta) {
-                        attackStatus=AttackStatus.inactive;
-                        speed=savedspeed;
+                        attackStatus = AttackStatus.inactive;
+                        speed = savedspeed;
                         return true;
                     }
                 }
         ));
-    }
-    public void dash(float targetx, float targety,float dspeed, float maxduration) {
-        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
-
-        final float savedspeed=speed;
-        speed=dspeed;
-        attackStatus=AttackStatus.dash;
-        savedVector=getDistanceVector(targetx, targety);
+     }
+     public void dash(float targetx, float targety,float dspeed, float maxduration) {
+        // Nur starten, wenn kein anderer Angriff aktiv ist
+        if (attackStatus != AttackStatus.inactive) return;
+        final float savedspeed = speed;
+        speed = dspeed;
+        attackStatus = AttackStatus.dash;
+        savedVector = getDistanceVector(targetx, targety);
         addAction(Actions.sequence(
                 Actions.delay(maxduration),
                 new Action() {
                     @Override
                     public boolean act(float delta) {
-                        attackStatus=AttackStatus.inactive;
-                        speed=savedspeed;
+                        attackStatus = AttackStatus.inactive;
+                        speed = savedspeed;
                         return true;
                     }
                 }
         ));
-    }
-    public void dash(Vector2 direction,float dspeed, float maxduration) {
-        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
-        final AttackStatus currentStatus = attackStatus; // Aktuellen Status speichern
-        final float savedspeed=speed;
-        speed=dspeed;
-        attackStatus=AttackStatus.dash;
-        savedVector=direction;
+     }
+     public void dash(Vector2 direction,float dspeed, float maxduration) {
+        // Nur starten, wenn kein anderer Angriff aktiv ist
+        if (attackStatus != AttackStatus.inactive) return;
+        final float savedspeed = speed;
+        speed = dspeed;
+        attackStatus = AttackStatus.dash;
+        savedVector = direction;
         addAction(Actions.sequence(
                 Actions.delay(maxduration),
                 new Action() {
                     @Override
                     public boolean act(float delta) {
-                        attackStatus=currentStatus;
-                        attackStatus=AttackStatus.inactive;
-                        speed=savedspeed;
+                        // Beim Ende des Dashs wieder inaktiv setzen (keine unerwartete Wiederherstellung)
+                        attackStatus = AttackStatus.inactive;
+                        speed = savedspeed;
                         return true;
                     }
                 }
         ));
-    }
+     }
 
     void fireballringattack(float angle) //
     {
@@ -417,7 +419,6 @@ void reset()
     }
     void fireballringattack(float angle,float angleoffset) //
     {
-        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
         Vector2 vec= new Vector2(hitbox.width/3f,0);
         vec.rotateDeg(angleoffset);
         for(float i=0; i<=360-angle;i+=angle)
@@ -428,7 +429,6 @@ void reset()
     }
     void fireStormattack()
     {
-        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive"; // Debugging purpose
         attackStatus=AttackStatus.projectile_storm;
     }
 
@@ -447,18 +447,17 @@ void reset()
     }
 
     void shockwavejump(float waveduration, float jumpheight, float cx, float cy) {
-        assert attackStatus==AttackStatus.inactive : "Gegner should be inactive";
-        if(attackStatus==attackStatus.projectile_storm)
-        {
-            System.out.println("status in jump: "+attackStatus);
+        // Guard: kein neuer Jump, wenn bereits ein Jump läuft oder inair/shockwave
+        if (performingJump || attackStatus == AttackStatus.shockwave || attackStatus == AttackStatus.inair) {
+            System.out.println("skip shockwavejump: already performing or inair/shockwave");
+            return;
         }
-        if(attackStatus==AttackStatus.shockwave|| attackStatus==AttackStatus.inair) {
-            assert true : "Already in shockwavejump"; // Debugging purpose
-            System.out.println(" no assert Already in shockwavejump");
-            return; // bereits in der Aktion
+        if (attackStatus == AttackStatus.projectile_storm) {
+            System.out.println("status in jump: " + attackStatus);
         }
         final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
         attackStatus = AttackStatus.inair;
+        performingJump = true;
         invincible=true;
         savedVector= new Vector2(cx - getHitboxCenterX(),  cy-hitbox.y);
         final float originalspeed = speed;
@@ -514,37 +513,33 @@ void reset()
                     attackStatus = AttackStatus.shockwave;
                     shadowscale=1f;
                     return true;}},
-
             Actions.delay(waveduration),
-
             new Action() {
                 @Override
                 public boolean act(float delta) {
                     speed=originalspeed;
-                        System.out.println("inv false-> past: "+attackStatus);
-                    System.out.println("inv false-> current:"+currentStatus);
+                        System.out.println("inv false-> past: " + attackStatus);
+                    System.out.println("inv false-> current:" + currentStatus);
                     invincible=false;
                     logic.resetCameraOffset();
+                    // Am Ende wieder in den vorherigen Status zurückkehren
                     attackStatus = currentStatus;
-                    return true;}}
+                    // allow future jumps again
+                    performingJump = false;
+                      return true;}}
 
-        ));
+         ));
 
+     }
 
-    }
-
-    void shockwaveAttack(float waveduration, float jumpheight) {
-        if(attackStatus==AttackStatus.shockwave|| attackStatus==AttackStatus.inair) {
-            assert true : "Already in shockwavejump/attack"; // Debugging purpose
-            System.out.println(" no assert Already in shockwaveAttack");
-            return; // bereits in der Aktion
-        }
-        shockwavejump(waveduration, jumpheight, player.getHitboxCenterX(), player.hitbox.y);
-    }
-
-
+     void shockwaveAttack(float waveduration, float jumpheight) {
+         if (performingJump || attackStatus==AttackStatus.shockwave || attackStatus==AttackStatus.inair) {
+            System.out.println("skip shockwaveAttack: already in shockwave or inair or performingJump");
+            return;
+         }
+         shockwavejump(waveduration, jumpheight, player.getHitboxCenterX(), player.hitbox.y);
+     }
 
 
 
-}
-
+ }
