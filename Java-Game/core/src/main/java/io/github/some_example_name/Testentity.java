@@ -177,6 +177,8 @@ public class Testentity extends Gegner {
 
     @Override
     void onDeath() {
+        SoundManager.stop("sheep");
+        //SoundManager.stop("sheep-hurt");
         if(evil&&!exploded){
             spawnCoins();
         }
@@ -186,8 +188,8 @@ public class Testentity extends Gegner {
 
     @Override
     boolean damageby(float damage) {
-       SoundManager.stop("sheep");
-        SoundManager.play("sheep",0.4f,0.95f);
+       //SoundManager.stop("sheep-hurt");
+        SoundManager.play("sheep",0.2f,0.95f+MathUtils.random(-0.08f, 0.08f));
         return super.damageby(damage);
     }
 
@@ -205,7 +207,7 @@ public class Testentity extends Gegner {
         }
         if(soundcountdown <= 0) {
             soundcountdown = MathUtils.random(10f, 40);
-            SoundManager.play("sheep", 0.3f, (aggressive?.8f:1f)+ MathUtils.random(-0.1f, 0.1f));
+            SoundManager.play("sheep", 0.2f, (aggressive?.8f:1f)+ MathUtils.random(-0.1f, 0.1f));
         }
         if (aggressive)
         {engagePlayer(delta);}

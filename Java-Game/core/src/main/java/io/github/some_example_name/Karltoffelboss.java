@@ -37,6 +37,10 @@ public class Karltoffelboss extends Boss{
         positionChanged();
         collisionOn=true;
         status= EntityStatus.inactiv;
+        addAction(Actions.sequence(Actions.delay(0.4f),
+                Actions.run(() -> {
+                   SoundManager.play("roar",0.6f,1);
+                })));
         addAction(Actions.sequence(Actions.delay(1.5f),
                 Actions.run(() -> {
                     status = EntityStatus.engaging;
@@ -57,7 +61,8 @@ public class Karltoffelboss extends Boss{
             batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth()/1.2f:getWidth()/1.2f,getHeight(),getScaleX(),getScaleY(),getRotation());
         }
         else{*/
-        batch.draw(texture,getX()+ (ismirrored?getWidth():0),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? -getWidth():getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
+        ismirrored= !(movement.angleDeg() > 90) || !(movement.angleDeg() < 270);
+        batch.draw(texture,getX()+ (ismirrored?0:getWidth()),getY()+textureYoffset,getOriginX(),getOriginY(),ismirrored? getWidth():-getWidth(),getHeight(),getScaleX(),getScaleY(),getRotation());
 
     }
 
@@ -106,6 +111,7 @@ public class Karltoffelboss extends Boss{
                     else{
                         Vector2 vector = getDistanceVector(spawnx, spawny).add(getDistanceVector(player).scl(-1));
                         dash(vector,200,0.8f);
+
                     }
 
                     return true;
@@ -275,6 +281,7 @@ public class Karltoffelboss extends Boss{
                              attackdelay2 = 0;
                              attackdelay = 0;
                              fireStormattack();
+                             SoundManager.play("nani",0.5f,1);
                              //texture=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
                              invincible=true;
                              recenthits=0;

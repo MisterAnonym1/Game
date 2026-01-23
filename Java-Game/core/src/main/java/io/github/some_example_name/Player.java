@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -20,6 +21,7 @@ class Player extends Entity
 {
     boolean isxmoving;
     boolean isymoving;
+    boolean hitTarget;
     MeeleWeapon weapon;
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
@@ -35,6 +37,7 @@ class Player extends Entity
     StorySpeechBox speechbox;
     Displaytext coindisplay;
     float smokedelay;
+
     Player(float x, float y, Viewport view) {
 
 
@@ -229,6 +232,7 @@ class Player extends Entity
             line.setLength(1000);
         }
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),actor.hitbox)){return false;}
+
         return true;
     }
 
@@ -285,6 +289,8 @@ class Player extends Entity
                 flip(true);
                 playAnimation(sideAttackAnimation);
             }
+            SoundManager.stop("sword-miss");
+            SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.15f));
             weapon.attack(currentAnimation, 2, 3);
             gegnerhitliste.clear();
             directionline=Math.round(angle1);

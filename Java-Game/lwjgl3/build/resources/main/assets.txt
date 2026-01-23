@@ -19,9 +19,11 @@ Credits Button V1.png
 dading.mp3
 Dead.png
 debug_dummy.png
+deep-sea-monster-roar-329857.mp3
 drop.png
 El_Karltoffel.png
 Explosions.png
+Fight-Nani.mp3
 Fire.png
 Fireball00/FB001.png
 Fireball00/FB002.png
@@ -39,7 +41,6 @@ Loadingsheet.png
 medium-explosion-40472.mp3
 misty-forest-background.png
 MountainKing-font.ttf
-music.mp3
 own Watertile 2.png
 Ph.Boden 3.png
 Ph.Boden_Tile_1.png
@@ -70,6 +71,8 @@ speech4.png
 steel-weapons.png
 story-box.png
 story-boxV2.png
+sword-blade-slicing-flesh-352708.mp3
+sword-sound-260274.mp3
 teleporter V3.png
 Test Karte 2.tmx
 Tileset_Grass.png

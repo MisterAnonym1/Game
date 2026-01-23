@@ -502,7 +502,11 @@ public class Main implements ApplicationListener {
                 if(Player.isAttacking())
                 {
                     if(Player.handleAttack(prc,false)) {
+                       // SoundManager.play("sword-hit",0.4f,0.95f);
                         prc.onHit();
+                    }else
+                    {
+                        //SoundManager.play("sword-miss",0.4f,0.95f);
                     }
 
                 }
@@ -625,11 +629,16 @@ public class Main implements ApplicationListener {
 
     void loadSounds() {
         SoundManager.load("medium-explosion", "medium-explosion-40472.mp3");
-        //SoundManager.load("sword-swing", "sounds/sword-swing-40473.mp3");
         SoundManager.load("player-death", "player-hurt_death.mp3");
         SoundManager.load("sheep", "baeh-sheep.wav");
-        //SoundManager.load("sheep-hurt", "sheep-hurt.wav");
+        // causes crash idk why: SoundManager.load("sheep-hurt", "sheep-hurt.wav");
         SoundManager.load("coin_pickup", "dading.mp3");
+        SoundManager.load("sword-miss", "sword-sound-260274.mp3");
+        SoundManager.load("sword-hit", "sword-blade-slicing-flesh-352708.mp3");
+        SoundManager.load("nani", "Fight-Nani.mp3");
+        SoundManager.load("roar", "deep-sea-monster-roar-329857.mp3");
+
+
     }
 
     void loadTilesets() {
