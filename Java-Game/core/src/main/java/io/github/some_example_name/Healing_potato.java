@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
+import javax.sound.sampled.SourceDataLine;
+
 public class Healing_potato extends TextureActor {
     int healingAmount;
     public Healing_potato(float x, float y,int healingAmount, Level level) {
@@ -55,6 +57,7 @@ public class Healing_potato extends TextureActor {
     }
 
     void collect(Entity entity) {
+            SoundManager.play("crunch", 1f, MathUtils.random(0.9f, 1.1f));
             entity.sethealth(entity.curhealth+ healingAmount, false);
             Level.indicators.addActor(new PopUpText("+" + healingAmount, getX() + getWidth() / 2, getY() + getHeight(), 19, Color.GREEN, Color.BLACK));
             Level.deleteList.add(this);

@@ -290,7 +290,7 @@ class Player extends Entity
                 playAnimation(sideAttackAnimation);
             }
             SoundManager.stop("sword-miss");
-            SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.15f));
+            SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.3f));
             weapon.attack(currentAnimation, 2, 3);
             gegnerhitliste.clear();
             directionline=Math.round(angle1);

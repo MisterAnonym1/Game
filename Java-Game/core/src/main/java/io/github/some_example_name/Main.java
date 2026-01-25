@@ -53,8 +53,8 @@ public class Main implements ApplicationListener {
         shape= new ShapeRenderer();
         spriteBatch = new SpriteBatch();
 
-
-        music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
+        //  music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("dark-magic-music-loop.wav"));
         skin= new Skin(Gdx.files.internal("ui/uiskin.json"));
         uiStage=new Stage(new FitViewport(1024,576));
 
@@ -72,7 +72,7 @@ public class Main implements ApplicationListener {
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
         //renderer = new OrthogonalTiledMapRenderer(map, 1 /4f);
         music.setLooping(true);
-        music.setVolume(.0017f); // .2f ist das selbe wie 0.2f
+        music.setVolume(.10f); // .2f ist das selbe wie 0.2f
         music.play();
         loadSounds();
         loadTilesets();
@@ -635,9 +635,19 @@ public class Main implements ApplicationListener {
         SoundManager.load("coin_pickup", "dading.mp3");
         SoundManager.load("sword-miss", "sword-sound-260274.mp3");
         SoundManager.load("sword-hit", "sword-blade-slicing-flesh-352708.mp3");
+        SoundManager.load("sword-attack", "_attack_sword_001.wav");
         SoundManager.load("nani", "Fight-Nani.mp3");
         SoundManager.load("roar", "deep-sea-monster-roar-329857.mp3");
+        SoundManager.load("knockback", "stomp.wav");
+        SoundManager.load("bush-cut", "bush-cut.wav");
+        //SoundManager.load("swush", "squeezing-sponge-rapidly-4.wav");
+       // SoundManager.load("tumbelweed1", "-------");
+        SoundManager.load("triumphant_music", "triumphant_medievalrpg-music.wav");
+        SoundManager.load("jubilant_music", "jubilant_medieval_music.wav");
+        SoundManager.load("crunch", "crunch.wav");
+        SoundManager.load("big-stomp", "stomp-pulse.wav");
 
+        //Already loaded SoundManager.load("dark-magic_music", "dark-magic-music-loop.wav");
 
     }
 

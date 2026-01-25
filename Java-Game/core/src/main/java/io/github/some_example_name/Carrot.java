@@ -3,6 +3,7 @@ package io.github.some_example_name;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -80,6 +81,7 @@ public class Carrot extends Gegner
     void onPlayertouch() {
         if(attackStatus==AttackStatus.spin){
         player.applyknockbackOn(this,230);
+        SoundManager.play("knockback", 0.9f, 1f+ MathUtils.random(-0.2f,0.2f));
         applyknockbackOn(player,110);
         player.damageby(10);
         }

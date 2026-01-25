@@ -140,6 +140,7 @@ public class Karltoffelboss extends Boss{
         super.onPlayertouch();
         System.out.println();
         if(attackStatus == AttackStatus.dash) {
+            SoundManager.play("knockback", 1f, 1f+MathUtils.random(-0.2f,0.2f));
             Vector2 knockback = player.getDistanceVector(getHitboxCenterX(), hitbox.y).scl(-1);
             knockback.setLength(160);
             player.setAdditionalForce(knockback);

@@ -480,6 +480,7 @@ class WinScreen extends Menu
         Main.uiStage.addActor(creditsknopf);
 
         setColor(1,1,1,0);
+        SoundManager.play("triumphant_music",0.5f,1f);
     }
 
     @Override
@@ -507,6 +508,8 @@ class WinScreen extends Menu
         knopf.remove();
         exitknopf.remove();
         creditsknopf.remove();
+        SoundManager.stop("triumphant_music");
+
         remove();
     }
 
@@ -562,6 +565,7 @@ class NewLevelScreen extends Menu {
         skillknopf.setOnUp(this::showSkillMenu);
         Main.uiStage.addActor(skillknopf);
          delay=0;
+        SoundManager.play("jubilant_music",0.4f,1f);
 
     }
 
@@ -755,6 +759,7 @@ class NewLevelScreen extends Menu {
         jaknopf.remove();
         neinknopf.remove();
         skillknopf.remove();
+        SoundManager.stop("jubilant_music");
         remove();
     }
 

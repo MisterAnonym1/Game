@@ -507,6 +507,7 @@ void reset()
                 @Override
                 public boolean act(float delta) {
                     Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
+                    SoundManager.play("big-stomp", 0.5f, 1f+MathUtils.random(-0.2f,0.2f));
                     wave.scaleBy(0.8f);
                     attackdelay=0;
                     Level.objects.add(wave);
