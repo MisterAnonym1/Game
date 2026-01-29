@@ -10,8 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
@@ -21,25 +19,23 @@ public class OwnText extends Actor {
    Color outlineColor;
     GlyphLayout layout;
     int size;
-    static FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("MountainKing-font.ttf"));
-    static FreeTypeFontParameter parameter = new FreeTypeFontParameter();
+
+    // BitmapFont used for cross-backend compatibility (GWT-compatible)
+
     public OwnText(String text, float x, float y, int size, Color color, Color outlineColor) {
         this(text, x, y, size, color, outlineColor, true);
     }
     public OwnText(String text, float leftx, float y, int size, Color color, Color outlineColor,boolean centered) {;
-        parameter.size = size; // Schriftgröße
-        if( outlineColor!=null){
-        parameter.borderWidth = 2f+size/33;
-        parameter.borderColor = outlineColor;
-        }else{
-            parameter.borderWidth = 0f;
-        }
-        this.size=size;
-        font = generator.generateFont(parameter);
-        //generator.dispose();
-        //this.font = new BitmapFont(); // Standard-Schriftart ohne TTF-Import
-        this.text = text;
-        layout = new GlyphLayout();
+        // Approximate font scaling: generate a BitmapFont and scale it.
+        this.size = size;
+        font = new BitmapFont();
+        // Default BitmapFont baseline size is approx 20; scale to match requested size.
+        float base = 20f;
+        float scale = Math.max(0.01f, size / base);
+        font.getData().setScale(scale);
+         //this.font = new BitmapFont(); // Standard-Schriftart ohne TTF-Import
+         this.text = text;
+         layout = new GlyphLayout();
         setX(leftx);
         setY(y);
         setColor(color);

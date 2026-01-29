@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: net.sourceforge.htmlunit:neko-htmlunit:2.55.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="net.sourceforge.htmlunit" artifactId="neko-htmlunit" version="2.55.0" baseVersion="2.55.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sourceforge.htmlunit/neko-htmlunit/2.55.0/357606d1648fe63f8bf159d357f54dfbf8611b08/neko-htmlunit-2.55.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

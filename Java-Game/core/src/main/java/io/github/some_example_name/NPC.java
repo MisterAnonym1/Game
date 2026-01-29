@@ -15,8 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
-import java.awt.*;
-
 import static io.github.some_example_name.Main.invManager;
 
 public class NPC extends Entity
@@ -256,7 +254,6 @@ class NpcData
      void onPress() {
          super.onPress();
          Main.uiStage.addActor(knopf);
-         System.out.println("Entered trader menu succesfully");
      }
 
      void onButtonPress() {

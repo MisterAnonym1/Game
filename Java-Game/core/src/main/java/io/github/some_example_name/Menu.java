@@ -108,8 +108,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 Gdx.app.exit();
-                main.dispose();
-                System.exit(0);
+                try { main.dispose(); } catch (Throwable t) { /* ignore on GWT */ }
             }
         });
         noButton.addListener(new ChangeListener() {

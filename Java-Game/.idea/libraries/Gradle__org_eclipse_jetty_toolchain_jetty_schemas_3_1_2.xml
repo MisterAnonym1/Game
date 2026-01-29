@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: org.eclipse.jetty.toolchain:jetty-schemas:3.1.2" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.eclipse.jetty.toolchain" artifactId="jetty-schemas" version="3.1.2" baseVersion="3.1.2" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.toolchain/jetty-schemas/3.1.2/e4fb7fb14038a35ac135a784180f8a51a518eab1/jetty-schemas-3.1.2.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

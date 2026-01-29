@@ -193,7 +193,6 @@ public class LibgdxHelperClass {
                 walkFrames[index++] = tmp[i][j];
 
                 if (index >= frames) {
-                    //System.out.println("\nfirst " + index);
                     break loop;
                 }
 

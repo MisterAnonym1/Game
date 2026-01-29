@@ -95,7 +95,6 @@ public class Main implements ApplicationListener {
         viewport.update(width, height, true);
         uiStage.getViewport().update(width, height, true);
         ocam.update();
-        //System.out.println(width+"w "+ height +"h\n");
     }
 
     @Override
@@ -224,6 +223,7 @@ public class Main implements ApplicationListener {
 
         switch(newState) {
             case "startmenu" :
+                invManager.resetInventory();
                 gamestate = Gamestate.startmenu;
                 BootingScreen boscreen=new BootingScreen(this);
                 uiStage.addActor(boscreen);
@@ -247,11 +247,9 @@ public class Main implements ApplicationListener {
             case "newlevel" : //triggert den Modus um eine neues Level zu laden
                 Player.normalise();
                 gamestate = Gamestate.loading;
-                System.out.println("delta: "+Gdx.graphics.getDeltaTime());
 
                 levelnummer++;
                 showLevel(this.levelnummer);
-                System.out.println("delta: "+Gdx.graphics.getDeltaTime()+"\n");
                 LoadingScreen screen =new LoadingScreen(this);
                 uiStage.addActor(screen);
                 screen.toFront();
@@ -502,11 +500,7 @@ public class Main implements ApplicationListener {
                 if(Player.isAttacking())
                 {
                     if(Player.handleAttack(prc,false)) {
-                       // SoundManager.play("sword-hit",0.4f,0.95f);
                         prc.onHit();
-                    }else
-                    {
-                        //SoundManager.play("sword-miss",0.4f,0.95f);
                     }
 
                 }
@@ -663,7 +657,6 @@ public class Main implements ApplicationListener {
 
     @Override
     public void pause() {
-        //System.out.println("Game paused");
         if(gamestate==Gamestate.playing){
         //setState("paused");
             }
@@ -685,7 +678,7 @@ public class Main implements ApplicationListener {
         for (TextureRegion reg : FireBall.explosion.getKeyFrames()) {
             reg.getTexture().dispose();
         }
-        OwnText.generator.dispose();
+        // OwnText no longer exposes a static FreeType generator; per-instance fonts are disposed by their owners.
 
     }
     public static void setToDefaultCursor()

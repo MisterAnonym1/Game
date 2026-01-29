@@ -277,6 +277,7 @@ class WeedyBall extends Projectile
         scale(1.6f);
         this.origin = origin;
         centerAt(x,y);
+        SoundManager.play("bush-cut",0.7f,1.2f);
     }
     @Override
     void reducemovement(float delta)

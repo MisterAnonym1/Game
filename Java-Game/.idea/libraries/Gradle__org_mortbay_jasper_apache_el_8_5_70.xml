@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: org.mortbay.jasper:apache-el:8.5.70" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.mortbay.jasper" artifactId="apache-el" version="8.5.70" baseVersion="8.5.70" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mortbay.jasper/apache-el/8.5.70/e280d60a1b02f85babcc20ed53d603def113f853/apache-el-8.5.70.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

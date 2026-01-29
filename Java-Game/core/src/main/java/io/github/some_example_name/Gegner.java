@@ -453,7 +453,6 @@ void reset()
             return;
         }
         if (attackStatus == AttackStatus.projectile_storm) {
-            System.out.println("status in jump: " + attackStatus);
         }
         final AttackStatus currentStatus = attackStatus;// Aktuellen Status speichern
         attackStatus = AttackStatus.inair;
@@ -519,8 +518,6 @@ void reset()
                 @Override
                 public boolean act(float delta) {
                     speed=originalspeed;
-                        System.out.println("inv false-> past: " + attackStatus);
-                    System.out.println("inv false-> current:" + currentStatus);
                     invincible=false;
                     logic.resetCameraOffset();
                     // Am Ende wieder in den vorherigen Status zurückkehren

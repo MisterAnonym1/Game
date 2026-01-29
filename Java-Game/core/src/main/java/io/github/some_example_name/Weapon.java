@@ -8,6 +8,7 @@ class MeeleWeapon extends Actor
 {
     int damage = 40;
     Player player;
+    float delay;
     boolean isAttacking = false;
     MeeleWeapon (Player pl) {
         player=pl;
@@ -29,11 +30,12 @@ class MeeleWeapon extends Actor
     }
     void attack(Animation<TextureRegion> attackAnimation, int fromFrame, int toFrame) {
         if (isAttacking||hasActions()) return; // Prevent multiple attacks at once
-        float delay= fromFrame*attackAnimation.getFrameDuration();
+        delay= fromFrame*attackAnimation.getFrameDuration();
         float duration= (toFrame-fromFrame+1)*attackAnimation.getFrameDuration();
         addAction(Actions.sequence(
                 Actions.delay(delay),
                 Actions.run(() -> {
+
                     isAttacking = true; // Reset attacking state after the attack duration
                 }),
                 Actions.delay(duration),

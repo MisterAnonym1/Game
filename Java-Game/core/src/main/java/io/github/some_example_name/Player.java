@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
@@ -21,7 +22,7 @@ class Player extends Entity
 {
     boolean isxmoving;
     boolean isymoving;
-    boolean hitTarget;
+    boolean hashitTarget;
     MeeleWeapon weapon;
     HealthBar healthbar;
     ArrayList<Entity> gegnerhitliste = new ArrayList<>();
@@ -206,6 +207,8 @@ class Player extends Entity
         if(!MathHelper.isLineIntersectingRectangle(getHitboxCenterX(),getHitboxCenterY(),line.x+getHitboxCenterX(),line.y+getHitboxCenterY(),enti.hitbox)){return false;}
         gegnerhitliste.add(enti);
         knockbackFromPlayer(enti,200);
+        hashitTarget=true;
+
         if(enti.damageby(weapon.damage)) {
            enti.onDeath();
             return true;
@@ -289,9 +292,20 @@ class Player extends Entity
                 flip(true);
                 playAnimation(sideAttackAnimation);
             }
-            SoundManager.stop("sword-miss");
-            SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.3f));
+            hashitTarget=false;
             weapon.attack(currentAnimation, 2, 3);
+            //SoundManager.stop("sword-miss");
+            addAction(Actions.sequence( Actions.moveBy(0,0,weapon.delay+0.04f),Actions.run(()->{
+                if(!hashitTarget) {
+                    SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.3f));
+                    System.out.println("miss");
+
+                }else{
+                    SoundManager.play("sword-hit",0.6f,0.95f+ MathUtils.random(-0.15f, 0.15f));
+                    System.out.println("hit");
+                }
+            })));
+           // SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.3f));
             gegnerhitliste.clear();
             directionline=Math.round(angle1);
         }

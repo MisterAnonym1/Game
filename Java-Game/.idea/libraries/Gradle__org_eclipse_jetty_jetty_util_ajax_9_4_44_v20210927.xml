@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: org.eclipse.jetty:jetty-util-ajax:9.4.44.v20210927" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="org.eclipse.jetty" artifactId="jetty-util-ajax" version="9.4.44.v20210927" baseVersion="9.4.44.v20210927" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty/jetty-util-ajax/9.4.44.v20210927/ed2f30e8eef939ab2825e607d83f82f85167e2c0/jetty-util-ajax-9.4.44.v20210927.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

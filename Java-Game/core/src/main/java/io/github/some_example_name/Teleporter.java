@@ -78,7 +78,6 @@ public class Teleporter extends TextureActor
                             if(main.levelnummer+1  >= LevelList.levels.length)
                             {
                                 main.setState("winscreen");
-                                System.out.println("Time played: "+DataCenter.getTimeplayed());
                                 System.out.println("Time: "+DataCenter.getformatedTimeplayed());
                             }
                             else{

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: javax.websocket:javax.websocket-api:1.0" type="java-imported" external-system-id="GRADLE">
+    <properties groupId="javax.websocket" artifactId="javax.websocket-api" version="1.0" baseVersion="1.0" />
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/javax.websocket/javax.websocket-api/1.0/fc843b649d4a1dcb0497669d262befa3918c7ba8/javax.websocket-api-1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
