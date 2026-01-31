@@ -204,7 +204,7 @@ void reset()
 
         visitedfields.clear();
         queue.clear();
-        if(start==null|| target==null|| start.obstructed|| target.obstructed) {
+        if(start==null|| target==null|| curlevel.isWall(start)|| curlevel.isWall(target)) {
             goalfields.clear();
             deactivate();
             return;

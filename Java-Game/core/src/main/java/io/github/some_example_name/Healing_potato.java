@@ -14,8 +14,7 @@ public class Healing_potato extends TextureActor {
         this.healingAmount = healingAmount;
         setColor(0.95f, 0.95f, 0.95f, 0f);
         centerAt(x,y);
-        if(level.getwallTile(x,y)!= null) {
-            // If the tile is a wall, we don't want to spawn the potato here
+        if(level.isWall[MyTile.yToRow(y)][MyTile.xToColumn(x)]) {
             removeFromLevel();
             return;
         }

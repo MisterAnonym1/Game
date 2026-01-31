@@ -55,6 +55,7 @@ public class MyTile extends Sprite {
     void setAdditionallTextures(ArrayList<TextureRegion> additionallTextures) {
         this.additionallTextures = additionallTextures;
     }
+
     void setToWall()
     {
         obstructed=true;
@@ -94,7 +95,6 @@ public class MyTile extends Sprite {
 
     public float getCenterX() { return getX()+getWidth()/2; }
     public float getCenterY() { return getY()+getHeight()/2; }
-    void destroy() { /* getTexture().dispose(); entfernt, da zentral */ }
 
 }
 

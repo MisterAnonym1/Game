@@ -1,9 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -21,6 +19,7 @@ class Level {
 
     String[] rows;
     MyTile[][] tiles;
+    boolean[][] isWall;
     MyTile[] walls;
     private final ArrayList<TextureActor> renderQueue = new ArrayList<>();
     static ArrayList<Teleporter>  teleporters= new ArrayList<>();
@@ -42,6 +41,7 @@ class Level {
         this.rows = rows;
         this.logic = mainlogic;
         this.tiles = new MyTile[rows.length][getMaxRowLength()];
+        isWall=new boolean[rows.length][getMaxRowLength()];
         doorsnummer = 0;
         xcoplayer = 500;
         ycoplayer = 400;
@@ -52,11 +52,7 @@ class Level {
      * Zerstört das Level, d.h. alle angezeigten Tiles und Kisten
 */
         public void destroy() {
-            for (int row = 0; row < tiles.length; row++) {
-                for (int col = 0; col < tiles[row].length; col++) {
-                        tiles[row][col].destroy();
-                }
-            }
+
 
             teleporters.clear();
 
@@ -277,7 +273,7 @@ class Level {
                 }
                 MyTile tile = createTile(column, row, tilechar);
                 tiles[row][column] = tile;
-
+                isWall[row][column]=tile.obstructed;
                 if (tilechar == '#') {
                     wallCount++;
                 } else if (tilechar == 'd') {
@@ -332,11 +328,11 @@ class Level {
 
             case '#':
                 // Nachbarn prüfen, um die passende tilenumber zu bestimmen
-                boolean wallTop = isWall(column, row - 1);
-                boolean wallRight = isWall(column + 1, row);
-                boolean wallBottom = isWall(column, row + 1);
-                boolean wallLeft = isWall(column - 1, row);
-                ArrayList<TextureRegion> aditex=new ArrayList<>();
+                boolean wallTop = isPreWall(column, row - 1);
+                boolean wallRight = isPreWall(column + 1, row);
+                boolean wallBottom = isPreWall(column, row + 1);
+                boolean wallLeft = isPreWall(column - 1, row);
+
                 /*int tilenumber = 113; // Standardwert--> einzelne Wand
 
                 aditex.add(TileManager.getTile("grass",  MathUtils.random(0, 3)));
@@ -439,7 +435,7 @@ class Level {
     }
 
     // Hilfsmethode, um zu prüfen, ob an einer Position eine Wand ist
-    private boolean isWall(int column, int row) {
+    private boolean isPreWall(int column, int row) {
         if (row >= 0 && row < rows.length && column >= 0 && column < getMaxRowLength()) {
             try {
                 return rows[row].charAt(column) == '#';
@@ -448,6 +444,16 @@ class Level {
             }
         }
         return false;
+
+    }
+
+    public boolean isWall(int x, int y) {
+
+        return isWall[x][y];
+    }
+    public boolean isWall(MyTile tile) {
+
+        return isWall[tile.row][tile.column];
     }
 
 
@@ -519,26 +525,18 @@ class Level {
     }
      private MyTile getnotwallTile(int column, int row) {
         if (row >= 0 && row < tiles.length && column >= 0 && column < tiles[row].length) {
-            if(tiles[row][column]!=null && tiles[row][column].obstructed){return null;}
+            if(tiles[row][column]!=null && isWall[row][column]){return null;}
             return tiles[row][column];
         }
         return null;
     }
 
-    private MyTile getwallTile(int column, int row) {
-        if (row >= 0 && row < tiles.length && column >= 0 && column < tiles[row].length) {
-            if(tiles[row][column]==null || !tiles[row][column].obstructed){return null;}
-            return tiles[row][column];
-        }
-        return null;
-    }
+
 
     MyTile getnotwallTile(float x, float y){
             return  getnotwallTile(MyTile.xToColumn(x),MyTile.yToRow(y));
     }
-    MyTile getwallTile(float x, float y){
-        return  getwallTile(MyTile.xToColumn(x),MyTile.yToRow(y));
-    }
+
 
     private int getMaxRowLength() {
         int max = 0;

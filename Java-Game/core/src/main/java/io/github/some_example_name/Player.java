@@ -298,11 +298,9 @@ class Player extends Entity
             addAction(Actions.sequence( Actions.moveBy(0,0,weapon.delay+0.04f),Actions.run(()->{
                 if(!hashitTarget) {
                     SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.3f));
-                    System.out.println("miss");
 
                 }else{
                     SoundManager.play("sword-hit",0.6f,0.95f+ MathUtils.random(-0.15f, 0.15f));
-                    System.out.println("hit");
                 }
             })));
            // SoundManager.play("sword-miss",0.5f,0.95f+ MathUtils.random(-0.15f, 0.3f));
