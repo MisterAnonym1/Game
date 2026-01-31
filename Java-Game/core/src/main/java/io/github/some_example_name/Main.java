@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import java.util.ArrayList;
+import java.util.IllegalFormatCodePointException;
 
 enum Gamestate { startmenu, paused, playing, dead, dialouge, loading }
 public class Main implements ApplicationListener {
@@ -337,6 +338,7 @@ public class Main implements ApplicationListener {
             return;
         }
         ArrayList <Polygon> walllist = getcollidingWalls(enti);
+
         for (int i = 0; i <walllist.size() ; i++)
         {
             Vector2 resolve=resolveCollision(enti.hitbox,walllist.get(i));
@@ -354,9 +356,20 @@ public class Main implements ApplicationListener {
         if(!actor.collisionOn) {
             return list;
         }
-        for (MyTile tile : loadedwalls) {
-            if(MathHelper.overlaps(actor.hitbox,tile.hitbox)) {
-                list.add(tile.hitbox);
+        if(actor instanceof Karltoffelboss)
+        {
+            for (MyTile tile : loadedwalls) {
+                if(MathHelper.overlaps(actor.hitbox,tile.hitbox)) {
+                    list.add(tile.hitbox);
+                }
+            }
+        }
+        else
+        {
+            for (MyTile tile : currentlevel.getAdjacentWalls(actor.getCenterX(),actor.getCenterY())) {
+                if(MathHelper.overlaps(actor.hitbox,tile.hitbox)) {
+                    list.add(tile.hitbox);
+                }
             }
         }
         return list;

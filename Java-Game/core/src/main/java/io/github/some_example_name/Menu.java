@@ -107,8 +107,8 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         yesButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                Gdx.app.exit();
-                try { main.dispose(); } catch (Throwable t) { /* ignore on GWT */ }
+                //Gdx.app.exit();
+                try { /*main.dispose();*/ } catch (Throwable t) { /* ignore on GWT */ }
             }
         });
         noButton.addListener(new ChangeListener() {

@@ -1,13 +1,11 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Polygon;
-import com.badlogic.gdx.math.Rectangle;
 
 import java.util.ArrayList;
 
@@ -16,15 +14,9 @@ public class MyTile extends Sprite {
     int column;
     int row;
     Polygon hitbox;
-    boolean visited = false;
     MyTile previoustile;
-    MyTile northNeighbour;
-    MyTile eastNeighbour;
-    MyTile southNeighbour;
-    MyTile westNeighbour;
     boolean obstructed;
-    int number=-1;
-    ArrayList<TextureRegion> additionallTextures = new ArrayList<>();
+    ArrayList<TextureRegion> additionalTextures = new ArrayList<>();
     public MyTile(int column, int row, String filepath, boolean hasHitbox) {
         this(column, row, TextureCache.getRegion(filepath), hasHitbox);
         if(filepath=="own Watertile 2.png")
@@ -35,7 +27,6 @@ public class MyTile extends Sprite {
 
     public MyTile(int column, int row, TextureRegion region, boolean hasHitbox,int num){
         this(column, row, region, hasHitbox);
-        number=num;
     }
     public MyTile(int column, int row, TextureRegion texreg, boolean hasHitbox) {
         super(texreg);
@@ -52,8 +43,8 @@ public class MyTile extends Sprite {
             hitbox.setPosition(getX(), getY());
         }
     }
-    void setAdditionallTextures(ArrayList<TextureRegion> additionallTextures) {
-        this.additionallTextures = additionallTextures;
+    void setAdditionalTextures(ArrayList<TextureRegion> additionalTextures) {
+        this.additionalTextures = additionalTextures;
     }
 
     void setToWall()
@@ -72,7 +63,7 @@ public class MyTile extends Sprite {
 
     @Override
     public void draw(Batch batch, float delta) {
-            for (TextureRegion tex : additionallTextures) {
+            for (TextureRegion tex : additionalTextures) {
                 batch.draw(tex, getX(), getY(), getWidth(), getHeight());
             }
         super.draw(batch);
@@ -86,12 +77,7 @@ public class MyTile extends Sprite {
 
 
 
-    public void setNeighbors(MyTile north, MyTile east, MyTile south, MyTile west) {
-        this.northNeighbour = north;
-        this.eastNeighbour = east;
-        this.southNeighbour = south;
-        this.westNeighbour = west;
-    }
+
 
     public float getCenterX() { return getX()+getWidth()/2; }
     public float getCenterY() { return getY()+getHeight()/2; }

@@ -212,7 +212,7 @@ void reset()
 
         targettile=target;
         MyTile currenttile = start;
-        currenttile.visited = true;
+        curlevel.setVisited(start.column,start.row,true);
         currenttile.previoustile = null;
         visitedfields.add(currenttile);
         queue.add(currenttile);
@@ -243,7 +243,8 @@ void reset()
         }
         for (MyTile tile : visitedfields)
         {
-            tile.visited = false;
+            curlevel.setVisited(tile.column,tile.row,false);
+
             tile.previoustile = null;
         }
     }
@@ -302,8 +303,45 @@ void reset()
     ArrayList<MyTile> getneighbours(MyTile feld)
     {
         ArrayList<MyTile> neighbors = new ArrayList<>();
+        int x,y;
+        y=feld.row+1;
+        x=feld.column;
+        if(!curlevel.isWall(x,y) &&!curlevel.visited(x,y)) {
+            MyTile addedtile= curlevel.getTile(x,y);
+            neighbors.add(addedtile);
+            curlevel.setVisited(x,y,true);
+            visitedfields.add(addedtile);
+            addedtile.previoustile = feld;
+        }
+        y=feld.row;
+        x=feld.column+1;
+        if(!curlevel.isWall(x,y) &&!curlevel.visited(x,y)) {
+            MyTile addedtile= curlevel.getTile(x,y);
+            neighbors.add(addedtile);
+            curlevel.setVisited(x,y,true);
+            visitedfields.add(addedtile);
+            addedtile.previoustile = feld;
+        }
+        y=feld.row-1;
+        x=feld.column;
+        if(!curlevel.isWall(x,y) &&!curlevel.visited(x,y)) {
+            MyTile addedtile= curlevel.getTile(x,y);
+            neighbors.add(addedtile);
+            curlevel.setVisited(x,y,true);
+            visitedfields.add(addedtile);
+            addedtile.previoustile = feld;
+        }
+        y=feld.row;
+        x=feld.column-1;
+        if(!curlevel.isWall(x,y) &&!curlevel.visited(x,y)) {
+            MyTile addedtile= curlevel.getTile(x,y);
+            neighbors.add(addedtile);
+            curlevel.setVisited(x,y,true);
+            visitedfields.add(addedtile);
+            addedtile.previoustile = feld;
+        }
 
-        if(feld.southNeighbour!=null && !feld.southNeighbour.obstructed && !feld.southNeighbour.visited) {
+        /*if(feld.southNeighbour!=null && !feld.southNeighbour.obstructed && !feld.southNeighbour.visited) {
             neighbors.add(feld.southNeighbour);
             feld.southNeighbour.visited = true;
             visitedfields.add(feld.southNeighbour);
@@ -326,7 +364,7 @@ void reset()
             feld.westNeighbour.visited = true;
             visitedfields.add(feld.westNeighbour);
             feld.westNeighbour.previoustile = feld;
-        }
+        }*/
         return neighbors;
 
     }

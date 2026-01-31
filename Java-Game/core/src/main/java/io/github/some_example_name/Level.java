@@ -20,6 +20,7 @@ class Level {
     String[] rows;
     MyTile[][] tiles;
     boolean[][] isWall;
+    private boolean[][] visited; //only for pathfinding
     MyTile[] walls;
     private final ArrayList<TextureActor> renderQueue = new ArrayList<>();
     static ArrayList<Teleporter>  teleporters= new ArrayList<>();
@@ -33,7 +34,6 @@ class Level {
     static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
     //ArrayList<Item> itemlist = new ArrayList<Item>();
     Main logic;
-    int doorsnummer;
     float xcoplayer;
     float ycoplayer;
     float leveltime=0f;
@@ -42,7 +42,7 @@ class Level {
         this.logic = mainlogic;
         this.tiles = new MyTile[rows.length][getMaxRowLength()];
         isWall=new boolean[rows.length][getMaxRowLength()];
-        doorsnummer = 0;
+        visited=new boolean[rows.length][getMaxRowLength()];
         xcoplayer = 500;
         ycoplayer = 400;
         indicators= new Stage(mainlogic.viewport);
@@ -201,8 +201,7 @@ class Level {
 
         //items.draw
     }
-    void drawHitboxes(ShapeRenderer shape)
-    {
+    void drawHitboxes(ShapeRenderer shape) {
         shape.begin(ShapeRenderer.ShapeType.Line);
         shape.setColor(1f, 1f, 0f, 1  );
 
@@ -234,8 +233,7 @@ class Level {
 
         shape.end();
     }
-    void drawShadows(ShapeRenderer shape)
-    {
+    void drawShadows(ShapeRenderer shape) {
         shape.begin(ShapeRenderer.ShapeType.Filled);
         shape.setColor(0.1f, 0.1f, 0.1f, 0.4f  );
         for (Testentity testi : testentitys) {
@@ -258,6 +256,23 @@ class Level {
     public void load() {
         int wallCount = 0;
 
+        for (int row = 0; row < tiles.length; row++) {
+            String rowString = rows[row];
+
+            for (int column = 0; column < tiles[row].length; column++) {
+                char tilechar;
+                try{
+                    tilechar = rowString.charAt(column);
+                }
+                catch(Exception e)
+                {
+                    tilechar=' ';
+                }
+                if (tilechar == '#') {
+                    isWall[row][column]=true;
+                }
+            }
+        }
 
         for (int row = 0; row < tiles.length; row++) {
             String rowString = rows[row];
@@ -273,12 +288,10 @@ class Level {
                 }
                 MyTile tile = createTile(column, row, tilechar);
                 tiles[row][column] = tile;
-                isWall[row][column]=tile.obstructed;
                 if (tilechar == '#') {
                     wallCount++;
                 } else if (tilechar == 'd') {
                     tile.obstructed=false;
-                    //teleporters.add(tile);
                 }
             }
         }
@@ -298,12 +311,10 @@ class Level {
             }
         }
 
-        setTileNeighbors();
     }
 
 
-    public MyTile getdefaultTile(int column, int row)
-    {
+    public MyTile getdefaultTile(int column, int row) {
       return new MyTile(column, row, TileManager.getTile("grass",MathUtils.random(0,31)), false);
     }
 
@@ -328,10 +339,10 @@ class Level {
 
             case '#':
                 // Nachbarn prüfen, um die passende tilenumber zu bestimmen
-                boolean wallTop = isPreWall(column, row - 1);
-                boolean wallRight = isPreWall(column + 1, row);
-                boolean wallBottom = isPreWall(column, row + 1);
-                boolean wallLeft = isPreWall(column - 1, row);
+                boolean wallTop = isWall(column, row - 1);
+                boolean wallRight = isWall(column + 1, row);
+                boolean wallBottom = isWall(column, row + 1);
+                boolean wallLeft = isWall(column - 1, row);
 
                 /*int tilenumber = 113; // Standardwert--> einzelne Wand
 
@@ -434,26 +445,51 @@ class Level {
         return getdefaultTile(column,row) ;
     }
 
-    // Hilfsmethode, um zu prüfen, ob an einer Position eine Wand ist
-    private boolean isPreWall(int column, int row) {
-        if (row >= 0 && row < rows.length && column >= 0 && column < getMaxRowLength()) {
-            try {
-                return rows[row].charAt(column) == '#';
-            } catch (Exception e) {
-                return true;
+
+    public ArrayList<MyTile> getAdjacentWalls(float x, float y) {
+        ArrayList<MyTile> adjacentWalls = new ArrayList<>();
+        int column = MyTile.xToColumn(x);
+        int row = MyTile.yToRow(y);
+
+        // Überprüfe die neun angrenzenden Kacheln
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                int neighborColumn = column + dx;
+                int neighborRow = row + dy;
+                if (isWall(neighborColumn, neighborRow)) {
+                    MyTile wallTile = getTile(neighborColumn, neighborRow);
+                    if (wallTile != null) {
+                        adjacentWalls.add(wallTile);
+                    }
+                }
             }
         }
-        return false;
-
+        return adjacentWalls;
     }
 
     public boolean isWall(int x, int y) {
-
-        return isWall[x][y];
+        if (y < 0 || y >=rows.length || x < 0 || x >= getMaxRowLength())
+        {
+            return true;
+        }
+        return isWall[y][x];
     }
+
     public boolean isWall(MyTile tile) {
 
         return isWall[tile.row][tile.column];
+    }
+
+    public boolean visited(int x, int y) {
+        return visited[y][x];
+    }
+
+    public void setVisited(int x, int y, boolean value) {
+        visited[y][x]=value;
+    }
+
+    public boolean visited(MyTile tile) {
+        return visited[tile.row][tile.column];
     }
 
 
@@ -508,16 +544,8 @@ class Level {
     }
 
 
-    private void setTileNeighbors() {
-        for (int row = 0; row < tiles.length; row++) {
-            for (int col = 0; col < tiles[row].length; col++) {
-                MyTile tile = tiles[row][col];
 
-                    tile.setNeighbors(getTile(col, row - 1),getTile(col + 1, row),getTile(col, row + 1),getTile(col - 1, row));
-            }
-        }
-    }
-     private MyTile getTile(int column, int row) {
+     public MyTile getTile(int column, int row) {
         if (row >= 0 && row < tiles.length && column >= 0 && column < tiles[row].length) {
             return tiles[row][column];
         }
