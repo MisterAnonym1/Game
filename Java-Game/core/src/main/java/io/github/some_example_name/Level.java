@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Polygon;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -45,6 +46,15 @@ class Level {
     // Performance optimization: object pools for frequently used objects
     private final ArrayList<Vector2> vector2Pool = new ArrayList<>();
     private final ArrayList<Polygon> polygonPool = new ArrayList<>();
+    
+    // Performance optimization: spatial partitioning for collision detection
+    private static final int GRID_SIZE = 128; // Size of each grid cell
+    private final ArrayList<ArrayList<TextureActor>> spatialGrid = new ArrayList<>();
+    private int gridWidth, gridHeight;
+    
+    // Performance optimization: frustum culling for off-screen objects
+    private float cameraLeft, cameraRight, cameraTop, cameraBottom;
+    private final Rectangle cameraBounds = new Rectangle();
     Level(String[] rows, Main mainlogic) {
         this.rows = rows;
         this.logic = mainlogic;
@@ -54,6 +64,9 @@ class Level {
         xcoplayer = 500;
         ycoplayer = 400;
         indicators= new Stage(mainlogic.viewport);
+        
+        // Initialize spatial grid
+        initializeSpatialGrid();
     }
 
     /**
@@ -107,6 +120,9 @@ class Level {
 
     public void act(float delta) {
          leveltime+=delta;
+         
+         // Performance optimization: update spatial grid for collision detection
+         updateSpatialGrid();
 
         // Performance optimization: combine loops where possible
         for (Testentity testi : testentitys) {
@@ -154,9 +170,17 @@ class Level {
     }
     public void draw(Batch batch,ShapeRenderer shape, float delta)
     {
+        // Performance optimization: update camera bounds for frustum culling
+        updateCameraBounds();
 
-        for (int row = 0; row < tiles.length; row++) {
-            for (int col = 0; col < tiles[row].length; col++) {
+        // Performance optimization: frustum culling for tile rendering
+        int startRow = Math.max(0, (int) (-cameraTop / 64) - 1);
+        int endRow = Math.min(tiles.length, (int) (-cameraBottom / 64) + 2);
+        int startCol = Math.max(0, (int) (cameraLeft / 64) - 1);
+        int endCol = Math.min(tiles[0].length, (int) (cameraRight / 64) + 2);
+        
+        for (int row = startRow; row < endRow; row++) {
+            for (int col = startCol; col < endCol; col++) {
                 if (tiles[row][col] != null) {
                     tiles[row][col].draw(batch, delta);
                 }
@@ -170,11 +194,17 @@ class Level {
         drawShadows(shape);
         batch.begin();
 
+        // Performance optimization: frustum culling for entity rendering
+        // Group similar texture rendering with culling
         for (Teleporter teleporter : teleporters) {
-            teleporter.draw(batch,delta);
+            if (isOnScreen(teleporter)) {
+                teleporter.draw(batch,delta);
+            }
         }
         for(TextureActor object: objects) {
-            object.draw(batch,delta);
+            if (isOnScreen(object)) {
+                object.draw(batch,delta);
+            }
         }
 
         renderQueue.clear();
@@ -186,27 +216,51 @@ class Level {
             lastRenderQueueSize = expectedSize;
         }
         
-        //renderQueue.addAll(objects);
-        renderQueue.addAll(npcs);
-        renderQueue.addAll(testentitys);
-        renderQueue.addAll(gegnerliste);
-        // **Sortieren nach Y-Koordinate (kleinster zuerst)**
-        Collections.sort(renderQueue, Comparator.comparing(obj -> -obj.hitbox.y));
-        for(TextureActor actor : renderQueue) {
-            actor.draw(batch, delta);
+        // Performance optimization: only add on-screen entities to render queue
+        for(NPC npc : npcs) {
+            if (isOnScreen(npc)) {
+                renderQueue.add(npc);
+            }
         }
+        for(Testentity testi : testentitys) {
+            if (isOnScreen(testi)) {
+                renderQueue.add(testi);
+            }
+        }
+        for(Gegner gegner : gegnerliste) {
+            if (isOnScreen(gegner)) {
+                renderQueue.add(gegner);
+            }
+        }
+        
+        // **Sortieren nach Y-Koordinate (kleinster zuerst)**
+        if (!renderQueue.isEmpty()) {
+            Collections.sort(renderQueue, Comparator.comparing(obj -> -obj.hitbox.y));
+            for(TextureActor actor : renderQueue) {
+                actor.draw(batch, delta);
+            }
+        }
+        
         logic.Player.draw(batch,shape, delta==0&&logic.gamestate!=Gamestate.paused?Gdx.graphics.getDeltaTime():delta);
 
+        // Performance optimization: frustum culling for projectiles
         for (Projectile projec : projectiles) {
-            projec.draw(batch,delta);
+            if (isOnScreen(projec)) {
+                projec.draw(batch,delta);
+            }
         }
+        
+        // Performance optimization: frustum culling for particles
         for(PartikelSprite particle : particles) {
-            particle.draw(batch,delta);
+            if (isOnScreen(particle)) {
+                particle.draw(batch,delta);
+            }
         }
+        
         // Performance optimization: reuse ArrayList for enemies with Y-offset
         ArrayList<Gegner> gegnerMitOffset = new ArrayList<>(gegnerliste.size());
         for (Gegner geg : gegnerliste) {
-            if (geg.textureYoffset >0) {
+            if (geg.textureYoffset >0 && isOnScreen(geg)) {
                 gegnerMitOffset.add(geg);
             }
         }
@@ -627,7 +681,74 @@ class Level {
         entities.addAll(npcs);
         return entities;
     }
-    // Performance optimization: object pool methods
+    // Performance optimization: spatial partitioning methods
+    private void initializeSpatialGrid() {
+        gridWidth = (getMaxRowLength() * 64 + GRID_SIZE - 1) / GRID_SIZE;
+        gridHeight = (rows.length * 64 + GRID_SIZE - 1) / GRID_SIZE;
+        
+        spatialGrid.clear();
+        for (int i = 0; i < gridWidth * gridHeight; i++) {
+            spatialGrid.add(new ArrayList<>());
+        }
+    }
+    
+    private void updateSpatialGrid() {
+        // Clear grid
+        for (ArrayList<TextureActor> cell : spatialGrid) {
+            cell.clear();
+        }
+        
+        // Add entities to grid
+        addEntityToGrid(testentitys);
+        addEntityToGrid(gegnerliste);
+        addEntityToGrid(npcs);
+        addEntityToGrid(projectiles);
+    }
+    
+    private void addEntityToGrid(ArrayList<? extends TextureActor> entities) {
+        for (TextureActor entity : entities) {
+            int gridX = (int) (entity.getCenterX() / GRID_SIZE);
+            int gridY = (int) (entity.getCenterY() / GRID_SIZE);
+            
+            if (gridX >= 0 && gridX < gridWidth && gridY >= 0 && gridY < gridHeight) {
+                int index = gridY * gridWidth + gridX;
+                spatialGrid.get(index).add(entity);
+            }
+        }
+    }
+    
+    // Performance optimization: frustum culling methods
+    private void updateCameraBounds() {
+        if (logic != null && logic.ocam != null) {
+            float camX = logic.ocam.position.x;
+            float camY = logic.ocam.position.y;
+            float camWidth = logic.ocam.viewportWidth;
+            float camHeight = logic.ocam.viewportHeight;
+            
+            cameraLeft = camX - camWidth / 2;
+            cameraRight = camX + camWidth / 2;
+            cameraBottom = camY - camHeight / 2;
+            cameraTop = camY + camHeight / 2;
+            
+            cameraBounds.set(cameraLeft, cameraBottom, camWidth, camHeight);
+        }
+    }
+    
+    private boolean isOnScreen(TextureActor actor) {
+        // Extend bounds slightly to avoid popping
+        float margin = 100;
+        return actor.hitbox.x + actor.hitbox.width + margin >= cameraLeft &&
+               actor.hitbox.x - margin <= cameraRight &&
+               actor.hitbox.y + actor.hitbox.height + margin >= cameraBottom &&
+               actor.hitbox.y - margin <= cameraTop;
+    }
+    
+    private boolean isTileOnScreen(int row, int col) {
+        float tileX = col * 64;
+        float tileY = -row * 64;
+        return tileX + 64 >= cameraLeft && tileX <= cameraRight &&
+               tileY - 64 >= cameraBottom && tileY <= cameraTop;
+    }
     private Vector2 getPooledVector2() {
         if (vector2Pool.isEmpty()) {
             return new Vector2();

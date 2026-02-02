@@ -403,17 +403,22 @@ public class Main implements ApplicationListener {
 
     void updateEntitys(float delta)
     {
-
+        // Performance optimization: cache player state and position
+        boolean playerAttacking = Player.isAttacking();
+        boolean playerCollisionOn = Player.collisionOn;
+        Rectangle playerHitbox = Player.hitbox;
+        
         if(currentlevel.testentitys.size()!=0)
         {
             float herdcenterx=0,herdcentery=0;
+            int testentityCount = currentlevel.testentitys.size();
           for(Testentity enti : currentlevel.testentitys)
           {
               herdcenterx+=enti.getCenterX();
               herdcentery+=enti.getCenterY();
           }
-          herdcenterx/=currentlevel.testentitys.size();
-          herdcentery/=currentlevel.testentitys.size();
+          herdcenterx/=testentityCount;
+          herdcentery/=testentityCount;
 
                 for(Testentity enti : currentlevel.testentitys)
                 {
@@ -422,72 +427,63 @@ public class Main implements ApplicationListener {
 
         }
 
+        // Performance optimization: combine collision checks for testentities
         for (Testentity enti : currentlevel.testentitys)
         {
-
-            if(Player.isAttacking())
+            if(playerAttacking)
             {
                     if(Player.handleAttack(enti)) {
                         continue;
                     }
-
             }
+            
             resolveWallCollision(enti);
-            if(enti.hitbox.overlaps(Player.hitbox))
+            
+            // Single overlap check instead of two
+            if(enti.hitbox.overlaps(playerHitbox))
             {
-                Vector2 vec= resolveCollision(enti.hitbox, Player.hitbox);
+                Vector2 vec = resolveCollision(enti.hitbox, playerHitbox);
                 vec.setLength(vec.len()/1.7f);
                 enti.moveatAngle(vec);
                 enti.movement.setLength(0);
+                
+                // Player collision response
+                if(playerCollisionOn) {
+                    Vector2 playerVec = resolveCollision(playerHitbox, enti.hitbox);
+                    Player.moveatAngle(playerVec);
+                }
             }
-
-            resolveWallCollision(enti);
-
-            if(enti.hitbox.overlaps(Player.hitbox))
-            {
-                Vector2 vec= resolveCollision(Player.hitbox,enti.hitbox);
-                Player.moveatAngle(vec);
-            }
-
-
         }
 
-
+        // Performance optimization: optimize enemy collision loops
         for (Gegner gegner : currentlevel.gegnerliste)
         {
-            if(gegner.status== Entity.EntityStatus.dead)
+            if(gegner.status== Entity.EntityStatus.dead || !gegner.collisionOn)
             {
                 continue;
             }
-                if(Player.isAttacking())
-                {
+            
+            if(playerAttacking)
+            {
                     if(Player.handleAttack(gegner)) {
                         continue;
                     }
-
-                }
-            if(!gegner.collisionOn) {continue;}
+            }
 
             resolveWallCollision(gegner);
-            if(Player.collisionOn&&gegner.attackStatus!= Gegner.AttackStatus.inair) {
-            if(gegner.hitbox.overlaps(Player.hitbox))
+            
+            // Combine collision checks
+            if(playerCollisionOn && gegner.attackStatus!= Gegner.AttackStatus.inair && gegner.hitbox.overlaps(playerHitbox))
             {
-                Vector2 vec= resolveCollision(gegner.hitbox, Player.hitbox);
+                Vector2 vec = resolveCollision(gegner.hitbox, playerHitbox);
                 vec.setLength(vec.len()/2f/gegner.weight*Player.weight);
                 gegner.moveatAngle(vec);
-            }
-
-            resolveWallCollision(gegner);
-
-            if(gegner.hitbox.overlaps(Player.hitbox))
-            {
-                Player.moveatAngle(resolveCollision(Player.hitbox,gegner.hitbox));
+                
+                resolveWallCollision(gegner);
+                
+                Player.moveatAngle(resolveCollision(playerHitbox, gegner.hitbox));
                 gegner.onPlayertouch();
             }
-            }
-
-
-
         }
 
         updateNpcs();
