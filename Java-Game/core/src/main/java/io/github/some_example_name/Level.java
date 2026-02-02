@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Polygon;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 
@@ -40,6 +41,10 @@ class Level {
     
     // Performance optimization: cache render queue capacity
     private int lastRenderQueueSize = 0;
+    
+    // Performance optimization: object pools for frequently used objects
+    private final ArrayList<Vector2> vector2Pool = new ArrayList<>();
+    private final ArrayList<Polygon> polygonPool = new ArrayList<>();
     Level(String[] rows, Main mainlogic) {
         this.rows = rows;
         this.logic = mainlogic;
@@ -93,24 +98,40 @@ class Level {
                 actor.destroy();
             }
             deleteList.clear();
+            
+            // Performance optimization: clear object pools
+            vector2Pool.clear();
+            polygonPool.clear();
         }
 
 
     public void act(float delta) {
          leveltime+=delta;
 
+        // Performance optimization: combine loops where possible
         for (Testentity testi : testentitys) {
             testi.act(delta);
         }
+        
         if(leveltime>0.6f)
         {
             for (Gegner gegner : gegnerliste) {
                gegner.act(delta);
             }
         }
-        for(TextureActor object: objects) {
-            object.act(delta);
+        
+        // Combine object and NPC loops
+        int objectCount = objects.size();
+        int npcCount = npcs.size();
+        for(int i = 0; i < Math.max(objectCount, npcCount); i++) {
+            if(i < objectCount) {
+                objects.get(i).act(delta);
+            }
+            if(i < npcCount) {
+                npcs.get(i).act(delta);
+            }
         }
+        
         for (Projectile projec : projectiles) {
             projec.act(delta);
         }
@@ -118,13 +139,12 @@ class Level {
         for( PartikelSprite particle : particles) {
             particle.act(delta);
         }
-        for (NPC npc : npcs) {
-            npc.act(delta);
-        }
+        
         applySeperation(delta);
         for (Teleporter testi : teleporters) {
             testi.act(delta);
         }
+        
         //items?
         for (TextureActor actor : deleteList) {
             actor.removeFromLevel();
@@ -607,6 +627,21 @@ class Level {
         entities.addAll(npcs);
         return entities;
     }
+    // Performance optimization: object pool methods
+    private Vector2 getPooledVector2() {
+        if (vector2Pool.isEmpty()) {
+            return new Vector2();
+        }
+        return vector2Pool.remove(vector2Pool.size() - 1);
+    }
+    
+    private void returnVector2ToPool(Vector2 vector) {
+        if (vector2Pool.size() < 50) { // Limit pool size
+            vector.set(0, 0);
+            vector2Pool.add(vector);
+        }
+    }
+    
     void applySeperation(float delta) {
         // Separation-Parameter
         float separationRadius = 80f; // Abstand, ab dem abgestoßen wird
@@ -619,7 +654,7 @@ class Level {
         for (int i = 0; i < entityCount; i++) {
             Entity enti = entities.get(i);
             // --- Separation-Kraft berechnen ---
-            Vector2 separation = new Vector2();
+            Vector2 separation = getPooledVector2();
             int count = 0;
             
             // Performance optimization: avoid redundant getEntities() call
@@ -628,10 +663,12 @@ class Level {
                 Entity other = entities.get(j);
                 float dist = enti.getdistance(other);
                 if (dist < separationRadius && dist > 0.00001f) {
-                    Vector2 diff = new Vector2(other.getDistanceVector(enti));
+                    Vector2 diff = getPooledVector2();
+                    diff.set(other.getDistanceVector(enti));
                     diff.nor();//normalise (setzt die Länge auf 1)
                     diff.scl(1f / dist); // Je näher, desto stärker
                     separation.add(diff);
+                    returnVector2ToPool(diff);
                     count++;
                 }
             }
@@ -640,6 +677,7 @@ class Level {
                 //enti.direction.add(separation);
                 enti.moveatAngle(separation);
             }
+            returnVector2ToPool(separation);
         }
     }
 

@@ -123,6 +123,7 @@ public class Main implements ApplicationListener {
             if( Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
                 if(gamestate == Gamestate.playing) {
                     setState("paused");
+                    uiStage.addActor(new PauseMenu(this));
                 } else if(gamestate == Gamestate.paused) {
                         //setState("resume");
                 } else {
@@ -284,7 +285,6 @@ public class Main implements ApplicationListener {
                 break;
             case "paused" :
                 gamestate = Gamestate.paused;
-                uiStage.addActor(new PauseMenu(this));
                 break;
             case "winscreen" :
                 gamestate = Gamestate.paused;
