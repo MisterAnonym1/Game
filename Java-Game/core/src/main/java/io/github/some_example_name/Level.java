@@ -23,20 +23,23 @@ class Level {
     private boolean[][] visited; //only for pathfinding
     MyTile[] walls;
     private final ArrayList<TextureActor> renderQueue = new ArrayList<>();
-    static ArrayList<Teleporter>  teleporters= new ArrayList<>();
-    static ArrayList<Testentity> testentitys= new ArrayList<>();
-    static ArrayList<Gegner> gegnerliste= new ArrayList<>();
-    static ArrayList<Projectile> projectiles= new ArrayList<>();
-    static ArrayList<PartikelSprite> particles= new ArrayList<>();
-    static Stage indicators;
-    static ArrayList<NPC> npcs= new ArrayList<>();
-    static ArrayList<TextureActor> objects= new ArrayList<>();//temporäre objekte die ganz hinten gedrawt werden
-    static ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
+    ArrayList<Teleporter>  teleporters= new ArrayList<>();
+    ArrayList<Testentity> testentitys= new ArrayList<>();
+    ArrayList<Gegner> gegnerliste= new ArrayList<>();
+    ArrayList<Projectile> projectiles= new ArrayList<>();
+    ArrayList<PartikelSprite> particles= new ArrayList<>();
+    Stage indicators;
+    ArrayList<NPC> npcs= new ArrayList<>();
+    ArrayList<TextureActor> objects= new ArrayList<>();//temporäre objekte die ganz hinten gedrawt werden
+    ArrayList<TextureActor> deleteList= new ArrayList<>(); // alle Objekte die hier hinzugefügt werden, werden am Ende von act() aus ihren Listen removed/deleted
     //ArrayList<Item> itemlist = new ArrayList<Item>();
     Main logic;
     float xcoplayer;
     float ycoplayer;
     float leveltime=0f;
+    
+    // Performance optimization: cache render queue capacity
+    private int lastRenderQueueSize = 0;
     Level(String[] rows, Main mainlogic) {
         this.rows = rows;
         this.logic = mainlogic;
@@ -155,6 +158,14 @@ class Level {
         }
 
         renderQueue.clear();
+        
+        // Performance optimization: ensure capacity to avoid reallocations
+        int expectedSize = npcs.size() + testentitys.size() + gegnerliste.size();
+        if (expectedSize > lastRenderQueueSize) {
+            renderQueue.ensureCapacity(expectedSize);
+            lastRenderQueueSize = expectedSize;
+        }
+        
         //renderQueue.addAll(objects);
         renderQueue.addAll(npcs);
         renderQueue.addAll(testentitys);
@@ -164,7 +175,7 @@ class Level {
         for(TextureActor actor : renderQueue) {
             actor.draw(batch, delta);
         }
-        logic.Player.draw(batch,shape, delta==0?Gdx.graphics.getDeltaTime():delta);
+        logic.Player.draw(batch,shape, delta==0&&logic.gamestate!=Gamestate.paused?Gdx.graphics.getDeltaTime():delta);
 
         for (Projectile projec : projectiles) {
             projec.draw(batch,delta);
@@ -172,17 +183,18 @@ class Level {
         for(PartikelSprite particle : particles) {
             particle.draw(batch,delta);
         }
-        // | Gegner im Sprung (mit Y-Offset)
-        // V
-        ArrayList<Gegner> gegnerMitOffset = new ArrayList<>();
+        // Performance optimization: reuse ArrayList for enemies with Y-offset
+        ArrayList<Gegner> gegnerMitOffset = new ArrayList<>(gegnerliste.size());
         for (Gegner geg : gegnerliste) {
             if (geg.textureYoffset >0) {
                 gegnerMitOffset.add(geg);
             }
         }
-        gegnerMitOffset.sort(Comparator.comparing(geg -> geg.textureYoffset));
-        for (Gegner geg : gegnerMitOffset) {
-            geg.draw(batch, delta);
+        if (!gegnerMitOffset.isEmpty()) {
+            gegnerMitOffset.sort(Comparator.comparing(geg -> geg.textureYoffset));
+            for (Gegner geg : gegnerMitOffset) {
+                geg.draw(batch, delta);
+            }
         }
 
 
@@ -447,7 +459,7 @@ class Level {
 
 
     public ArrayList<MyTile> getAdjacentWalls(float x, float y) {
-        ArrayList<MyTile> adjacentWalls = new ArrayList<>();
+        ArrayList<MyTile> adjacentWalls = new ArrayList<>(9); // Max 9 adjacent tiles
         int column = MyTile.xToColumn(x);
         int row = MyTile.yToRow(y);
 
@@ -599,12 +611,21 @@ class Level {
         // Separation-Parameter
         float separationRadius = 80f; // Abstand, ab dem abgestoßen wird
         float separationStrength = 2000f; // Stärke der Abstoßung
-        for (Entity enti : getEntities()) {
+        
+        // Performance optimization: get entities once and reuse
+        ArrayList<Entity> entities = getEntities();
+        int entityCount = entities.size();
+        
+        for (int i = 0; i < entityCount; i++) {
+            Entity enti = entities.get(i);
             // --- Separation-Kraft berechnen ---
             Vector2 separation = new Vector2();
             int count = 0;
-            for (Entity other : getEntities()) {
-                if (other == enti) continue;
+            
+            // Performance optimization: avoid redundant getEntities() call
+            for (int j = 0; j < entityCount; j++) {
+                if (i == j) continue;
+                Entity other = entities.get(j);
                 float dist = enti.getdistance(other);
                 if (dist < separationRadius && dist > 0.00001f) {
                     Vector2 diff = new Vector2(other.getDistanceVector(enti));
@@ -619,7 +640,6 @@ class Level {
                 //enti.direction.add(separation);
                 enti.moveatAngle(separation);
             }
-
         }
     }
 

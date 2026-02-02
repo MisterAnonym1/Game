@@ -33,7 +33,7 @@ public class NPC extends Entity
     Animation<Texture> bubble;
     NPC(float x, float y, String filepath, String fileBackround, int scriptindex,Main log)
     {
-        super(x, y, filepath,log.Player);
+        super(x, y, filepath,log.Player,log.currentlevel);
         //addAction(Actions.delay(1));
         backroundfilepath=fileBackround;
         viewport=Main.uiStage.getViewport();
@@ -87,7 +87,7 @@ public class NPC extends Entity
 
     @Override
     public void removeFromLevel() {
-        Level.npcs.remove(this);
+        curlevel.npcs.remove(this);
     }
 
     public void drawInConversation(Batch batch)

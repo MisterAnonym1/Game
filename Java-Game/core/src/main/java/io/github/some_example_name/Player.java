@@ -39,10 +39,10 @@ class Player extends Entity
     Displaytext coindisplay;
     float smokedelay;
 
-    Player(float x, float y, Viewport view) {
+    Player(float x, float y, Viewport view,Main logic) {
 
 
-        super(x, y,new TextureRegion(new Texture("Se_Player_ja.jpg"),0,0,200,180),null);
+        super(x, y,new TextureRegion(new Texture("Se_Player_ja.jpg"),0,0,200,180),null,logic.currentlevel);
         toBack();
         player=this;
         weight = 0.5f;

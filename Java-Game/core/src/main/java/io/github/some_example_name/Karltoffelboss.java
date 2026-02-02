@@ -128,7 +128,7 @@ public class Karltoffelboss extends Boss{
         if(potatodelay<=0&& player.curhealth<player.maxhealth/2f&&  aggressionLevel<140)
         {
             for (int i = 0; i < MathUtils.random(4,7); i++) {
-                Level.objects.add(new Healing_potato(getHitboxCenterX()+MathUtils.random(-400,400), getHitboxCenterY()+MathUtils.random(-400,400), MathUtils.random(10,20), level));
+                level.objects.add(new Healing_potato(getHitboxCenterX()+MathUtils.random(-400,400), getHitboxCenterY()+MathUtils.random(-400,400), MathUtils.random(10,20), level));
             }
             potatodelay=20;
         }
@@ -286,10 +286,10 @@ public class Karltoffelboss extends Boss{
                              //texture=new TextureRegion(new Texture("Karltoffelzwischenform.png"));
                              invincible=true;
                              recenthits=0;
-                             PartikelSprite smokepar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,true);
+                             PartikelSprite smokepar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAuraAnimation,true,level);
                              smokepar.setSize(hitbox.width*1.8f,hitbox.height*1.8f);
                              smokepar.centerAt(getHitboxCenterX()-10,getHitboxCenterY()+20);
-                             Level.particles.add(smokepar);
+                             level.particles.add(smokepar);
                          }
                          else{shockwaveAttack(0.3f,100);
                              recenthits= Math.max(recenthits-1,0);}

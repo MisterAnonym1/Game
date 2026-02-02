@@ -17,38 +17,27 @@ class PartikelSprite extends TextureActor
      Animation<TextureRegion> animation;
     float animationstateTime;
     private boolean useAnimation = false;
-
-    PartikelSprite(float x, float y, String filepath, float vanishInSecs)
+    Level level;
+    PartikelSprite(float x, float y, String filepath, float vanishInSecs,Level level)
     {
         super(filepath);
+        this.level=level;
         //setPosition(x,y);
         centerAt(x,y);
         delay =  vanishInSecs;
     }
-    PartikelSprite(float x, float y, TextureRegion tex, float vanishInSecs)
-    {
-        super(tex);
-        //setPosition(x,y);
-        centerAt(x,y);
-        delay =  vanishInSecs;
-    }
-    PartikelSprite(float x,float y,String filepath ,float vanishInSecs,float xTexture,float yTexture,float width,float heigth)
-    {
-        super(filepath, xTexture, yTexture, width, heigth);
-        //setPosition(x,y);
-        centerAt(x,y);
-        delay =  vanishInSecs;
-    }
-    PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation, float vanishInSecs) {
+
+    PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation, float vanishInSecs,Level level) {
         super(animation.getKeyFrame(0f));
+        this.level=level;
         this.animation = animation;
         this.useAnimation = true;
         centerAt(centerx, centery);
         setOrigin(centerx-getX(), centery-getY());
         delay = vanishInSecs;
     }
-    PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation,boolean playOnce) {
-        this(centerx, centery, animation, playOnce ? animation.getAnimationDuration() : Integer.MAX_VALUE); // Default delay if not specified
+    PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation,boolean playOnce,Level level) {
+        this(centerx, centery, animation, playOnce ? animation.getAnimationDuration() : Integer.MAX_VALUE,level); // Default delay if not specified
     }
 
     @Override
@@ -68,12 +57,12 @@ class PartikelSprite extends TextureActor
         }
         if(delay <= 0)
         {
-            Level.deleteList.add(this);
+            level.deleteList.add(this);
         }
     }
     @Override
     public void removeFromLevel() {
-        Level.particles.remove(this);
+        level.particles.remove(this);
     }
     // Hilfsmethode, um das TextureRegion der Basisklasse zu setzen
     private void setRegion(TextureRegion region) {
@@ -94,26 +83,26 @@ class Projectile extends PartikelSprite
     int damage = 20;
     boolean collisionOn=true,isacting =false;
     static float hitboxalpha = 0;;
-    Projectile(float x, float y, String filepath, Vector2 velocity)
+    Projectile(float x, float y, String filepath, Vector2 velocity,Level level)
     {
-        super(x, y,filepath, 3);
+        super(x, y,filepath, 3,level);
 
 
         movement = velocity;
         //move(movement.x, movement.y);
     }
-    Projectile(float centerx, float centery, String filepath, Vector2 velocity, int dmg)
+    Projectile(float centerx, float centery, String filepath, Vector2 velocity, int dmg,Level level)
     {
-        super(centerx, centery, filepath, 3);
+        super(centerx, centery, filepath, 3,level);
 
         movement = velocity;
         //move(movement.x, movement.y);
 
         setdamage(dmg);
     }
-    Projectile(float centerx, float centery, Animation<TextureRegion> animation, Vector2 velocity, int dmg)
+    Projectile(float centerx, float centery, Animation<TextureRegion> animation, Vector2 velocity, int dmg, Level level)
     {
-        super(centerx, centery, animation, true);
+        super(centerx, centery, animation, true, level);
 
         movement = velocity;
         //move(movement.x, movement.y);
@@ -135,15 +124,15 @@ class Projectile extends PartikelSprite
 
     void onHit()
     {
-        Level.deleteList.add(this);
+        level.deleteList.add(this);
     }
     void onHit(Entity enti)
     {
-        Level.deleteList.add(this);
+        level.deleteList.add(this);
     }
     @Override
     public void removeFromLevel() {
-        Level.projectiles.remove(this);
+        level.projectiles.remove(this);
     }
 
     void reducemovement(float delta){}
@@ -155,9 +144,9 @@ class FireBall extends Projectile
     static float speed=370;
     Gegner origin;
     static Animation<TextureRegion> explosion=Animator.getAnimation("Explosions.png",9,1,1,9,0.1f); //Variable zum speichern der letzten abgespielten animation
-    FireBall(float x,float y, Vector2 vel, Gegner origin)
+    FireBall(float x,float y, Vector2 vel, Gegner origin,Level level)
     {
-        super(x,y,"potato.png",vel,20);
+        super(x,y,"potato.png",vel,20,level);
         movement.setLength(speed);
         scale(2.5f);
         this.origin = origin;
@@ -194,7 +183,7 @@ class FireBall extends Projectile
         addAction(Actions.after(new Action() {
             @Override
             public boolean act(float delta) {
-                Level.deleteList.add(fireBall);
+                level.deleteList.add(fireBall);
                 return true;
             }
         }));
@@ -212,8 +201,8 @@ class FireBall extends Projectile
 }
 class Shockwave extends PartikelSprite {
 
-    Shockwave(float centerx, float centery) {
-        super(centerx, centery,  Animator.getAnimation("small shockwave.png", 9, 9, 8, 78, 0.02f), true);
+    Shockwave(float centerx, float centery,Level  level) {
+        super(centerx, centery,  Animator.getAnimation("small shockwave.png", 9, 9, 8, 78, 0.02f), true,level);
         setSize(106*2,106);
         centerAt(centerx, centery);
         setOrigin(centerx-getX(), centery-getY());
@@ -234,33 +223,13 @@ class Shockwave extends PartikelSprite {
 
 
     public void onTouch(Entity enti) {
-        String s="IVXLCDM";
-        Map<Character,Integer> map= new HashMap<>();
 
-        map.put('I',1);
-        map.put('V',5);
-        map.put('X',10);
-        map.put('L',50);
-        map.put('C',100);
-        map.put('D',500);
-        map.put('M',1000);
-        int output=0;
-        int lastnum=0;
-        s.replaceAll(s.substring(0,s.length()),"");
-        loop: for(int i=0;i<s.length();i++)
-        {
-            int cur=map.get(s.charAt(i));
-
-            output+=(cur<lastnum? -cur:cur);
-            lastnum=cur;
-            break loop;
-        }
 
     }
 
     @Override
     public void removeFromLevel() {
-       Level.objects.remove(this);
+       level.objects.remove(this);
     }
 }
 
@@ -270,9 +239,9 @@ class WeedyBall extends Projectile
     static float speed=400;
     Gegner origin;
     static Animation<TextureRegion>  projectileAnimation= Animator.getAnimation("Rettich-sheet.png",7,6,15,15,1f);
-    WeedyBall(float x,float y, Vector2 vel, Gegner origin)
+    WeedyBall(float x,float y, Vector2 vel, Gegner origin,Level level)
     {
-        super(x,y,projectileAnimation,vel,8);
+        super(x,y,projectileAnimation,vel,8,level);
         movement.setLength(speed);
         scale(1.6f);
         this.origin = origin;
@@ -304,7 +273,7 @@ class WeedyBall extends Projectile
             origin.damagePlayer(damage);
         }else{
             enti.damageby(damage);}
-        Level.deleteList.add(this);
+        level.deleteList.add(this);
 
 
 

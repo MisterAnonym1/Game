@@ -22,6 +22,19 @@ import java.util.IllegalFormatCodePointException;
 
 enum Gamestate { startmenu, paused, playing, dead, dialouge, loading }
 public class Main implements ApplicationListener {
+    private static Main instance;
+    
+    public static Main getInstance() {
+        if (instance == null) {
+            instance = new Main();
+        }
+        return instance;
+    }
+    
+    private Main() {
+        // Private constructor to prevent instantiation
+    }
+    
     ArrayList<MyTile> loadedwalls = new ArrayList<>();
     ShapeRenderer shape;
     Music music;
@@ -67,7 +80,7 @@ public class Main implements ApplicationListener {
         invManager = new InventoryManager();
        setToDefaultCursor();
 
-        Player = new Player(400,-250, viewport);
+        Player = new Player(400,-250, viewport,this);
 
         ocam.position.set(ocam.viewportWidth / 2f, ocam.viewportHeight / 2f, 0);
         //map = new TmxMapLoader().load("Test Karte 2.tmx");
@@ -106,10 +119,16 @@ public class Main implements ApplicationListener {
     }
 
     private void input() {
-        float delta = Gdx.graphics.getDeltaTime();
         if(gamestate!=Gamestate.dialouge&&gamestate!=Gamestate.loading) {
             if( Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)){
-            Menu.showQuitConfirmation(this);}
+                if(gamestate == Gamestate.playing) {
+                    setState("paused");
+                } else if(gamestate == Gamestate.paused) {
+                        //setState("resume");
+                } else {
+                    Menu.showQuitConfirmation(this);
+                }
+            }
             else if(Gdx.input.isKeyJustPressed(Input.Keys.R)&&Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT)) {
                 Menu.showRestartConfirmation(this);
             }
@@ -130,17 +149,18 @@ public class Main implements ApplicationListener {
 
         float delta = Gdx.graphics.getDeltaTime();
         uiStage.act(delta);
-        delta= Math.min(delta,1/30.0f);
-        delta=delta*deltaFactor;
+        float cappedDelta = Math.min(delta,1/30.0f);
+        float processedDelta = cappedDelta*deltaFactor;
+        
         if(gamestate!=Gamestate.loading&&gamestate!=Gamestate.paused&&gamestate!=Gamestate.startmenu){DataCenter.updateTimeplayed();}
       if(gamestate == Gamestate.playing)
       {
          updatewalls();
-         Player.act(delta==0?Gdx.graphics.getDeltaTime():delta);
+         Player.act(processedDelta==0?delta:processedDelta);
           //Player.stayinWorldbounds();
 
-         currentlevel.act(delta);
-         updateEntitys(delta);
+         currentlevel.act(processedDelta);
+         updateEntitys(processedDelta);
 
          checkplayercollision();
          Player.stayinWorldbounds();
@@ -177,9 +197,15 @@ public class Main implements ApplicationListener {
 
     private void draw() {
         float delta = Gdx.graphics.getDeltaTime();
-        delta= Math.min(delta,1/30.0f);
-        delta=delta*deltaFactor;
-
+        float processedDelta;
+        
+        if(gamestate==Gamestate.paused)
+        { processedDelta=0;}
+        else{
+            float cappedDelta = Math.min(delta, 1 / 30.0f);
+            processedDelta = cappedDelta * deltaFactor;
+        }
+        
         if(gamestate==Gamestate.loading){ScreenUtils.clear(Color.WHITE);}
         else{
         ScreenUtils.clear(Color.BLACK);}
@@ -192,8 +218,7 @@ public class Main implements ApplicationListener {
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
 
-        float worldWidth = Gdx.graphics.getWidth();
-        float worldHeight = Gdx.graphics.getHeight();
+
         spriteBatch.setColor(1,1,1,1);
 
 
@@ -202,7 +227,7 @@ public class Main implements ApplicationListener {
 
         if(gamestate == Gamestate.playing||gamestate ==Gamestate.dead||gamestate== Gamestate.paused)
         {
-        currentlevel.draw(spriteBatch,shape,delta);
+        currentlevel.draw(spriteBatch,shape,processedDelta);
         //Player wird im Level gedrawt
         }
         spriteBatch.end();
@@ -210,7 +235,7 @@ public class Main implements ApplicationListener {
         uiStage.draw();
         if(gamestate==Gamestate.dialouge)
         {
-            dialougnpc.act(Gdx.graphics.getDeltaTime());
+            dialougnpc.act(delta);
             dialougnpc.drawInConversation(uiStage.getBatch());
         }
 
@@ -259,6 +284,7 @@ public class Main implements ApplicationListener {
                 break;
             case "paused" :
                 gamestate = Gamestate.paused;
+                uiStage.addActor(new PauseMenu(this));
                 break;
             case "winscreen" :
                 gamestate = Gamestate.paused;
@@ -553,7 +579,7 @@ public class Main implements ApplicationListener {
                 }
             }
         }
-        for(TextureActor object: Level.objects)
+        for(TextureActor object: currentlevel.objects)
         {
             if( Player.hitbox.overlaps(object.hitbox))
             {

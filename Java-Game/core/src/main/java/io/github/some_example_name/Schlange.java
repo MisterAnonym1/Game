@@ -29,7 +29,7 @@ class Schlange extends Gegner
         super.act(delta);
         playerinview();
         if(curhealth <= 0) {
-              Level.deleteList.add(this);
+              curlevel.deleteList.add(this);
 
         }
         else {

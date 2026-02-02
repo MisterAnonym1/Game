@@ -22,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 class Entity extends TextureActor
 {
+    Level curlevel;
     float maxhealth, curhealth;
     float speed, directionline=0,shadowscale=1;
     boolean  ismoving;
@@ -42,9 +43,10 @@ class Entity extends TextureActor
      Animation<TextureRegion> smokeAnimation=Animator.getAnimation("Smoke5.png",11,15,68,75,0.08f);
     public enum EntityStatus { inactiv, idle, engaging,dead }
 
-    Entity(float x, float y, TextureRegion tex, Player player)
+    Entity(float x, float y, TextureRegion tex, Player player,Level level)
     {
         super(tex);
+        this.curlevel=level;
         spawnx = x;
         spawny = y;
         this.player=player;
@@ -56,9 +58,9 @@ class Entity extends TextureActor
         status = EntityStatus.inactiv;
         setPosition(x,y);
     }
-    Entity(float x, float y, String filepath,Player player)
+    Entity(float x, float y, String filepath,Player player,Level level)
     {
-         this(x,y,new TextureRegion(new Texture(filepath)), player);
+         this(x,y,new TextureRegion(new Texture(filepath)), player,level);
     }
 
 void reset()
@@ -168,17 +170,17 @@ void reset()
     }
     void onDeath()
     {
-        Level.deleteList.add(this);
+        curlevel.deleteList.add(this);
         deathEffect();
     }
     void deathEffect()
     {
         final float cx= getHitboxCenterX();
         final float cy= getHitboxCenterY();
-        PartikelSprite deathpar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAnimation,true);
+        PartikelSprite deathpar=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),smokeAnimation,true,curlevel);
         deathpar.setSize(hitbox.width*3f,hitbox.height*3f);
         deathpar.centerAt(cx,cy);
-        Level.particles.add(deathpar);
+        curlevel.particles.add(deathpar);
     }
 
 

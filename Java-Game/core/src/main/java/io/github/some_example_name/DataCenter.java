@@ -22,8 +22,8 @@ public class DataCenter
     public boolean areEnemysRemaining()
     {
         if(level==null)return false;
-        if(Level.gegnerliste.isEmpty())return false;
-        for(Gegner geg: Level.gegnerliste)
+        if(level.gegnerliste.isEmpty())return false;
+        for(Gegner geg: level.gegnerliste)
         {
             if(geg.getSignature()!=99)
             {

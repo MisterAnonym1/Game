@@ -9,8 +9,8 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 
 public class Coin extends PartikelSprite {
     private int amount;
-    public Coin(float cx, float cy,int amount) {
-        super(cx,cy, Animator.getAnimation(new TextureRegion(new Texture("Coin-rotating.png")), 8, 1, 0.07f),false);
+    public Coin(float cx, float cy,int amount,Level level) {
+        super(cx,cy, Animator.getAnimation(new TextureRegion(new Texture("Coin-rotating.png")), 8, 1, 0.07f),false,level);
         this.amount = amount;
         setColor(1,1,1,0.1f);
         addAction(Actions.fadeIn(0.2f));
@@ -32,7 +32,7 @@ public class Coin extends PartikelSprite {
     }
     @Override
     public void removeFromLevel() {
-        Level.objects.remove(this);
+        level.objects.remove(this);
     }
 
 
@@ -41,8 +41,8 @@ public class Coin extends PartikelSprite {
             Main.invManager.addValueByKey("Coins", amount);
             SoundManager.stop("coin_pickup");
             SoundManager.play("coin_pickup",0.11f, MathUtils.random(0.9f,1.1f));
-            Level.indicators.addActor(new PopUpText("+" + amount, getX() + getWidth() /2, getY() + getHeight(), 19, Color.YELLOW, Color.BLACK));
-            Level.deleteList.add(this);
+            level.indicators.addActor(new PopUpText("+" + amount, getX() + getWidth() /2, getY() + getHeight(), 19, Color.YELLOW, Color.BLACK));
+            level.deleteList.add(this);
         }
     }
 }

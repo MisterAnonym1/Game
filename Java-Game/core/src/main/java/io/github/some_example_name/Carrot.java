@@ -53,7 +53,7 @@ public class Carrot extends Gegner
             new Action() {
                 @Override
                 public boolean act(float delta) {
-                    Level.deleteList.add(car);
+                    curlevel.deleteList.add(car);
                     spawnCoins();
 
                     return true;

@@ -47,7 +47,7 @@ class Mage extends Gegner
                 new Action() {
                     @Override
                     public boolean act(float delta) {
-                        Level.deleteList.add(mag);
+                        curlevel.deleteList.add(mag);
                         spawnCoins();
 
                         return true;
@@ -88,7 +88,7 @@ class Mage extends Gegner
 
 
         //Projectile expose = new FireBall(getCenterX(),getCenterY(),  distancevec,this);
-        Projectile expose = new WeedyBall(getHitboxCenterX(),getHitboxCenterY(),  distancevec,this);
+        Projectile expose = new WeedyBall(getHitboxCenterX(),getHitboxCenterY(),  distancevec,this,curlevel);
 
         logic.currentlevel.projectiles.add(expose);
 

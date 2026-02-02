@@ -329,7 +329,6 @@ class BootingScreen extends Menu
     }
 }
 
-
  class Deathscreen extends Menu {
     AdvancedTextButton knopf;
     ShapeRenderer shape;
@@ -780,6 +779,180 @@ class NewLevelScreen extends Menu {
 }
 
 
+class PauseMenu extends Menu {
+    AdvancedTextButton resumeButton;
+    AdvancedTextButton settingsButton;
+    AdvancedTextButton restartButton;
+    AdvancedTextButton quitButton;
+    ShapeRenderer shape;
+    private Window settingsWindow;
+    
+    PauseMenu(Main main) {
+        super();
+        this.main = main;
+        shape = new ShapeRenderer();
+        delay=0.1f;
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.6f, 55, 0.02f, "PAUSE");
+        textbox.setColor(Color.WHITE);
+        
+        resumeButton = new AdvancedTextButton("Resume", ScreenWidth/2f, 280, 3, Color.SKY, Color.WHITE);
+        resumeButton.getLabel().setFontScale(2f);
+        resumeButton.setOnUp(() -> this.destroy("resume"));
+        Main.uiStage.addActor(resumeButton);
+        
+        settingsButton = new AdvancedTextButton("Settings", ScreenWidth/2f, 220, 3, Color.GOLD, Color.WHITE);
+        settingsButton.getLabel().setFontScale(2f);
+        settingsButton.setOnUp(this::showSettingsWindow);
+        Main.uiStage.addActor(settingsButton);
+        
+        restartButton = new AdvancedTextButton("Restart", ScreenWidth/2f, 160, 3, Color.ORANGE, Color.WHITE);
+        restartButton.getLabel().setFontScale(2f);
+        restartButton.setOnUp(() -> showRestartConfirmation(main));
+        Main.uiStage.addActor(restartButton);
+        
+        quitButton = new AdvancedTextButton("Quit", ScreenWidth/2f, 100, 3, Color.RED, Color.WHITE);
+        quitButton.getLabel().setFontScale(2f);
+        quitButton.setOnUp(() -> showQuitConfirmation(main));
+        Main.uiStage.addActor(quitButton);
+        
+        setColor(1, 1, 1, 0);
+        addAction(Actions.fadeIn(0.3f));
+    }
+    
+    private void showSettingsWindow() {
+        if (main.inPopUpWindow) return;
+        main.inPopUpWindow = true;
+        
+        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        settingsWindow = new Window("", skin);
+        settingsWindow.setModal(true);
+        settingsWindow.setMovable(false);
+        settingsWindow.setResizable(false);
+        settingsWindow.setSize(600, 400);
+        settingsWindow.setPosition(ScreenWidth/2f - 300, ScreenHeight/2f - 200);
+        
+        Table table = new Table(skin);
+        table.setFillParent(true);
+        table.defaults().pad(15);
+        
+        Label title = new Label("Game Settings", skin);
+        title.setFontScale(2f);
+        title.setColor(Color.CYAN);
+        table.add(title).colspan(2).center().padBottom(30);
+        table.row();
+        
+        // Master Volume
+        Label volumeLabel = new Label("Master Volume:", skin);
+        volumeLabel.setFontScale(1.5f);
+        Slider volumeSlider = new Slider(0, 1, 0.1f, false, skin);
+        volumeSlider.setValue(main.music.getVolume());
+        volumeSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                main.music.setVolume(volumeSlider.getValue());
+            }
+        });
+        table.add(volumeLabel).width(200).height(40);
+        table.add(volumeSlider).width(200).height(40);
+        table.row();
+        
+        // Sound Effects
+        Label sfxLabel = new Label("Sound Effects:", skin);
+        sfxLabel.setFontScale(1.5f);
+        Slider sfxSlider = new Slider(0, 1, 0.1f, false, skin);
+        sfxSlider.setValue(0.7f); // Default SFX volume
+        table.add(sfxLabel).width(200).height(40);
+        table.add(sfxSlider).width(200).height(40);
+        table.row();
+        
+        // Fullscreen Toggle
+        Label fullscreenLabel = new Label("Fullscreen:", skin);
+        fullscreenLabel.setFontScale(1.5f);
+        CheckBox fullscreenCheckbox = new CheckBox("", skin);
+        fullscreenCheckbox.setChecked(Gdx.graphics.isFullscreen());
+        fullscreenCheckbox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (fullscreenCheckbox.isChecked()) {
+                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                } else {
+                    Gdx.graphics.setWindowedMode(1024, 576);
+                }
+            }
+        });
+        table.add(fullscreenLabel).width(200).height(40);
+        table.add(fullscreenCheckbox).width(200).height(40);
+        table.row();
+        
+        // Close Button
+        TextButton closeButton = new TextButton("Close", skin);
+        closeButton.getLabel().setFontScale(1.7f);
+        closeButton.setColor(Color.SKY);
+        closeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                settingsWindow.remove();
+                main.inPopUpWindow = false;
+            }
+        });
+        table.add(closeButton).colspan(2).center().padTop(20).width(150).height(50);
+        
+        settingsWindow.add(table).expand().fill();
+        Main.uiStage.addActor(settingsWindow);
+    }
+    
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        batch.end();
+        
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shape.setProjectionMatrix(batch.getProjectionMatrix());
+        
+        shape.begin(ShapeRenderer.ShapeType.Filled);
+        shape.setColor(new Color(0.1f, 0.1f, 0.2f, 0.8f * getColor().a));
+        shape.rect(0, 0, ScreenWidth, ScreenHeight);
+        shape.end();
+        
+        batch.begin();
+        textbox.draw(batch, getColor().a);
+        resumeButton.draw(batch, getColor().a);
+        settingsButton.draw(batch, getColor().a);
+        restartButton.draw(batch, getColor().a);
+        quitButton.draw(batch, getColor().a);
+    }
+    
+    void destroy(String state) {
+        main.setState(state);
+        resumeButton.remove();
+        settingsButton.remove();
+        restartButton.remove();
+        quitButton.remove();
+        if (settingsWindow != null && settingsWindow.hasParent()) {
+            settingsWindow.remove();
+        }
+        remove();
+    }
+    
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        if(delay<=0){
+             if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+               //destroy("resume");
+            }
+        }else
+        {
+            delay-=delta;
+        }
+        textbox.act(delta);
+        resumeButton.act(delta);
+        settingsButton.act(delta);
+        restartButton.act(delta);
+        quitButton.act(delta);
+    }
+}
+
 class Startmenu extends Menu
 {
     TextureRegion hintergrund;
@@ -1050,7 +1223,7 @@ class DevMenu extends Menu
 
            }
            if (Gdx.input.isKeyJustPressed(Input.Keys.M) ) {
-               Level.objects.add(new Coin(main.Player.getHitboxCenterX(), main.Player.getHitboxCenterY(), 50));
+               main.currentlevel.objects.add(new Coin(main.Player.getHitboxCenterX(), main.Player.getHitboxCenterY(), 50,main.currentlevel));
 
            }
            if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {

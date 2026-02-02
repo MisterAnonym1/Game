@@ -93,10 +93,10 @@ public class Testentity extends Gegner {
     @Override
     public void removeFromLevel() {
         if(evil){
-           Level.gegnerliste.remove(this);
+           curlevel.gegnerliste.remove(this);
         }
         else{
-        Level.testentitys.remove(this);}
+        curlevel.testentitys.remove(this);}
     }
 
     @Override
@@ -182,7 +182,7 @@ public class Testentity extends Gegner {
         if(evil&&!exploded){
             spawnCoins();
         }
-        Level.deleteList.add(this);
+        curlevel.deleteList.add(this);
         deathEffect();
     }
 
@@ -227,7 +227,7 @@ public class Testentity extends Gegner {
 
                 pathCountdown -= delta;
                 if (pathCountdown <= 0) {
-                    pathCountdown = MathUtils.random() * 3.5f + 1.5f+ MathUtils.random()*Level.testentitys.size()/2;
+                    pathCountdown = MathUtils.random() * 3.5f + 1.5f+ MathUtils.random()*curlevel.testentitys.size()/2;
                     setrandompoint(strivingx, strivingy, 140f);
                 }
             }

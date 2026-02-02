@@ -16,10 +16,11 @@ public class MyTile extends Sprite {
     Polygon hitbox;
     MyTile previoustile;
     boolean obstructed;
-    ArrayList<TextureRegion> additionalTextures = new ArrayList<>();
+    ArrayList<TextureRegion> additionalTextures; // Only create when needed
+    
     public MyTile(int column, int row, String filepath, boolean hasHitbox) {
         this(column, row, TextureCache.getRegion(filepath), hasHitbox);
-        if(filepath=="own Watertile 2.png")
+        if("own Watertile 2.png".equals(filepath)) // Performance: use .equals() instead of ==
         {
             setColor(new Color(0.5f,0.5f,0.3f,1));
         }
@@ -44,6 +45,9 @@ public class MyTile extends Sprite {
         }
     }
     void setAdditionalTextures(ArrayList<TextureRegion> additionalTextures) {
+        if (this.additionalTextures == null) {
+            this.additionalTextures = new ArrayList<>();
+        }
         this.additionalTextures = additionalTextures;
     }
 
@@ -63,11 +67,12 @@ public class MyTile extends Sprite {
 
     @Override
     public void draw(Batch batch, float delta) {
+        if (additionalTextures != null && !additionalTextures.isEmpty()) {
             for (TextureRegion tex : additionalTextures) {
                 batch.draw(tex, getX(), getY(), getWidth(), getHeight());
             }
+        }
         super.draw(batch);
-
     }
 
     void drawHitbox(ShapeRenderer shape) {

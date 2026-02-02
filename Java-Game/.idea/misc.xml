@@ -3,5 +3,5 @@
   <component name="ProjectResources">
     <resource url="https://www.gwtproject.org/doctype/2.11.0/gwt-module.dtd" location="$PROJECT_DIR$/html/src/main/resources/dtds/gwt-module.dtd" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="corretto-21" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" project-jdk-name="corretto-21" project-jdk-type="JavaSDK" />
 </project>

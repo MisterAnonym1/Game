@@ -17,7 +17,6 @@ import java.util.ArrayList;
 abstract class Gegner extends Entity
 {
 
-    Level curlevel;
     float pathCountdown= 0;
     float attackdelay = 0;
     float attackdelay2 = 0;
@@ -46,8 +45,7 @@ abstract class Gegner extends Entity
     }
     Gegner(float x, float y, Main logic, TextureRegion texture)
     {
-        super(x, y, texture, logic.Player);
-        curlevel = logic.currentlevel;
+        super(x, y, texture, logic.Player,logic.currentlevel);
         this.logic = logic;
         maxhealth = 100;
         curhealth = 100;
@@ -95,7 +93,7 @@ void reset()
 
     @Override
     boolean damageby(float damage) {
-        Level.indicators.addActor(new PopUpText("-" + (int) damage, (player.getCenterX()<getCenterX()?hitbox.x:hitbox.x+hitbox.width), getHitboxCenterY()));
+        curlevel.indicators.addActor(new PopUpText("-" + (int) damage, (player.getCenterX()<getCenterX()?hitbox.x:hitbox.x+hitbox.width), getHitboxCenterY()));
         return super.damageby(damage);
     }
 
@@ -191,10 +189,10 @@ void reset()
         for(int i=1; i<objectcount; i++)
         {
             combinedvalue-=value;
-            Level.objects.add(new Coin(getHitboxCenterX()+MathUtils.random(-hitbox.width/2,hitbox.width/2), getHitboxCenterY()+MathUtils.random(-hitbox.height/2,hitbox.height/2), value));
+            curlevel.objects.add(new Coin(getHitboxCenterX()+MathUtils.random(-hitbox.width/2,hitbox.width/2), getHitboxCenterY()+MathUtils.random(-hitbox.height/2,hitbox.height/2), value,curlevel));
         }
 
-        Level.objects.add(new Coin(getHitboxCenterX()+MathUtils.random(-hitbox.width/2,hitbox.width/2), getHitboxCenterY()+MathUtils.random(-hitbox.height/2,hitbox.height/2), combinedvalue));
+        curlevel.objects.add(new Coin(getHitboxCenterX()+MathUtils.random(-hitbox.width/2,hitbox.width/2), getHitboxCenterY()+MathUtils.random(-hitbox.height/2,hitbox.height/2), combinedvalue,curlevel));
 
 
     }
@@ -277,7 +275,7 @@ void reset()
 
     @Override
     public void removeFromLevel() {
-        Level.gegnerliste.remove(this);
+        curlevel.gegnerliste.remove(this);
     }
 
     void locateplayer(float mindistance, float maxdistance)
@@ -389,7 +387,7 @@ void reset()
 
             Vector2 vec= new Vector2(player.getCenterX()-getCenterX(), player.getCenterY()-getCenterY());
             vec.setLength(this.getHeight()/2);
-            Level.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec,this));
+        curlevel.projectiles.add(new FireBall(getCenterX()+vec.x,getCenterY()+vec.y,vec,this,curlevel));
 
     }
     public void dashattack () {
@@ -461,7 +459,7 @@ void reset()
         vec.rotateDeg(angleoffset);
         for(float i=0; i<=360-angle;i+=angle)
         {
-            Level.projectiles.add( new FireBall(getHitboxCenterX()+vec.x,getHitboxCenterY()+vec.y,new Vector2(vec.x,vec.y),this));
+            curlevel.projectiles.add( new FireBall(getHitboxCenterX()+vec.x,getHitboxCenterY()+vec.y,new Vector2(vec.x,vec.y),this,curlevel));
             vec.rotateDeg(angle);
         }
     }
@@ -473,9 +471,9 @@ void reset()
     void explodeAttack(float damage) {
 
         if(attackStatus==AttackStatus.exploding) {
-            PartikelSprite explosion= new PartikelSprite(getHitboxCenterX(), getHitboxCenterY(), Animator.getAnimation("Explosions.png",9,1,1,9,0.1f), true);
+            PartikelSprite explosion= new PartikelSprite(getHitboxCenterX(), getHitboxCenterY(), Animator.getAnimation("Explosions.png",9,1,1,9,0.1f), true,curlevel);
             explosion.scaleBy(0.7f);
-            Level.particles.add(explosion);
+            curlevel.particles.add(explosion);
             SoundManager.play("medium-explosion", 1, 1.6f+MathUtils.random(0,0.4f));
         }
         applyknockbackOn(player, 230);
@@ -543,11 +541,11 @@ void reset()
             new Action() {
                 @Override
                 public boolean act(float delta) {
-                    Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y);
+                    Shockwave wave=new Shockwave(getHitboxCenterX(), hitbox.y,curlevel);
                     SoundManager.play("big-stomp", 0.5f, 1f+MathUtils.random(-0.2f,0.2f));
                     wave.scaleBy(0.8f);
                     attackdelay=0;
-                    Level.objects.add(wave);
+                    curlevel.objects.add(wave);
                     attackStatus = AttackStatus.shockwave;
                     shadowscale=1f;
                     return true;}},

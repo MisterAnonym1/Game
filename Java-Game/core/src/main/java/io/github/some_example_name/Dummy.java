@@ -53,7 +53,7 @@ public class Dummy extends Gegner
     @Override
     boolean damageby(float damage) {
         damageEffect();
-        Level.indicators.addActor(new PopUpText("-" + (int) damage, (player.getCenterX()<getCenterX()?hitbox.x:hitbox.x+hitbox.width), getHitboxCenterY()));
+        curlevel.indicators.addActor(new PopUpText("-" + (int) damage, (player.getCenterX()<getCenterX()?hitbox.x:hitbox.x+hitbox.width), getHitboxCenterY()));
         return false;
     }
 }

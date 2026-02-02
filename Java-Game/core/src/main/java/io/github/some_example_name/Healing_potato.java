@@ -9,8 +9,10 @@ import javax.sound.sampled.SourceDataLine;
 
 public class Healing_potato extends TextureActor {
     int healingAmount;
+    Level level;
     public Healing_potato(float x, float y,int healingAmount, Level level) {
         super("healing-potato.png");
+        this.level=level;
         this.healingAmount = healingAmount;
         setColor(0.95f, 0.95f, 0.95f, 0f);
         centerAt(x,y);
@@ -24,7 +26,7 @@ public class Healing_potato extends TextureActor {
        addAction(Actions.after(Actions.forever(
                Actions.parallel(
             Actions.sequence(
-                Actions.scaleTo(1.6f+ this.healingAmount /20f, 1.6f+ this.healingAmount /20f, 0.5f),
+                Actions.scaleTo(1.6f+ this.healingAmount /20f, 1.6f+ this.healingAmount /20f, MathUtils.random(0.4f,0.6f)),
                 Actions.scaleTo(1.4f+ this.healingAmount /20f, 1.4f+ this.healingAmount /20f, 0.5f)
             ),
             Actions.sequence(
@@ -52,14 +54,14 @@ public class Healing_potato extends TextureActor {
 
     @Override
     public void removeFromLevel() {
-        Level.objects.remove(this);
+        level.objects.remove(this);
     }
 
     void collect(Entity entity) {
             SoundManager.play("crunch", 1f, MathUtils.random(0.9f, 1.1f));
             entity.sethealth(entity.curhealth+ healingAmount, false);
-            Level.indicators.addActor(new PopUpText("+" + healingAmount, getX() + getWidth() / 2, getY() + getHeight(), 19, Color.GREEN, Color.BLACK));
-            Level.deleteList.add(this);
+            level.indicators.addActor(new PopUpText("+" + healingAmount, getX() + getWidth() / 2, getY() + getHeight(), 19, Color.GREEN, Color.BLACK));
+            level.deleteList.add(this);
 
     }
 }
