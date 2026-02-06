@@ -3,7 +3,7 @@ package io.github.some_example_name;
 
 public class InventoryManager {
 
-    private static final boolean USE_PREFERENCES_FOR_HTML = true; // <-- bei HTML-Build auf true setzen
+    private static final boolean USE_PREFERENCES_FOR_HTML = false; // <-- bei HTML-Build auf true setzen
 
     private final InventoryStorage storage;
 

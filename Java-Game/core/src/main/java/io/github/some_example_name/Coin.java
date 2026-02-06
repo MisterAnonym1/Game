@@ -41,7 +41,7 @@ public class Coin extends PartikelSprite {
             Main.invManager.addValueByKey("Coins", amount);
             SoundManager.stop("coin_pickup");
             SoundManager.play("coin_pickup",0.11f, MathUtils.random(0.9f,1.1f));
-            level.indicators.addActor(new PopUpText("+" + amount, getX() + getWidth() /2, getY() + getHeight(), 19, Color.YELLOW, Color.BLACK));
+            level.indicators.addActor(new PopUpText("+" + amount, getX() + getWidth() /2, getY() + getHeight(), 1, Color.YELLOW, Color.BLACK));
             level.deleteList.add(this);
         }
     }

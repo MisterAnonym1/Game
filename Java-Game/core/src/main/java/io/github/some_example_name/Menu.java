@@ -10,16 +10,14 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
-import com.badlogic.gdx.scenes.scene2d.actions.AddAction;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 import java.util.function.Consumer;
 
@@ -29,7 +27,8 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
     boolean onscreen = false;
     float delay=1;
     Main main;
-    Revtext textbox;
+    OwnText textbox;
+    Window settingsWindow;
     static float ScreenWidth=1024;
     static float ScreenHeight=576;
    static void showRestartConfirmation(Main main) {
@@ -44,17 +43,17 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
 
         Label label = new Label("Are you sure you want to\n restart the whole game?\nThis will delete your progress.", Main.skin);
         label.setAlignment(Align.center);
-        label.setFontScale(2.2f); // Größerer Text
+        label.setFontScale(1);
         confirmWindow.add(label).colspan(2).pad(30);
         confirmWindow.row();
 
         TextButton yesButton = new TextButton("Yes", Main.skin);
         TextButton noButton = new TextButton("No", Main.skin);
-        yesButton.getLabel().setFontScale(2.2f); // Größerer Button-Text
+        yesButton.getLabel().setFontScale(1); // Größerer Button-Text
         yesButton.getLabel().setColor(Color.BLUE);
 
-        noButton.getLabel().setFontScale(2.2f);
-        yesButton.getLabel().setColor(Color.RED);
+        noButton.getLabel().setFontScale(1);
+        yesButton.getLabel().setColor(Color.SALMON);
         yesButton.setSize(100, 100); // Größe nicht hier ändern
         noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
 
@@ -78,9 +77,98 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         confirmWindow.add(noButton).width(150).height(70).pad(30);
         Main.uiStage.addActor(confirmWindow);
     }
+
+    void showSettingsWindow() {
+        if (main.inPopUpWindow) return;
+        main.inPopUpWindow = true;
+
+        Skin skin = new Skin(Gdx.files.internal("pixthulhu/skin/pixthulhu-ui.json"));
+        settingsWindow = new Window("", skin);
+        settingsWindow.setModal(true);
+        settingsWindow.setMovable(false);
+        settingsWindow.setResizable(false);
+        settingsWindow.setSize(600, 400);
+        settingsWindow.setPosition(ScreenWidth/2f - 300, ScreenHeight/2f - 200);
+
+        Table table = new Table(skin);
+        table.setFillParent(true);
+        table.defaults().pad(15);
+
+        Label title = new Label("Game Settings", skin);
+        title.setFontScale(1f);
+        title.setColor(Color.CYAN);
+        table.add(title).colspan(2).center().padBottom(30);
+        table.row();
+
+        // Master Volume
+        Label volumeLabel = new Label("Music  Volume:", skin);
+        volumeLabel.setFontScale(1f);
+        Slider volumeSlider = new Slider(0, 0.4f, 0.02f, false, skin);
+        volumeSlider.setValue(main.music.getVolume());
+        volumeSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                main.music.setVolume(volumeSlider.getValue());
+            }
+        });
+        table.add(volumeLabel).width(200).height(40);
+        table.add(volumeSlider).width(200).height(40);
+        table.row();
+
+        // Sound Effects
+        Label sfxLabel = new Label("Sound Effects:", skin);
+        sfxLabel.setFontScale(1f);
+        Slider sfxSlider = new Slider(0, 1, 0.05f, false, skin);
+        sfxSlider.setValue(SoundManager.getMasterVolume()); // Default SFX volume
+        sfxSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                SoundManager.setMasterVolume(sfxSlider.getValue());
+            }
+        });
+        table.add(sfxLabel).width(200).height(40);
+        table.add(sfxSlider).width(200).height(40);
+        table.row();
+
+        // Fullscreen Toggle
+        Label fullscreenLabel = new Label("Fullscreen:", skin);
+        fullscreenLabel.setFontScale(1f);
+        CheckBox fullscreenCheckbox = new CheckBox("", skin);
+        fullscreenCheckbox.setChecked(Gdx.graphics.isFullscreen());
+        fullscreenCheckbox.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (fullscreenCheckbox.isChecked()) {
+                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
+                } else {
+                    Gdx.graphics.setWindowedMode(1024, 576);
+                }
+            }
+        });
+        table.add(fullscreenLabel).width(200).height(40);
+        table.add(fullscreenCheckbox).width(200).height(40);
+        table.row();
+
+        // Close Button
+        TextButton closeButton = new TextButton("Close", skin);
+        closeButton.getLabel().setFontScale(1f);
+        closeButton.setColor(Color.SKY);
+        closeButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                settingsWindow.remove();
+                main.inPopUpWindow = false;
+            }
+        });
+        table.add(closeButton).colspan(2).center().padTop(20).width(150).height(50);
+
+        settingsWindow.add(table).expand().fill();
+        Main.uiStage.addActor(settingsWindow);
+    }
+
      static void showQuitConfirmation(Main main) {
         if (main.inPopUpWindow) return; // Verhindert mehrfaches Öffnen
-        main.inPopUpWindow= true; // Verhindert mehrfaches Öffnen
+        main.inPopUpWindow= true;
         final Window confirmWindow = new Window("", Main.skin);
         confirmWindow.setModal(true);
         confirmWindow.setMovable(false);
@@ -90,16 +178,16 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
 
         Label label = new Label("Are you sure you want to quit?", Main.skin);
         label.setAlignment(Align.center);
-        label.setFontScale(2.2f); // Größerer Text
+        label.setFontScale(1);
         confirmWindow.add(label).colspan(2).pad(30);
         confirmWindow.row();
 
         TextButton yesButton = new TextButton("Yes", Main.skin);
         TextButton noButton = new TextButton("No", Main.skin);
-        yesButton.getLabel().setFontScale(2.2f); // Größerer Button-Text
+        yesButton.getLabel().setFontScale(1);
         yesButton.getLabel().setColor(Color.BLUE);
 
-        noButton.getLabel().setFontScale(2.2f);
+        noButton.getLabel().setFontScale(1);
         yesButton.getLabel().setColor(Color.RED);
         yesButton.setSize(100, 100); // Größe nicht hier ändern
         noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
@@ -108,7 +196,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //Gdx.app.exit();
-                try { /*main.dispose();*/ } catch (Throwable t) { /* ignore on GWT */ }
+                try { Gdx.app.exit(); } catch (Throwable t) { /* ignore on GWT */ }
             }
         });
         noButton.addListener(new ChangeListener() {
@@ -137,20 +225,22 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         // Titel als Label im Fenster-Inhalt, damit er nicht überlappt
         Label titleLabel = new Label("Credits", Main.skin);
         titleLabel.setAlignment(Align.center);
-        titleLabel.setFontScale(2.5f);
+        titleLabel.setColor(Color.CYAN);
+
+        titleLabel.setFontScale(1.4f);
         creditsWindow.add(titleLabel).expandX().padTop(10).padBottom(10);
         creditsWindow.row();
 
         Label creditsLabel = new Label(
-                "Game made by: The Boys Deluxe \nGrafik: Our own and from the Internet\nMusic: I stole it (joke)\nMountain king Font by Michael W. Moss: --\n https://www.fontspace.com/mountain-king-font-f119642\nSounds: sheep.wav by Gitanki -- https://freesound.org/s/172712/\nNorwegian sheep by michaelperfect -- https://freesound.org/s/710296/ \nSpecial Thanks: Frau Bauereisen\n" ,
+                "Game made by: The Boys Deluxe Studios \nGrafik: Our own and from the Internet\nMusic: I stole it (joke)\nMountain king Font by Michael W. Moss: --\n https://www.fontspace.com/mountain-king-font-f119642\nSounds: sheep.wav by Gitanki https://freesound.org/s/172712/\nNorwegian sheep by michaelperfect https://freesound.org/s/710296/ \nSpecial Thanks: Frau Bauereisen\n" ,
                 Main.skin);
         creditsLabel.setAlignment(Align.center);
-        creditsLabel.setFontScale(1.6f);
+        creditsLabel.setFontScale(0.85f);
         creditsWindow.add(creditsLabel).expand().fill().pad(20);
         creditsWindow.row();
-        TextButton closeButton = new TextButton("Schließen", Main.skin);
-        closeButton.getLabel().setFontScale(1.6f);
-        closeButton.setSize(180, 60); // Größere Box
+        TextButton closeButton = new TextButton("Close", Main.skin);
+        closeButton.getLabel().setFontScale(1f);
+        closeButton.setColor(Color.SKY);
         closeButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -158,7 +248,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
                 main.inPopUpWindow=false;
             }
         });
-        creditsWindow.add(closeButton).padBottom(20).padTop(10).width(180).height(60);
+        creditsWindow.add(closeButton).padBottom(20).padTop(10).width(150).height(50);
         Main.uiStage.addActor(creditsWindow);
     }
 
@@ -189,16 +279,16 @@ class BootingScreen extends Menu
         skipMessage.setFontScale(4f);
         skipMessage.setPosition(ScreenWidth / 2f - skipMessage.getWidth()*2, ScreenHeight/2);
         skipMessage.setColor(0.5f,0.5f,0.5f,1);
-        studioText=new OwnText("The Boyz Deluxe Studios",ScreenWidth / 2f, ScreenHeight / 2f * 0.4f, 50, new Color(0.7f, 0.9f, 0.7f, 1),null);
+        studioText=new OwnText("The Boyz Deluxe Studios",ScreenWidth / 2f, ScreenHeight / 2f * 0.4f, 1.5f, new Color(0.7f, 0.9f, 0.7f, 1),null);
         backround = new Texture("whitebase.png");
         backround2 = new Texture(pixmap);
         logo=new TextureActor("Boys_logo.jpg");
         logo.centerAt(ScreenWidth / 2f, ScreenHeight / 1.65f);
         logo.setColor(1,1,1,0);
         logo.toFront();
-        textbox = new Revtext(ScreenWidth / 2f, ScreenHeight / 2f * 1.3f, 140, 0.0f, "GARDEN SLAYER");
-        textbox.setColor(new Color(0.15f, 0.5f, 0.15f, 0), null);
+        textbox = new OwnText("GARDEN SLAYER",ScreenWidth / 2f, ScreenHeight / 2f * 1.3f, 4, new Color(0.15f, 0.5f, 0.15f, 1),Color.WHITE );
         delay = 0f;
+        textbox.addAction(Actions.fadeOut(0));
         Action logoAction=Actions.run(()->{logo.addAction(Actions.sequence(
                 Actions.delay(1.5f),
                 Actions.fadeIn(2, Interpolation.slowFast),
@@ -228,10 +318,11 @@ class BootingScreen extends Menu
         batch.setColor(0,0,0,getColor().a);
         batch.draw(backround,0,0,ScreenWidth,ScreenHeight);
         skipMessage.draw(batch,(delay<=1.5f?(delay<=1f?0.6f+delay*2:1.5f-delay):0)*getColor().a);
-        textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
+        textbox.draw(batch,alpha);
+        textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
         logo.setColor(logo.getColor().r,logo.getColor().g,logo.getColor().b,Math.min(logo.getColor().a,getColor().a)*getColor().a);
         logo.draw(batch,1);
-        studioText.draw(batch,1,logo.getColor().a*getColor().a);
+        studioText.draw(batch,logo.getColor().a*getColor().a);
 
     }
 
@@ -239,7 +330,7 @@ class BootingScreen extends Menu
     {
         if(finished) return; // Verhindert mehrfaches Zerstören
         setfinished();
-        Main.uiStage.addActor(new Startmenu(main));
+        Main.uiStage.addActor(new Startmenu(main,1.4f));
         toFront();
         addAction(Actions.sequence(
                 Actions.delay(0.9f),
@@ -278,7 +369,7 @@ class BootingScreen extends Menu
 
         super();
         int ran = MathUtils.random(0, Script.loadingscreenscript.length - 1);
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.65f, 40, 0.01f,Script.loadingscreenscript[ran]);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.6f, 2, 0.01f,Script.loadingscreenscript[ran]);
         textbox.setColor(new Color(0.4f, 0.4f, 0.9f,1),null);
         delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         if(mainl.DevMode){delay=0;}
@@ -340,13 +431,13 @@ class BootingScreen extends Menu
             message=main.predeterminedDeathmessage;
             main.predeterminedDeathmessage="";
         }
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.8f, 45, 0.06f,message);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.7f, 3, 0.06f,message);
         textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
         delay=1;
         shape = new ShapeRenderer();
         this.main=main;
-        knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 130, 3,Color.SCARLET,Color.BLACK );
-        knopf.getLabel().setFontScale(2f); // 1.5x größer
+        knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 130, 1,Color.SCARLET,Color.BLACK );
+        knopf.getLabel().setFontScale(1f);
         knopf.setOnUp(()->this.destroy());
         Main.uiStage.addActor(knopf);
 
@@ -430,8 +521,9 @@ class BootingScreen extends Menu
 class WinScreen extends Menu
 {
     AdvancedTextButton knopf;
-    AdvancedTextButton exitknopf;
+   // AdvancedTextButton exitknopf;
     AdvancedTextButton creditsknopf;
+    AdvancedTextButton settingsButton;
     TextureRegion hintergrund;
     ShapeRenderer shape;
     private final String playtime= DataCenter.getformatedTimeplayed();
@@ -453,33 +545,39 @@ class WinScreen extends Menu
         confettiManager=new ConfettiManager();
         confettiManager.add(new ConfettiRain(0.00f));
         confettiManager.add(new ConfettiRain(0.06f));
-        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.2f,80, Color.GOLD,Color.BLACK);
+        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.3f,4, Color.GOLD,Color.BLACK);
 
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.8f, 40, 0.06f,message);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.8f, 1f, 0.06f,message);
         textbox.setColor(Color.WHITE);
 
-        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f, 100, 3,Color.CORAL,Color.RED );
-        knopf.getLabel().setFontScale(2f); // nur Schrift 2x größer
+        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f-215, 80, 0.7f,Color.CORAL,Color.RED );
+        knopf.getLabel().setFontScale(0.7f);
         knopf.setOnUp(()->showRestartConfirmation(main));
         Main.uiStage.addActor(knopf);
 
-        exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f-215, 100, 3,Color.ROYAL,Color.BLACK );
+        settingsButton = new AdvancedTextButton(" Settings ", ScreenWidth/2f, 80, 0.7f, Color.GOLD, Color.WHITE);
+        settingsButton.getLabel().setFontScale(0.7f);
+        settingsButton.setOnUp(this::showSettingsWindow);
+        Main.uiStage.addActor(settingsButton);
+
+        /*exitknopf=new AdvancedTextButton("Quit Game",ScreenWidth/2f-215, 100, 3,Color.ROYAL,Color.BLACK );
         exitknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
         exitknopf.setOnUp(()->{
             showQuitConfirmation(main);
         });
-        Main.uiStage.addActor(exitknopf);
+        Main.uiStage.addActor(exitknopf);*/
 
-        creditsknopf=new AdvancedTextButton("  Credits  ",ScreenWidth/2f+210, 100, 3,Color.CYAN,Color.BLACK );
-        creditsknopf.getLabel().setFontScale(2f); //  nur Schrift 2x größer
+        creditsknopf=new AdvancedTextButton("  Credits  ",ScreenWidth/2f+210, 80, 0.7f,Color.CYAN,Color.BLACK );
+        creditsknopf.getLabel().setFontScale(0.7f);
         creditsknopf.setOnUp(()->{
             showCreditsWindow();
         });
         Main.uiStage.addActor(creditsknopf);
 
-        setColor(1,1,1,0);
-        SoundManager.play("triumphant_music",0.5f,1f);
+        main.music.stop();
+        SoundManager.play("triumphant_music",0.3f,1f);
     }
+
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
@@ -490,7 +588,8 @@ class WinScreen extends Menu
         batch.setColor(1,1,1,1);
         batch.draw(hintergrund, 0, 0,0,ScreenHeight, 1026,576,1,1,getRotation());
         knopf.draw(batch,1);
-        exitknopf.draw(batch,1);
+        //exitknopf.draw(batch,1);
+        settingsButton.draw(batch,1);
         creditsknopf.draw(batch,1);
         batch.end();
         shape.setProjectionMatrix(batch.getProjectionMatrix());
@@ -504,10 +603,11 @@ class WinScreen extends Menu
     void destroy(String state){
         main.setState(state); ///restart game
         knopf.remove();
-        exitknopf.remove();
+        //exitknopf.remove();
+        settingsButton.remove();
         creditsknopf.remove();
         SoundManager.stop("triumphant_music");
-
+        main.music.play();
         remove();
     }
 
@@ -520,6 +620,7 @@ class WinScreen extends Menu
         {destroy("resume");}
         textbox.act(delta);
         wintext.act(delta);
+        settingsButton.act(delta);
         confettiManager.act(delta);
     }
 
@@ -542,24 +643,24 @@ class NewLevelScreen extends Menu {
     private java.util.List<Upgrade> skillUpgrades = new java.util.ArrayList<>();
 
     NewLevelScreen(Main main) {
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 50, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
-        secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 52, 0.06f,"");
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 2, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
+        secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 2, 0.06f,"");
         textbox.setColor(Color.WHITE);
         secondtext.setColor(new Color(0, 0f, 0,1));
         this.main=main;
         upmanager=main.Player.upgradeManager;
-        jaknopf = new AdvancedTextButton(" JA ",ScreenWidth/2f-150, 130, 3,Color.SKY,Color.WHITE );
-        jaknopf.getLabel().setFontScale(2f); // 1.5x größer
+        jaknopf = new AdvancedTextButton(" Yes ",ScreenWidth/2f-150, 130, 0.7f,Color.SKY,Color.WHITE );
+        jaknopf.getLabel().setFontScale(0.7f);
         jaknopf.setOnUp(()->this.destroy("newlevel"));
         Main.uiStage.addActor(jaknopf);
 
-        neinknopf = new AdvancedTextButton("Nein",ScreenWidth/2f, 130, 3,Color.SKY,Color.WHITE );
-        neinknopf.getLabel().setFontScale(2f); // 1.5x größer
+        neinknopf = new AdvancedTextButton(" No ",ScreenWidth/2f, 130, 0.7f,Color.FIREBRICK,Color.WHITE );
+        neinknopf.getLabel().setFontScale(0.7f);
         neinknopf.setOnUp(()->this.destroy("resume"));
         Main.uiStage.addActor(neinknopf);
 
-        skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+150, 130, 3,Color.SKY,Color.WHITE );
-        skillknopf.getLabel().setFontScale(2f); // 1.5x größer
+        skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+150, 130, 0.7f,Color.SKY,Color.WHITE );
+        skillknopf.getLabel().setFontScale(0.7f);
         skillknopf.setOnUp(this::showSkillMenu);
         Main.uiStage.addActor(skillknopf);
          delay=0;
@@ -571,7 +672,7 @@ class NewLevelScreen extends Menu {
         skillCostLabels.clear();
         skillUpgrades.clear();
         if (skillWindow != null && skillWindow.hasParent()) return;
-        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        Skin skin = main.skin;
         skillWindow = new Window("", skin);
         skillWindow.setSize(ScreenWidth, ScreenHeight);
         skillWindow.setPosition(0, 0);
@@ -579,13 +680,18 @@ class NewLevelScreen extends Menu {
         skillWindow.setModal(true);
         skillWindow.setResizable(false);
         skillWindow.setColor(new Color(0.13f, 0.18f, 0.32f, 0.98f)); // Blau-grau
-
+        skillWindow.addListener(new ClickListener() {
+            @Override
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
+                main.Player.coindisplay.toFront();
+                return false;
+            }});
         Table table = new Table(skin);
         table.setFillParent(true);
         table.defaults().pad(20);
 
-        Label title = new Label("Skill Menü", skin);
-        title.setFontScale(2.2f);
+        Label title = new Label("Skill Menu", skin);
+        title.setFontScale(1.8f);
         title.setColor(new Color(0.5f,0.7f,1f,1f)); // Hellblau
         table.add(title).colspan(4).center().padBottom(40);
         table.row();
@@ -595,8 +701,8 @@ class NewLevelScreen extends Menu {
         addSkillRow(table, upmanager.getUpgrade("Speed"));
 
         table.row();
-        TextButton closeBtn = new TextButton("Schließen", skin);
-        closeBtn.getLabel().setFontScale(1.7f);
+        TextButton closeBtn = new TextButton("Close", skin);
+        closeBtn.getLabel().setFontScale(1f);
         closeBtn.setColor(new Color(0.5f,0.7f,1f,1f));
         closeBtn.addListener(new ChangeListener() {
             @Override
@@ -611,24 +717,24 @@ class NewLevelScreen extends Menu {
     }
 
     private void addSkillRow(Table table, Upgrade upgrade) {
-        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        Skin skin = main.skin;
         Label skillLabel = new Label(upgrade.getName(), skin);
-        skillLabel.setFontScale(1.7f); // Größer
+        skillLabel.setFontScale(1.1f);
         ProgressBar bar = new ProgressBar(0, maxLevel, 1, false, skin);
         bar.setValue(upgrade.getLevel());
         bar.setAnimateDuration(0.2f);
         bar.getStyle().knobBefore = new TextureRegionDrawable(new TextureRegion(new Texture(Gdx.files.internal("blue-loading.png"))));
-        bar.getStyle().knobBefore.setMinHeight(24); // dicker
-        bar.getStyle().background.setMinHeight(18); // dicker
+        bar.getStyle().knobBefore.setMinHeight(20); // dicker
+        bar.getStyle().background.setMinHeight(24); // dicker
         bar.setHeight(32f);
-        bar.setWidth(260f);
+        bar.setWidth(300f);
         TextButton plusBtn = new TextButton("+", skin);
-        plusBtn.getLabel().setFontScale(2.1f); // Größer
+        plusBtn.getLabel().setFontScale(1.6f);
         plusBtn.setColor(new Color(0.5f,0.7f,1f,1f));
         int cost = upgrade.getCost(upgrade.getLevel()+1);
         int coins = Main.invManager.getValueByKey("Coins");
-        Label costLabel = new Label(cost + " Münzen", skin);
-        costLabel.setFontScale(1.3f);
+        Label costLabel = new Label(cost + " Coins", skin);
+        costLabel.setFontScale(1.1f);
         if(bar.getValue()==bar.getMaxValue()) {
             costLabel.setText("Max");
             costLabel.setColor(Color.GRAY);
@@ -636,6 +742,7 @@ class NewLevelScreen extends Menu {
         skillCostLabels.add(costLabel);
         skillUpgrades.add(upgrade);
         plusBtn.addListener(new ChangeListener() {
+
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 int val = upgrade.getLevel();
@@ -649,10 +756,10 @@ class NewLevelScreen extends Menu {
                         costLabel.setText("Max");
                         costLabel.setColor(Color.GRAY);
                     } else {
-                        costLabel.setText(upgrade.getCost(val+2) +" Münzen");
+                        costLabel.setText(upgrade.getCost(val+2) +" Coins");
                     }
                     updateAllSkillCostLabels();
-                    main.Player.coindisplay.toFront();
+
 
                 }
             }
@@ -675,7 +782,7 @@ class NewLevelScreen extends Menu {
                 label.setText("Max");
                 label.setColor(Color.GRAY);
             } else {
-                label.setText(cost + " Münzen");
+                label.setText(String.format("%2d", cost) + " Coins");
                 if (coins < cost) label.setColor(Color.RED); else label.setColor(Color.GOLD);
             }
         }
@@ -743,7 +850,6 @@ class NewLevelScreen extends Menu {
         shape.end();
 
 
-
         batch.begin();
         textbox.draw(batch,1);
         secondtext.draw(batch,1);
@@ -752,6 +858,7 @@ class NewLevelScreen extends Menu {
         skillknopf.draw(batch,1);
 
     }
+
     void destroy(String state){
         main.setState(state);
         jaknopf.remove();
@@ -785,33 +892,32 @@ class PauseMenu extends Menu {
     AdvancedTextButton restartButton;
     AdvancedTextButton quitButton;
     ShapeRenderer shape;
-    private Window settingsWindow;
-    
+
     PauseMenu(Main main) {
         super();
         this.main = main;
         shape = new ShapeRenderer();
         delay=0.1f;
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.6f, 55, 0.02f, "PAUSE");
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.4f, 2, 0.02f, "PAUSE");
         textbox.setColor(Color.WHITE);
         
-        resumeButton = new AdvancedTextButton("Resume", ScreenWidth/2f, 280, 3, Color.SKY, Color.WHITE);
-        resumeButton.getLabel().setFontScale(2f);
+        resumeButton = new AdvancedTextButton("Resume", ScreenWidth/2f, 280, 0.7f, Color.SKY, Color.WHITE);
+        resumeButton.getLabel().setFontScale(0.7f);
         resumeButton.setOnUp(() -> this.destroy("resume"));
         Main.uiStage.addActor(resumeButton);
         
-        settingsButton = new AdvancedTextButton("Settings", ScreenWidth/2f, 220, 3, Color.GOLD, Color.WHITE);
-        settingsButton.getLabel().setFontScale(2f);
+        settingsButton = new AdvancedTextButton("Settings", ScreenWidth/2f, 220, 0.7f, Color.GOLD, Color.WHITE);
+        settingsButton.getLabel().setFontScale(0.7f);
         settingsButton.setOnUp(this::showSettingsWindow);
         Main.uiStage.addActor(settingsButton);
         
-        restartButton = new AdvancedTextButton("Restart", ScreenWidth/2f, 160, 3, Color.ORANGE, Color.WHITE);
-        restartButton.getLabel().setFontScale(2f);
+        restartButton = new AdvancedTextButton("Restart", ScreenWidth/2f, 160, 0.7f, Color.ORANGE, Color.WHITE);
+        restartButton.getLabel().setFontScale(0.7f);
         restartButton.setOnUp(() -> showRestartConfirmation(main));
         Main.uiStage.addActor(restartButton);
         
-        quitButton = new AdvancedTextButton("Quit", ScreenWidth/2f, 100, 3, Color.RED, Color.WHITE);
-        quitButton.getLabel().setFontScale(2f);
+        quitButton = new AdvancedTextButton("Quit", ScreenWidth/2f, 100, 0.7f, Color.RED, Color.WHITE);
+        quitButton.getLabel().setFontScale(0.7f);
         quitButton.setOnUp(() -> showQuitConfirmation(main));
         Main.uiStage.addActor(quitButton);
         
@@ -819,88 +925,7 @@ class PauseMenu extends Menu {
         addAction(Actions.fadeIn(0.3f));
     }
     
-    private void showSettingsWindow() {
-        if (main.inPopUpWindow) return;
-        main.inPopUpWindow = true;
-        
-        Skin skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
-        settingsWindow = new Window("", skin);
-        settingsWindow.setModal(true);
-        settingsWindow.setMovable(false);
-        settingsWindow.setResizable(false);
-        settingsWindow.setSize(600, 400);
-        settingsWindow.setPosition(ScreenWidth/2f - 300, ScreenHeight/2f - 200);
-        
-        Table table = new Table(skin);
-        table.setFillParent(true);
-        table.defaults().pad(15);
-        
-        Label title = new Label("Game Settings", skin);
-        title.setFontScale(2f);
-        title.setColor(Color.CYAN);
-        table.add(title).colspan(2).center().padBottom(30);
-        table.row();
-        
-        // Master Volume
-        Label volumeLabel = new Label("Master Volume:", skin);
-        volumeLabel.setFontScale(1.5f);
-        Slider volumeSlider = new Slider(0, 1, 0.1f, false, skin);
-        volumeSlider.setValue(main.music.getVolume());
-        volumeSlider.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                main.music.setVolume(volumeSlider.getValue());
-            }
-        });
-        table.add(volumeLabel).width(200).height(40);
-        table.add(volumeSlider).width(200).height(40);
-        table.row();
-        
-        // Sound Effects
-        Label sfxLabel = new Label("Sound Effects:", skin);
-        sfxLabel.setFontScale(1.5f);
-        Slider sfxSlider = new Slider(0, 1, 0.1f, false, skin);
-        sfxSlider.setValue(0.7f); // Default SFX volume
-        table.add(sfxLabel).width(200).height(40);
-        table.add(sfxSlider).width(200).height(40);
-        table.row();
-        
-        // Fullscreen Toggle
-        Label fullscreenLabel = new Label("Fullscreen:", skin);
-        fullscreenLabel.setFontScale(1.5f);
-        CheckBox fullscreenCheckbox = new CheckBox("", skin);
-        fullscreenCheckbox.setChecked(Gdx.graphics.isFullscreen());
-        fullscreenCheckbox.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (fullscreenCheckbox.isChecked()) {
-                    Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
-                } else {
-                    Gdx.graphics.setWindowedMode(1024, 576);
-                }
-            }
-        });
-        table.add(fullscreenLabel).width(200).height(40);
-        table.add(fullscreenCheckbox).width(200).height(40);
-        table.row();
-        
-        // Close Button
-        TextButton closeButton = new TextButton("Close", skin);
-        closeButton.getLabel().setFontScale(1.7f);
-        closeButton.setColor(Color.SKY);
-        closeButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                settingsWindow.remove();
-                main.inPopUpWindow = false;
-            }
-        });
-        table.add(closeButton).colspan(2).center().padTop(20).width(150).height(50);
-        
-        settingsWindow.add(table).expand().fill();
-        Main.uiStage.addActor(settingsWindow);
-    }
-    
+
     @Override
     public void draw(Batch batch, float parentAlpha) {
         batch.end();
@@ -953,29 +978,37 @@ class PauseMenu extends Menu {
     }
 }
 
+
 class Startmenu extends Menu
 {
     TextureRegion hintergrund;
+    AdvancedTextButton settingsButton;
     SpriteButton credits;
     Revtext randomtext;
     Matrix matrix;
     String[] easterEggMessages;
-    Startmenu(Main mainl)
+    Startmenu(Main mainl,float dlay)
     {
         super();
         main = mainl;
         setPosition(0,0);
         hintergrund = new TextureRegion(new Texture("misty-forest-background.png"));
-        textbox = new Revtext(ScreenWidth/2f, 400, 65, 0.04f,"Press \"Enter\" to start");
+        textbox = new Revtext(ScreenWidth/2f, 400, 2, 0.04f,"Press \"Enter\" to start");
         textbox.setColor(Color.SKY);
-        delay=0;
+        delay=1.4f-dlay;
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
         String message=Script.startmenuscript[ran];
         message= increaseEasterEggProbability(message);
         //message="Now with 10% more bugs!!";
-        randomtext = new Revtext(ScreenWidth/2f, 320, 40, 0.03f,message);
+        randomtext = new Revtext(ScreenWidth/2f, 320, 1.2f, 0.03f,message);
         checkmessage(message);
 
+        settingsButton = new AdvancedTextButton("Settings", ScreenWidth/2f, 100, 0.8f, new Color(1,0.8f,0.4f,1), Color.WHITE);
+        settingsButton.getLabel().setFontScale(1f);
+        settingsButton.setOnUp(this::showSettingsWindow);
+        Main.uiStage.addActor(settingsButton);
+        settingsButton.setColor(1,1,1,0);
+        settingsButton.addAction(Actions.sequence(Actions.delay(dlay),Actions.fadeIn(0.5f)));
 
         credits = new SpriteButton(675, 60, "Credits Button V1.png",2);
         credits.setOnUp( ()->showCreditsWindow());
@@ -990,6 +1023,7 @@ class Startmenu extends Menu
         batch.draw(hintergrund, getX(), getY(),0,ScreenHeight, 1024,576,1,1,getRotation());
         textbox.draw(batch,1);
         randomtext.draw(batch,1);
+        settingsButton.draw(batch,1);
         credits.draw(batch,1);
     }
 
@@ -999,12 +1033,13 @@ class Startmenu extends Menu
       if(matrix!=null){matrix.remove();}
       remove();
       credits.remove();
+      settingsButton.remove();
     }
 
 
     String increaseEasterEggProbability(String mess)
     {
-        easterEggMessages= new String[]{"I was a player once... \nnow I'm just code.", "Das haettest du nicht sehen sollen...",
+        easterEggMessages= new String[]{/*"I was a player once... \nnow I'm just code.",*/ "Das haettest du nicht sehen sollen...",
                 "Now with 10% more bugs!!"};
         boolean alreadyEgg=false;
         for (int i = 0; i < easterEggMessages.length; i++) {
@@ -1015,7 +1050,7 @@ class Startmenu extends Menu
         }
         if(!alreadyEgg&&Math.random()<0.2f)
         {
-        mess=easterEggMessages[MathUtils.random(0,easterEggMessages.length-1)];
+        mess=easterEggMessages[MathUtils.random(1,easterEggMessages.length-1)];
         }
         return mess;
     }
@@ -1099,8 +1134,8 @@ class Startmenu extends Menu
         pinWindow.setModal(true);
         pinWindow.setMovable(false);
         pinWindow.setResizable(false);
-        pinWindow.setSize(400, 200);
-        pinWindow.setPosition(ScreenWidth/2f - 200, ScreenHeight/2f - 100);
+        pinWindow.setSize(500, 350);
+        pinWindow.setPosition(ScreenWidth/2f - 250, ScreenHeight/2f - 175);
 
         Label label = new Label("Bitte PIN eingeben:", Main.skin);
         label.setAlignment(Align.center);
@@ -1111,29 +1146,28 @@ class Startmenu extends Menu
         pinField = new TextField("", Main.skin);
         pinField.setPasswordMode(true);
         pinField.setPasswordCharacter('*');
-        pinField.setMaxLength(10);
+        pinField.setMaxLength(12);
 
-        pinField.setSize(260, 40); // Größer
-       pinField.getStyle().font.getData().setScale(2.5f); // Text größer
+       // pinField.setSize(300, 90); // Größer
+       pinField.getStyle().font.getData().setScale(1f); // Text größer
 
         pinField.getStyle().messageFont = pinField.getStyle().font; // Gleiche Schriftgröße für Message
         pinField.getStyle().messageFontColor = Color.RED; // Fehlermeldung rot
-        pinWindow.add(pinField).colspan(2).width(260).height(40).pad(16);
+        pinWindow.add(pinField).colspan(2).width(300).height(60).pad(16);
         pinWindow.row();
         final Startmenu menu=this;
         TextButton okButton = new TextButton("OK", Main.skin);
-        TextButton cancelButton = new TextButton("Abbrechen", Main.skin);
-        okButton.getLabel().setFontScale(1.4f);
-        cancelButton.getLabel().setFontScale(1.4f);
-        okButton.setSize(100, 50);
-        cancelButton.setSize(100, 50);
+        TextButton cancelButton = new TextButton("Close", Main.skin);
+        okButton.getLabel().setFontScale(0.8f);
+        cancelButton.getLabel().setFontScale(.7f);
+
         okButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (DEV_PIN.toLowerCase().equals(pinField.getText().toLowerCase())) {
                     pinWindow.remove();
                     pinDialogVisible = false;
-                    pinField.getStyle().font.getData().setScale(1f); // Text normal groß
+                    pinField.getStyle().font.getData().setScale(2.5f); // Text normal groß
                     main.setState("DevMode");
                     menu.destroy();
 
@@ -1152,12 +1186,12 @@ class Startmenu extends Menu
             }
         });
         pinWindow.add(okButton).width(120).height(60).pad(10);
-        pinWindow.add(cancelButton).width(120).height(60).pad(10);
+        pinWindow.add(cancelButton).width(140).height(60).pad(10);
         Main.uiStage.addActor(pinWindow);
         pinField.setText("");
-        pinField.setMessageText("");
         pinField.setFocusTraversal(false);
         pinField.setCursorPosition(pinField.getText().length());
+        pinField.getDefaultInputListener().touchDown(new InputEvent(),0,0,0,0);
     }
 }
 
@@ -1174,9 +1208,9 @@ class DevMenu extends Menu
         this.main = main;
         for (int i = 0; i < texte.length; i++)
         {
-            texte[i] = new Revtext( 20,  30 + i * 27, 20,"hallo");
+            texte[i] = new Revtext( 20,  30 + i * 27, 0.7f,"hallo");
             texte[i].setColor(Color.GOLDENROD);
-            texte[i].setOutlineColor(Color.BLACK);
+            //texte[i].setOutlineColor(null);
         }
         texte[0].setColor(Color.YELLOW);
         texte[1].setColor(Color.RED);
@@ -1274,20 +1308,20 @@ class DevMenu extends Menu
           if(delay<=0)
           {
               delay=1;
-              texte[2].setText("Fps: " + (int)fpscounter/delay +" or "+ 1.0/delta);
+              texte[2].setcurrentText("Fps: " + (int)fpscounter/delay +" or "+ 1.0/delta);
               fpscounter=0;
           }
 
-          texte[0].setText("loadedwalls amount: " + main.loadedwalls.size());
-          texte[1].setText("Player speed: " + main.Player.movement.len());
-          texte[3].setText("Testentitys: " + main.currentlevel.testentitys.size());
-          texte[4].setText("Deaths: " + DataCenter.getDeathcount());
-          texte[5].setText("Player direction-angle: " + main.Player.directionline);
+          texte[0].setcurrentText("loadedwalls amount: " + main.loadedwalls.size());
+          texte[1].setcurrentText("Player speed: " + main.Player.movement.len());
+          texte[3].setcurrentText("Testentitys: " + main.currentlevel.testentitys.size());
+          texte[4].setcurrentText("Deaths: " + DataCenter.getDeathcount());
+          texte[5].setcurrentText("Player direction-angle: " + main.Player.directionline);
           Vector2 cursorposition= main.viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
-          texte[6].setText("Cursor Coordinates: " + Math.round(cursorposition.x)+"X " + Math.round(cursorposition.y)+"Y "   );
-          texte[7].setText("line to cursor length: " + new Vector2(cursorposition.x-main.Player.getCenterX(),cursorposition.y-main.Player.getCenterY()).len());
-          texte[8].setText("Cursor Screen Coordinates: (" + Math.round(Gdx.input.getX())+"|" + Math.round( Gdx.input.getY())+")"   );
-          texte[9].setText("Gamestate: " +main.gamestate);
+          texte[6].setcurrentText("Cursor Coordinates: " + Math.round(cursorposition.x)+"X " + Math.round(cursorposition.y)+"Y "   );
+          texte[7].setcurrentText("line to cursor length: " + new Vector2(cursorposition.x-main.Player.getCenterX(),cursorposition.y-main.Player.getCenterY()).len());
+          texte[8].setcurrentText("Cursor Screen Coordinates: (" + Math.round(Gdx.input.getX())+"|" + Math.round( Gdx.input.getY())+")"   );
+          texte[9].setcurrentText("Gamestate: " +main.gamestate);
 
       }
    }
@@ -1414,6 +1448,7 @@ class SpriteButton extends Button
         setSize(getWidth() * scale, getHeight() * scale);
         setPosition(centerx-getWidth()/2.0f,centery-getHeight()/2.0f);
         toFront();
+
 
         addListener(new ClickListener() {
             @Override

@@ -69,7 +69,8 @@ public class Main implements ApplicationListener {
 
         //  music = Gdx.audio.newMusic(Gdx.files.internal("battle-of-the-dragons-8037.mp3"));
         music = Gdx.audio.newMusic(Gdx.files.internal("dark-magic-music-loop.wav"));
-        skin= new Skin(Gdx.files.internal("ui/uiskin.json"));
+        skin= new Skin(Gdx.files.internal("pixthulhu/skin/pixthulhu-ui.json"));
+
         uiStage=new Stage(new FitViewport(1024,576));
 
         Pixmap pixmap = new Pixmap(Gdx.files.internal("Pointers/Pointer.png"));
@@ -334,7 +335,7 @@ public class Main implements ApplicationListener {
                 gamestate = Gamestate.startmenu;
                 uiStage.clear();
                 Player.reAddUiElements();
-                uiStage.addActor(new Startmenu(this));
+                uiStage.addActor(new Startmenu(this,0.3f));
                 DataCenter.resetTimeplayed();
                 break;
 

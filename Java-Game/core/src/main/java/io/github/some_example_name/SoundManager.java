@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 public class SoundManager {
     private static final HashMap<String, Sound> sounds = new HashMap<>();
-    private static float masterVolume = 1.0f;
+    private static float masterVolume = 0.7f;
     public static void load(String key, String filePath) {
         if (!sounds.containsKey(key)) {
             sounds.put(key, Gdx.audio.newSound(Gdx.files.internal(filePath)));
@@ -44,6 +44,9 @@ public class SoundManager {
         masterVolume = MathUtils.clamp(volume, 0f, 1f);
     }
 
+    public static float getMasterVolume() {
+        return masterVolume;
+    }
 
     public static void dispose() {
         for (Sound sound : sounds.values()) {

@@ -1,6 +1,7 @@
 package io.github.some_example_name;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -12,40 +13,34 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
-public class OwnText extends Actor {
-     BitmapFont font;
-    String text;
-   Color outlineColor;
+public class OwnText extends Label {
+    Color outlineColor;
+    float scale=1;
     GlyphLayout layout;
-    int size;
 
-    // BitmapFont used for cross-backend compatibility (GWT-compatible)
+    // Static skin for efficient resource management
+    private static Skin pixthulhuSkin;
 
-    public OwnText(String text, float x, float y, int size, Color color, Color outlineColor) {
-        this(text, x, y, size, color, outlineColor, true);
+
+    public OwnText(String text, float x, float y, float scale, Color color, Color outlineColor) {
+        this(text, x, y, scale, color, outlineColor, true);
     }
-    public OwnText(String text, float leftx, float y, int size, Color color, Color outlineColor,boolean centered) {;
-        // Approximate font scaling: generate a BitmapFont and scale it.
-        this.size = size;
-        font = new BitmapFont();
-        // Default BitmapFont baseline size is approx 20; scale to match requested size.
-        float base = 20f;
-        float scale = Math.max(0.01f, size / base);
-        font.getData().setScale(scale);
-         //this.font = new BitmapFont(); // Standard-Schriftart ohne TTF-Import
-         this.text = text;
-         layout = new GlyphLayout();
+    public OwnText(String text, float leftx, float y, float scale, Color color, Color outlineColor,boolean centered) {
+        super(text, new Label.LabelStyle(getSkin().getFont("font"), color));
+
+        this.scale=scale;
+        this.outlineColor = outlineColor;
+        layout = new GlyphLayout();
+        
         setX(leftx);
         setY(y);
-        setColor(color);
-        this.outlineColor = outlineColor;
+        this.setFontScale(scale);
 
-        //font.getData().setScale(scale); // Skalierung festlegen
-        //setScale(scale);
         if(centered)
             center();
-
     }
     public OwnText(String text, float x, float y) {
         this(text,x,y,20,Color.WHITE,null);
@@ -55,142 +50,97 @@ public class OwnText extends Actor {
     }
 
 
+    public static void initializeSkin() {
+        if (pixthulhuSkin == null) {
+            pixthulhuSkin = new Skin(Gdx.files.internal("pixthulhu/skin/pixthulhu-ui.json"));
+        }
+    }
+    private static Skin getSkin() {
+        initializeSkin();
+        return pixthulhuSkin;
+    }
+
+
 
     public void setText(String text) {
-        this.text = text;
+        super.setText(text);
     }
 
     void center(String text)
     {
-        this.text=text;
-        layout.setText(font, text);
-        setX(getX()- layout.width/**getScaleX()*/ / 2.0f);// Zentriere den Text horizontal
-        //setY(centerY-layout.height / 2.0f);
-        setY(getY());
+        setText(text);
+        layout.setText(getStyle().font, text);
+        setX(getX() - (layout.width / 2.0f)*scale);
+        setY(getY()-(layout.height )*scale);
     }
     void center()
     {
-        center(text);
+        center(getText().toString());
     }
 
     @Override
     public void setScale(float scale) {
         super.setScale(scale);
-        //font.getData().setScale(scale);
+        this.setFontScale(scale);
     }
 
     @Override
     public void scaleBy(float scale) {
         super.scaleBy(scale);
-
+        this.setFontScale(getFontScaleX() + scale);
     }
 
     @Override
     protected void scaleChanged() {
         super.scaleChanged();
-        font.getData().setScale(getScaleX());
+        this.setFontScale(getScaleX());
     }
 
     public void setOutlineColor(Color outlineColor) {
         this.outlineColor = outlineColor;
     }
+    
+    @Override
     public void setColor(Color color) {
         super.setColor(color);
-        font.setColor(color);
+        getStyle().fontColor = color;
     }
 
-    public void setColor(Color color,Color outlinecolor) {
-        super.setColor(color);
-        font.setColor(color);
+    public void setColor(Color color, Color outlinecolor) {
+        setColor(color);
         setOutlineColor(outlinecolor);
     }
 
-    @Override
-    public void draw(Batch batch,float outlinealpha) {
-        if(outlineColor!=null) {
-            // Umrandung zeichnen (leicht versetzter Text)
-            float offset = 1.4f+size/33; // Randdicke
-            font.setColor(outlineColor.r, outlineColor.g, outlineColor.b, getColor().a * outlinealpha);
 
-            /*font.draw(batch, text, getX() - offset, getY());
-            font.draw(batch, text, getX() + offset, getY());
-            font.draw(batch, text, getX(), getY() - offset);
-            font.draw(batch, text, getX(), getY() + offset);*/
-
-            /*font.draw(batch, text, getX() + offset, getY()- offset);
-            font.draw(batch, text, getX() - offset, getY()+ offset);
-            font.draw(batch, text, getX()- offset, getY() - offset);
-            font.draw(batch, text, getX()+ offset, getY() + offset);*/
-        }
-        // Originalfarbe des Textes
-        font.setColor(getColor());
-        font.draw(batch, text, getX(), getY());
+    
+    public void draw(Batch batch) {
+        draw(batch,1);
     }
-    public void draw(Batch batch,float outlinealpha, float alpha) {
-        setColor(getColor().r, getColor().g, getColor().b, alpha);
-        draw(batch,outlinealpha);
+    
+    public void draw(Batch batch,  float alpha) {
+       // setColor(getColor().r, getColor().g, getColor().b,getColor().a);
+        super.draw(batch,alpha );
     }
 
     public void dispose() {
-        font.dispose();
+        // Label doesn't need explicit disposal of font as it's managed by the skin
+    }
+
+    // Static cleanup method - call this when shutting down the game
+    public static void disposeStatic() {
+        if (pixthulhuSkin != null) {
+            pixthulhuSkin.dispose();
+            pixthulhuSkin = null;
+        }
     }
 }
 
 
- /*class CustomText {
-    private BitmapFont font;
-    private String text;
-    private float x, y;
-    private float scale;
-    private Color color;
 
-     public CustomText(String fontPath, String text, float x, float y, float scale, Color color) {
-        // Lade eine TTF-Schriftart für saubere Skalierung
-        FontGenerator generator = new FontGenerator(Gdx.files.internal(fontPath));
-        FontParameter parameter = new FontParameter();
-        parameter.size = (int) (32 * scale); // Skalierbare Größe
-        font = generator.generateFont(parameter);
-        generator.dispose();
-
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.scale = scale;
-        this.color = color;
-    }
-
-    public void setText(String text) {
-        this.text = text;
-    }
-
-    public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    public void setScale(float scale) {
-        this.scale = scale;
-        font.getData().setScale(scale);
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public void draw(SpriteBatch batch) {
-        font.setColor(color);
-        font.draw(batch, text, x, y);
-    }
-
-    public void dispose() {
-        font.dispose();
-    }
-}*/
 
 class PopUpText extends OwnText {
-    public PopUpText(String text, float x, float y, int size, Color color, Color outlineColor) {
-        super(text, x, y, size, color, outlineColor);
-        final PopUpText thistext =this;
+    public PopUpText(String text, float x, float y, float scale, Color color, Color outlineColor) {
+        super(text, x, y, scale, color, outlineColor);
         addAction(Actions.fadeIn(0.2f));
         addAction(Actions.sequence(
                 Actions.moveBy(0, 50, 0.25f,Interpolation.fastSlow),// Bewege den Text nach oben
@@ -206,7 +156,7 @@ class PopUpText extends OwnText {
     }
 
     public PopUpText(String text, float x, float y) {
-        this(text, x, y, 20, Color.WHITE, Color.BLACK);
+        this(text, x, y, 1, Color.WHITE, Color.BLACK);
     }
 
     @Override
@@ -218,9 +168,9 @@ class PopUpText extends OwnText {
 class Displaytext extends OwnText
 {
     String key;
-    Displaytext(String text, float leftx, float y, int size, Color color, Color outlineColor,boolean centered,String invkey)
+    Displaytext(String text, float leftx, float y, float scale, Color color, Color outlineColor,boolean centered,String invkey)
     {
-        super(text,leftx,y,size,color,outlineColor,centered);
+        super(text,leftx,y,scale,color,outlineColor,centered);
         key=invkey;
     }
 

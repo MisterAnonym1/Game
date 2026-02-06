@@ -3,7 +3,6 @@ package io.github.some_example_name;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 
 
 public class Revtext extends OwnText {
@@ -18,8 +17,8 @@ public class Revtext extends OwnText {
     boolean centered;
     float centerx, centery;
 
-    public Revtext(float centerx, float centery, int fontsize, float chardelay, String mainText) {
-        super("", centerx, centery, fontsize, Color.WHITE, Color.BLACK);
+    public Revtext(float centerx, float centery, float scale, float chardelay, String mainText) {
+        super("", centerx, centery, scale, Color.WHITE, Color.BLACK);
         centered = true;
         this.centerx = centerx;
         this.centery = centery;
@@ -32,12 +31,12 @@ public class Revtext extends OwnText {
         center(mainText);
 
     }
-    public Revtext(float leftx, float bottomy, int fontsize, String mainText) {
-        super("", leftx, bottomy, fontsize, Color.WHITE, null,false);
+    public Revtext(float leftx, float bottomy, float scale, String mainText) {
+        super("", leftx, bottomy, scale, Color.WHITE, null,false);
         centered = false;
         charDelay = 0;
         maintext = mainText;
-        text = mainText;
+        newText(mainText);
         setColor(1,1,1,1);
         linefinished = true;
         lineDelay = 2;
@@ -52,12 +51,13 @@ public class Revtext extends OwnText {
         sbatch.setTransformMatrix(new Matrix4());
     }
     String reveal() {
-        text = text + maintext.charAt(nummer);
+        String currentText = getText().toString();
+        setcurrentText(currentText + maintext.charAt(nummer));
         nummer++;
-        return text;
+        return getText().toString();
     }
     void skip() {
-        text = maintext;
+        setcurrentText(maintext);
         nummer = maintext.length();
         counter = 0;
         waitingforLine = true;
@@ -70,11 +70,11 @@ public class Revtext extends OwnText {
         maintext = newtext;
         linefinished = false;
     }
-    public void setText(String text) {
-        this.text = text;
-        maintext = text;
-        linefinished = true;
+
+    public void setcurrentText(String text) {
+        super.setText(text);
     }
+
     @Override
     public void act(float delta) {
         super.act(delta);
@@ -94,20 +94,18 @@ public class Revtext extends OwnText {
         }
     }
     void center(String text) {
-        layout.setText(font, text);
-        setX(centerx- layout.width / 2.0f);// Zentriere den Text horizontal
-        layout.setText(font,"X");
+        layout.setText(getStyle().font, text);
+        setX(centerx- (layout.width / 2.0f)*scale);// Zentriere den Text horizontal
+        layout.setText(getStyle().font,"X");
         setY(centery+ layout.height / 2.0f); // Zentriere den Text vertikal
         //setY(getX()-layout.height / 2.0f);
         //setY(getY());
 
     }
-    public void setMaintext(String maintext) {
-        this.maintext = maintext;
-    }
+
     public void reset() {
         maintext = "";
-        text = "";
+        setcurrentText("");
         counter = 0;
         nummer = 0;
         linefinished = false;

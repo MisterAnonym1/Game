@@ -59,7 +59,7 @@ class Player extends Entity
         speechbox.toBack();
         speechbox.setVisible(false);
 
-        coindisplay=new Displaytext("Coins:"+Main.invManager.getValueByKey("Coins"),20,570,28,Color.YELLOW,Color.BLACK,false,"Coins");
+        coindisplay=new Displaytext("Coins:"+Main.invManager.getValueByKey("Coins"),20,530,1.2f,Color.YELLOW,Color.BLACK,false,"Coins");
         Main.uiStage.addActor(coindisplay);
         coindisplay.setZIndex(Integer.MAX_VALUE-10);//ist wie toFront()
 
