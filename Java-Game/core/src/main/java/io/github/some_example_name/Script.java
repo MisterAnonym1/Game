@@ -62,6 +62,7 @@ public class Script {
             "Grass is green",
             "Dieser Bildschirm ist nur geliehen",
             //"Entwickelt mit IntelliJ und (Timofeys) Traenen",
+            "Entwickelt mit IntelliJ und Traenen",
             "Vorsicht, epic moments ahead!",
             "Du bist bereit... oder?",
             "Help! I am trapped in a screen-message factory :\\",
@@ -74,7 +75,7 @@ public class Script {
             "Hello there!",
             "HINTER DIR!!     ist dein Ruecken :O",
             "Druecke einen Knopf.",
-            "                                                         \n                                                                \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
+            "                                                                                                          \n                                                                \nWillst du das Spiel starten?\n oder  weiter auf deinen\n Bildschirm starren?",
             "Nur Mut!",
             "Was echt ist, entscheidest du.",
             "Bereit oder nicht...",
@@ -111,8 +112,8 @@ public class Script {
         "Loading... still loading...",
         "Life is hard, but loading is harder.",
         "One does not simply skip loading screens.",
-        "Optimizing... definitely not making it worse.",
-        "Ehrlich gesagt, habe ich das Laden absichtlich lange gemacht."
+        "Optimizing... definitely not making it worse",
+        "Ehrlich gesagt, habe ich das Laden\n absichtlich lange gemacht."
     };
 
     static String[] deathscreenscript =
@@ -129,7 +130,7 @@ public class Script {
             "Der Tod wartet immer.",
             "Das linkere Links vielleicht?",
             "Wieder hier?",
-                "Es ist noch nie ein Meister vom Himmel gefallen.",
+                "Es ist noch nie ein Meister\n vom Himmel gefallen.",
             "Sag zum Abschied\n\n   leise Servus...",
             "GG: Get Good",
             "You found me! Now what?", //+++++++++++++++++++++(you found death)

@@ -1,6 +1,9 @@
-#Coins 50
+#Coins 150
 #Potions 0
 #Armor 50
 #Sword 1
-#Playtime 67
-#Level 2
+#Playtime 186
+#Level 7
+#Upgrade_Speed 4
+#Upgrade_Damage 5
+#Upgrade_Health 4

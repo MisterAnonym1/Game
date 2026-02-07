@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 public class OwnText extends Label {
-    Color outlineColor;
     float scale=1;
     GlyphLayout layout;
 
@@ -32,9 +31,7 @@ public class OwnText extends Label {
         super(text, new Label.LabelStyle(getSkin().getFont("font"), color));
 
         this.scale=scale;
-        this.outlineColor = outlineColor;
         layout = new GlyphLayout();
-        
         setX(leftx);
         setY(y);
         this.setFontScale(scale);
@@ -96,9 +93,7 @@ public class OwnText extends Label {
         this.setFontScale(getScaleX());
     }
 
-    public void setOutlineColor(Color outlineColor) {
-        this.outlineColor = outlineColor;
-    }
+
     
     @Override
     public void setColor(Color color) {
@@ -108,7 +103,7 @@ public class OwnText extends Label {
 
     public void setColor(Color color, Color outlinecolor) {
         setColor(color);
-        setOutlineColor(outlinecolor);
+
     }
 
 

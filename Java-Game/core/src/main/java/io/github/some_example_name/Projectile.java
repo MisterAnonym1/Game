@@ -25,6 +25,8 @@ class PartikelSprite extends TextureActor
         //setPosition(x,y);
         centerAt(x,y);
         delay =  vanishInSecs;
+        /// causes random inexplainable Texture bug
+       // addAction(Actions.sequence(Actions.delay(delay*0.8f),Actions.fadeOut(delay*0.2f)));
     }
 
     PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation, float vanishInSecs,Level level) {
@@ -35,6 +37,7 @@ class PartikelSprite extends TextureActor
         centerAt(centerx, centery);
         setOrigin(centerx-getX(), centery-getY());
         delay = vanishInSecs;
+        addAction(Actions.sequence(Actions.delay(delay*0.8f),Actions.fadeOut(delay*0.2f)));
     }
     PartikelSprite(float centerx, float centery, Animation<TextureRegion> animation,boolean playOnce,Level level) {
         this(centerx, centery, animation, playOnce ? animation.getAnimationDuration() : Integer.MAX_VALUE,level); // Default delay if not specified
@@ -238,7 +241,7 @@ class WeedyBall extends Projectile
 {
     static float speed=400;
     Gegner origin;
-    static Animation<TextureRegion>  projectileAnimation= Animator.getAnimation("Rettich-sheet.png",7,6,15,15,1f);
+    static Animation<TextureRegion>  projectileAnimation= Animator.getAnimation("Rettich-sheet.png",7,6,15,15,1.3f);
     WeedyBall(float x,float y, Vector2 vel, Gegner origin,Level level)
     {
         super(x,y,projectileAnimation,vel,8,level);

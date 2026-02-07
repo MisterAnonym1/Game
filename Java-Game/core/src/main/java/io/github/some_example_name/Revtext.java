@@ -25,7 +25,6 @@ public class Revtext extends OwnText {
         charDelay = chardelay;
         maintext = mainText;
         setColor(1,1,1,1);
-        outlineColor= Color.BLACK;
         lineDelay = (0.1f-chardelay)*mainText.length()+0.2f;
         toFront();
         center(mainText);

@@ -16,8 +16,8 @@ public class Healing_potato extends TextureActor {
         this.healingAmount = healingAmount;
         setColor(0.95f, 0.95f, 0.95f, 0f);
         centerAt(x,y);
-        if(level.isWall(MyTile.yToRow(y),MyTile.xToColumn(x))) {
-            removeFromLevel();
+        if(level.isWall(MyTile.xToColumn(x),MyTile.yToRow(y))) {
+            level.deleteList.add(this);
             return;
         }
         setOrigin( x-getX(),y-getY());

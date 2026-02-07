@@ -369,8 +369,9 @@ class BootingScreen extends Menu
 
         super();
         int ran = MathUtils.random(0, Script.loadingscreenscript.length - 1);
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.6f, 2, 0.01f,Script.loadingscreenscript[ran]);
-        textbox.setColor(new Color(0.4f, 0.4f, 0.9f,1),null);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.5f, 1.6f, 0.01f,Script.loadingscreenscript[ran]);
+        textbox.setColor(new Color(0.7f, 0.7f, 1f,1),null);
+
         delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
         if(mainl.DevMode){delay=0;}
         main = mainl;
@@ -431,12 +432,12 @@ class BootingScreen extends Menu
             message=main.predeterminedDeathmessage;
             main.predeterminedDeathmessage="";
         }
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.7f, 3, 0.06f,message);
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.7f, 2f, 0.06f,message);
         textbox.setColor(new Color(0.8f, 0.1f, 0.1f,1));
         delay=1;
         shape = new ShapeRenderer();
         this.main=main;
-        knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 130, 1,Color.SCARLET,Color.BLACK );
+        knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 110, 1,Color.SCARLET,Color.BLACK );
         knopf.getLabel().setFontScale(1f);
         knopf.setOnUp(()->this.destroy());
         Main.uiStage.addActor(knopf);
@@ -550,7 +551,7 @@ class WinScreen extends Menu
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.8f, 1f, 0.06f,message);
         textbox.setColor(Color.WHITE);
 
-        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f-215, 80, 0.7f,Color.CORAL,Color.RED );
+        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f-240, 80, 0.7f,Color.CORAL,Color.RED );
         knopf.getLabel().setFontScale(0.7f);
         knopf.setOnUp(()->showRestartConfirmation(main));
         Main.uiStage.addActor(knopf);
@@ -621,6 +622,7 @@ class WinScreen extends Menu
         textbox.act(delta);
         wintext.act(delta);
         settingsButton.act(delta);
+        knopf.act(delta);
         confettiManager.act(delta);
     }
 
@@ -643,7 +645,7 @@ class NewLevelScreen extends Menu {
     private java.util.List<Upgrade> skillUpgrades = new java.util.ArrayList<>();
 
     NewLevelScreen(Main main) {
-        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 2, 0.02f,"Level abgeschlossen Gratulation!\nNeues Level Laden?");
+        textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 2, 0.02f,"Level cleared congrats!\nLoad new level?");
         secondtext = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 2, 0.06f,"");
         textbox.setColor(Color.WHITE);
         secondtext.setColor(new Color(0, 0f, 0,1));
@@ -983,6 +985,7 @@ class Startmenu extends Menu
 {
     TextureRegion hintergrund;
     AdvancedTextButton settingsButton;
+    AdvancedTextButton startButton;
     SpriteButton credits;
     Revtext randomtext;
     Matrix matrix;
@@ -1000,17 +1003,23 @@ class Startmenu extends Menu
         String message=Script.startmenuscript[ran];
         message= increaseEasterEggProbability(message);
         //message="Now with 10% more bugs!!";
-        randomtext = new Revtext(ScreenWidth/2f, 320, 1.2f, 0.03f,message);
+        randomtext = new Revtext(ScreenWidth/2f, 320, 1.4f, 0.03f,message);
         checkmessage(message);
 
-        settingsButton = new AdvancedTextButton("Settings", ScreenWidth/2f, 100, 0.8f, new Color(1,0.8f,0.4f,1), Color.WHITE);
+        settingsButton = new AdvancedTextButton("Settings", ScreenWidth/2f*0.6f, 100, 0.8f, new Color(1,0.8f,0.4f,1), Color.WHITE);
         settingsButton.getLabel().setFontScale(1f);
         settingsButton.setOnUp(this::showSettingsWindow);
         Main.uiStage.addActor(settingsButton);
         settingsButton.setColor(1,1,1,0);
         settingsButton.addAction(Actions.sequence(Actions.delay(dlay),Actions.fadeIn(0.5f)));
 
-        credits = new SpriteButton(675, 60, "Credits Button V1.png",2);
+        startButton = new AdvancedTextButton("Start", ScreenWidth/2f, 100, 0.8f, new Color(0.6f,0.8f,1f,1), Color.WHITE);
+        startButton.setOnUp(this::enterGame);
+        Main.uiStage.addActor(startButton);
+        startButton.setColor(1,1,1,0);
+        startButton.addAction(Actions.sequence(Actions.delay(dlay),Actions.fadeIn(0.5f)));
+
+        credits = new SpriteButton(620, 60, "Credits Button V1.png",3);
         credits.setOnUp( ()->showCreditsWindow());
         Main.uiStage.addActor(credits);
     }
@@ -1024,6 +1033,7 @@ class Startmenu extends Menu
         textbox.draw(batch,1);
         randomtext.draw(batch,1);
         settingsButton.draw(batch,1);
+        startButton.draw(batch,1);
         credits.draw(batch,1);
     }
 
@@ -1034,6 +1044,14 @@ class Startmenu extends Menu
       remove();
       credits.remove();
       settingsButton.remove();
+      startButton.remove();
+    }
+
+    public void enterGame()
+    {
+        main.setState("beforeGame");
+        Main.DevMode=false;
+        this.destroy();
     }
 
 
@@ -1110,9 +1128,7 @@ class Startmenu extends Menu
         }
         if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.ENTER))
         {
-            main.setState("beforeGame");
-            Main.DevMode=false;
-            this.destroy();
+            enterGame();
             return;
         }
 
@@ -1246,6 +1262,14 @@ class DevMenu extends Menu
        if(Gdx.input.isKeyJustPressed(Input.Keys.P)) {
            main.deltaFactor=(main.deltaFactor==0?1:0);
        }
+       if(Gdx.input.isKeyPressed(Input.Keys.SHIFT_LEFT))
+       {
+           if(Gdx.input.isKeyPressed(Input.Keys.N)){
+           main.setState("newlevel");}
+           else if(Gdx.input.isKeyPressed(Input.Keys.B)){
+           main.setState("oldlevel");}
+
+       }
        if (Gdx.input.isKeyPressed(Input.Keys.CONTROL_LEFT))
        {
            //STRG
@@ -1266,9 +1290,6 @@ class DevMenu extends Menu
            }
            if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
                main.setState("dead");
-           }
-           if(Gdx.input.isKeyJustPressed(Input.Keys.Q)) {
-               showQuitConfirmation(main);
            }
            if(Gdx.input.isKeyJustPressed(Input.Keys.R)) {
                showRestartConfirmation(main);

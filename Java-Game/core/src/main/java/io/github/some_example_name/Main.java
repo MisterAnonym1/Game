@@ -42,7 +42,9 @@ public class Main implements ApplicationListener {
     boolean inPopUpWindow=false;
     //TiledMap map;
     static Cursor bettercursor;
-    String predeterminedDeathmessage= "you died of dumb";
+    //String predeterminedDeathmessage= "you died of dumb";
+    String predeterminedDeathmessage= "Es ist noch nie ein Meister\n vom Himmel gefallen.";
+    ;
     static Stage uiStage;
     float cameraoffsetx=0, cameraoffsety=0;
    // private OrthogonalTiledMapRenderer renderer;
@@ -281,6 +283,18 @@ public class Main implements ApplicationListener {
                 LoadingScreen screen =new LoadingScreen(this);
                 uiStage.addActor(screen);
                 screen.toFront();
+                Player.setZIndex(Integer.MAX_VALUE-1);
+                gamestate=Gamestate.playing;
+                break;
+            case "oldlevel" : //triggert den Modus um eine neues Level zu laden
+                Player.normalise();
+                gamestate = Gamestate.loading;
+
+                levelnummer--;
+                showLevel(this.levelnummer);
+                LoadingScreen screen2 =new LoadingScreen(this);
+                uiStage.addActor(screen2);
+                screen2.toFront();
                 Player.setZIndex(Integer.MAX_VALUE-1);
                 gamestate=Gamestate.playing;
                 break;
