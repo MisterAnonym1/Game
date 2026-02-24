@@ -60,7 +60,7 @@ public class Healing_potato extends TextureActor {
     void collect(Entity entity) {
             SoundManager.play("crunch", 1f, MathUtils.random(0.9f, 1.1f));
             entity.sethealth(entity.curhealth+ healingAmount, false);
-            level.indicators.addActor(new PopUpText("+" + healingAmount, getX() + getWidth() / 2, getY() + getHeight(), 1, Color.GREEN, Color.BLACK));
+            level.indicators.addActor(new PopUpText("+" + healingAmount, getX() + getWidth() / 2, getY() + getHeight(), 1, Color.GREEN));
             level.deleteList.add(this);
 
     }

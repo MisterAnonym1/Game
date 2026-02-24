@@ -18,7 +18,7 @@ public class StorySpeechBox extends Actor {
 
         text= new Revtext(cx,cy,32,0.05f,"They know too much. X");
 
-        text.setColor( Color.WHITE,Color.BLACK);
+        text.setColor( Color.WHITE);
     }
 
     @Override

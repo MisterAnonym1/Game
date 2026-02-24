@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -46,16 +45,20 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         label.setFontScale(1);
         confirmWindow.add(label).colspan(2).pad(30);
         confirmWindow.row();
+        confirmWindow.setColor(new Color(27f/240,142f/240,145f/240,1));
 
-        TextButton yesButton = new TextButton("Yes", Main.skin);
+
+       TextButton yesButton = new TextButton("Yes", Main.skin);
         TextButton noButton = new TextButton("No", Main.skin);
         yesButton.getLabel().setFontScale(1); // Größerer Button-Text
         yesButton.getLabel().setColor(Color.BLUE);
+        yesButton.setColor(new Color(27f/240,142f/240,145f/240,1));
 
         noButton.getLabel().setFontScale(1);
-        yesButton.getLabel().setColor(Color.SALMON);
+        yesButton.getLabel().setColor(Color.RED);
         yesButton.setSize(100, 100); // Größe nicht hier ändern
         noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
+       noButton.setColor(new Color(27f/240,142f/240,145f/240,1));
 
         yesButton.addListener(new ChangeListener() {
             @Override
@@ -89,6 +92,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         settingsWindow.setResizable(false);
         settingsWindow.setSize(600, 400);
         settingsWindow.setPosition(ScreenWidth/2f - 300, ScreenHeight/2f - 200);
+        settingsWindow.setColor(new Color(27f/240,142f/240,145f/240,1));
 
         Table table = new Table(skin);
         table.setFillParent(true);
@@ -111,6 +115,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
                 main.music.setVolume(volumeSlider.getValue());
             }
         });
+        volumeSlider.setColor(new Color(27f/240,142f/240,145f/240,1));
         table.add(volumeLabel).width(200).height(40);
         table.add(volumeSlider).width(200).height(40);
         table.row();
@@ -126,6 +131,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
                 SoundManager.setMasterVolume(sfxSlider.getValue());
             }
         });
+        sfxSlider.setColor(new Color(27f/240,142f/240,145f/240,1));
         table.add(sfxLabel).width(200).height(40);
         table.add(sfxSlider).width(200).height(40);
         table.row();
@@ -145,6 +151,8 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
                 }
             }
         });
+        fullscreenCheckbox.setColor(new Color(27f/240,142f/240,145f/240,1));
+        fullscreenCheckbox.getImage().setColor(new Color(27f/240,142f/240,145f/240,1));
         table.add(fullscreenLabel).width(200).height(40);
         table.add(fullscreenCheckbox).width(200).height(40);
         table.row();
@@ -161,6 +169,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
             }
         });
         table.add(closeButton).colspan(2).center().padTop(20).width(150).height(50);
+        closeButton.setColor(new Color(27f/240,142f/240,145f/240,1));
 
         settingsWindow.add(table).expand().fill();
         Main.uiStage.addActor(settingsWindow);
@@ -181,6 +190,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         label.setFontScale(1);
         confirmWindow.add(label).colspan(2).pad(30);
         confirmWindow.row();
+        confirmWindow.setColor(new Color(27f/240,142f/240,145f/240,1));
 
         TextButton yesButton = new TextButton("Yes", Main.skin);
         TextButton noButton = new TextButton("No", Main.skin);
@@ -191,7 +201,8 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         yesButton.getLabel().setColor(Color.RED);
         yesButton.setSize(100, 100); // Größe nicht hier ändern
         noButton.setSize(100, 100);//sondern unten bei der Hinzufügung
-
+        yesButton.setColor(new Color(27f/240,142f/240,145f/240,1));
+        noButton.setColor(new Color(27f/240,142f/240,145f/240,1));
         yesButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -221,7 +232,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         creditsWindow.setResizable(false);
         creditsWindow.setSize(800, 500);
         creditsWindow.setPosition(ScreenWidth/2f - 400, ScreenHeight/2f - 250);
-
+        creditsWindow.setColor(new Color(27f/240,142f/240,145f/240,1));
         // Titel als Label im Fenster-Inhalt, damit er nicht überlappt
         Label titleLabel = new Label("Credits", Main.skin);
         titleLabel.setAlignment(Align.center);
@@ -232,7 +243,7 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
         creditsWindow.row();
 
         Label creditsLabel = new Label(
-                "Game made by: The Boys Deluxe Studios \nGrafik: Our own and from the Internet\nMusic: I stole it (joke)\nMountain king Font by Michael W. Moss: --\n https://www.fontspace.com/mountain-king-font-f119642\nSounds: sheep.wav by Gitanki https://freesound.org/s/172712/\nNorwegian sheep by michaelperfect https://freesound.org/s/710296/ \nSpecial Thanks: Frau Bauereisen\n" ,
+                "Game made by: The Boys Deluxe Studios \nPixthulhu UI Ver. 1 Created by Raymond \"Raeleus\" Buckley \nVisit ray3k.wordpress.com for games, tutorials, and much more!\n© Copyright 2016 Raymond Buckley\nMusic: I stole it (joke)\nNorwegian sheep by michaelperfect https://freesound.org/s/710296/ \nSpecial Thanks: Frau Bauereisen\n" ,
                 Main.skin);
         creditsLabel.setAlignment(Align.center);
         creditsLabel.setFontScale(0.85f);
@@ -248,11 +259,10 @@ public class Menu extends Actor { //Hier sind alle Menüs die verwendet werden
                 main.inPopUpWindow=false;
             }
         });
+        closeButton.setColor(new Color(27f/240,142f/240,145f/240,1));
         creditsWindow.add(closeButton).padBottom(20).padTop(10).width(150).height(50);
         Main.uiStage.addActor(creditsWindow);
     }
-
-
 
 
 }
@@ -268,7 +278,6 @@ class BootingScreen extends Menu
     TextureActor logo;
     Label skipMessage;
     OwnText studioText;
-    TriangleBackgroundRenderer background = new TriangleBackgroundRenderer(200);
     BootingScreen(Main mainl) {
 
         super();
@@ -279,33 +288,54 @@ class BootingScreen extends Menu
         skipMessage.setFontScale(4f);
         skipMessage.setPosition(ScreenWidth / 2f - skipMessage.getWidth()*2, ScreenHeight/2);
         skipMessage.setColor(0.5f,0.5f,0.5f,1);
-        studioText=new OwnText("The Boyz Deluxe Studios",ScreenWidth / 2f, ScreenHeight / 2f * 0.4f, 1.5f, new Color(0.7f, 0.9f, 0.7f, 1),null);
-        backround = new Texture("whitebase.png");
+        studioText=new OwnText("The Boyz Deluxe Studios",ScreenWidth / 2f, ScreenHeight / 2f * 0.4f, 1.5f, new Color(0.7f, 0.9f, 0.7f, 1));
+        Pixmap map= new Pixmap(1,1, Pixmap.Format.RGB888);
+        map.setColor(Color.WHITE);
+        map.fillRectangle(0,0,1,1);
+        backround=new Texture(map);
+        map.dispose();
         backround2 = new Texture(pixmap);
         logo=new TextureActor("Boys_logo.jpg");
         logo.centerAt(ScreenWidth / 2f, ScreenHeight / 1.65f);
         logo.setColor(1,1,1,0);
         logo.toFront();
-        textbox = new OwnText("GARDEN SLAYER",ScreenWidth / 2f, ScreenHeight / 2f * 1.3f, 4, new Color(0.15f, 0.5f, 0.15f, 1),Color.WHITE );
+        textbox = new OwnText("GARDEN SLAYER",ScreenWidth / 2f, ScreenHeight / 2f * 1.3f, 1f, new Color(0.15f, 0.5f, 0.15f, 1),"title" );
+        //textbox.setTra
+
+        Action resizeAction=new Action() {
+            float t = 0f;
+            @Override
+            public boolean act(float delta) {
+                t += delta;
+                if(t>Math.PI*2)
+                {
+                    return true;
+                }
+                float scale = 0.7f + 0.3f * (float)Math.sin(t);
+
+                textbox.setFontScale(scale);
+                return false;
+            }
+        };
+
         delay = 0f;
         textbox.addAction(Actions.fadeOut(0));
-        Action logoAction=Actions.run(()->{logo.addAction(Actions.sequence(
+        Action logoAction=Actions.run(()-> logo.addAction(Actions.sequence(
                 Actions.delay(1.5f),
-                Actions.fadeIn(2, Interpolation.slowFast),
+                Actions.parallel(
+                Actions.fadeIn(2, Interpolation.slowFast)),
+
                 Actions.delay(2.5f),
                 Actions.fadeOut(2),
                 Actions.removeActor()
 
-        ));});
-        Action textAction=Actions.run(() -> {textbox.addAction(Actions.sequence(
+        )));
+        Action textAction=Actions.run(() -> textbox.addAction(Actions.sequence(
                 Actions.fadeIn(3, Interpolation.slowFast),
                 Actions.delay(2.5f),
-                Actions.parallel(Actions.fadeOut(1),Actions.run(() -> {
-                            this.destroy();
-                        }
-                ))
+                Actions.parallel(Actions.fadeOut(1),Actions.run(this::destroy))
 
-        ));});
+        )));
         addAction(Actions.sequence(logoAction,Actions.delay(7.3f), textAction));
 
 
@@ -335,9 +365,7 @@ class BootingScreen extends Menu
         addAction(Actions.sequence(
                 Actions.delay(0.9f),
                 Actions.fadeOut(0.5f),
-                Actions.run(() -> {
-                    remove();
-                })
+                Actions.run(this::remove)
         ));
 
     }
@@ -370,12 +398,16 @@ class BootingScreen extends Menu
         super();
         int ran = MathUtils.random(0, Script.loadingscreenscript.length - 1);
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.5f, 1.6f, 0.01f,Script.loadingscreenscript[ran]);
-        textbox.setColor(new Color(0.7f, 0.7f, 1f,1),null);
+        textbox.setColor(new Color(0.7f, 0.7f, 1f,1));
 
-        delay=1.2f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
-        if(mainl.DevMode){delay=0;}
+        delay=1.3f;// Mindest-Zeit die der Ladebildschirm zu sehen ist
+        if(Main.DevMode){delay=0;}
         main = mainl;
-        backround=new Texture("whitebase.png");
+        Pixmap map= new Pixmap(1,1, Pixmap.Format.RGB888);
+        map.setColor(Color.WHITE);
+        map.fillRectangle(0,0,1,1);
+        backround=new Texture(map);
+        map.dispose();
 
         loading = Animator.getAnimation("Loadingsheet.png",15,1,1,15,0.05f);
         main.Player.coindisplay.setZIndex(Integer.MAX_VALUE-1);
@@ -387,6 +419,7 @@ class BootingScreen extends Menu
 
     @Override
     public void draw(Batch batch, float alpha) {
+        batch.setColor(1,1,1,1);
         batch.draw(backround,0,0,ScreenWidth,ScreenHeight);        textbox.draw(batch,alpha); textbox.setPosition(textbox.getX()+getX(), textbox.getY()+getY());
         animationstateTime += Gdx.graphics.getDeltaTime(); // Accumulate elapsed animation time
         TextureRegion currentFrame = loading.getKeyFrame(animationstateTime, true);
@@ -437,9 +470,9 @@ class BootingScreen extends Menu
         delay=1;
         shape = new ShapeRenderer();
         this.main=main;
-        knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 110, 1,Color.SCARLET,Color.BLACK );
+        knopf = new AdvancedTextButton("Respawn",ScreenWidth/2f, 110, 1,Color.SCARLET,Color.WHITE);
         knopf.getLabel().setFontScale(1f);
-        knopf.setOnUp(()->this.destroy());
+        knopf.setOnUp(this::destroy);
         Main.uiStage.addActor(knopf);
 
 
@@ -527,7 +560,6 @@ class WinScreen extends Menu
     AdvancedTextButton settingsButton;
     TextureRegion hintergrund;
     ShapeRenderer shape;
-    private final String playtime= DataCenter.getformatedTimeplayed();
     OwnText wintext;
     ConfettiManager confettiManager;
     WinScreen(Main main) { //erschafft den Screen;
@@ -546,12 +578,13 @@ class WinScreen extends Menu
         confettiManager=new ConfettiManager();
         confettiManager.add(new ConfettiRain(0.00f));
         confettiManager.add(new ConfettiRain(0.06f));
-        wintext = new OwnText(""+playtime, ScreenWidth/2f, ScreenHeight/2f*1.3f,4, Color.GOLD,Color.BLACK);
+        String playtime = DataCenter.getformatedTimeplayed();
+        wintext = new OwnText(playtime, ScreenWidth/2f, ScreenHeight/2f*1.3f,4, Color.GOLD);
 
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*0.8f, 1f, 0.06f,message);
         textbox.setColor(Color.WHITE);
 
-        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f-240, 80, 0.7f,Color.CORAL,Color.RED );
+        knopf = new AdvancedTextButton("Restart Game",ScreenWidth/2f-240, 80, 0.7f,Color.CORAL,Color.WHITE );
         knopf.getLabel().setFontScale(0.7f);
         knopf.setOnUp(()->showRestartConfirmation(main));
         Main.uiStage.addActor(knopf);
@@ -568,11 +601,9 @@ class WinScreen extends Menu
         });
         Main.uiStage.addActor(exitknopf);*/
 
-        creditsknopf=new AdvancedTextButton("  Credits  ",ScreenWidth/2f+210, 80, 0.7f,Color.CYAN,Color.BLACK );
+        creditsknopf=new AdvancedTextButton("  Credits  ",ScreenWidth/2f+210, 80, 0.7f,Color.CYAN,Color.WHITE );
         creditsknopf.getLabel().setFontScale(0.7f);
-        creditsknopf.setOnUp(()->{
-            showCreditsWindow();
-        });
+        creditsknopf.setOnUp(this::showCreditsWindow);
         Main.uiStage.addActor(creditsknopf);
 
         main.music.stop();
@@ -601,8 +632,8 @@ class WinScreen extends Menu
         textbox.draw(batch,1);
         wintext.draw(batch,1);
     }
-    void destroy(String state){
-        main.setState(state); ///restart game
+    void destroy(){
+        main.setState("resume"); ///restart game
         knopf.remove();
         //exitknopf.remove();
         settingsButton.remove();
@@ -618,7 +649,7 @@ class WinScreen extends Menu
     {
         super.act(delta);
         if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE))
-        {destroy("resume");}
+        {destroy();}
         textbox.act(delta);
         wintext.act(delta);
         settingsButton.act(delta);
@@ -641,8 +672,8 @@ class NewLevelScreen extends Menu {
     // --- Skill Menü Variablen ---
     private final int maxLevel = 5;
     private Window skillWindow;
-    private java.util.List<Label> skillCostLabels = new java.util.ArrayList<>();
-    private java.util.List<Upgrade> skillUpgrades = new java.util.ArrayList<>();
+    private final java.util.List<Label> skillCostLabels = new java.util.ArrayList<>();
+    private final java.util.List<Upgrade> skillUpgrades = new java.util.ArrayList<>();
 
     NewLevelScreen(Main main) {
         textbox = new Revtext(ScreenWidth/2f, ScreenHeight/2f*1.5f, 2, 0.02f,"Level cleared congrats!\nLoad new level?");
@@ -656,14 +687,25 @@ class NewLevelScreen extends Menu {
         jaknopf.setOnUp(()->this.destroy("newlevel"));
         Main.uiStage.addActor(jaknopf);
 
-        neinknopf = new AdvancedTextButton(" No ",ScreenWidth/2f, 130, 0.7f,Color.FIREBRICK,Color.WHITE );
+        neinknopf = new AdvancedTextButton(" No ",ScreenWidth/2f, 130, 0.7f,Color.RED,Color.WHITE );
         neinknopf.getLabel().setFontScale(0.7f);
         neinknopf.setOnUp(()->this.destroy("resume"));
         Main.uiStage.addActor(neinknopf);
 
-        skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+150, 130, 0.7f,Color.SKY,Color.WHITE );
+        skillknopf = new AdvancedTextButton("Skills",ScreenWidth/2f+150, 130, 0.7f,Color.SKY,Color.GOLD );
         skillknopf.getLabel().setFontScale(0.7f);
+        // Add golden glow effect
+        skillknopf.getColor().set(Color.GOLD);
         skillknopf.setOnUp(this::showSkillMenu);
+        skillknopf.setTransform(true);
+        skillknopf.setOrigin(Align.center);
+        //skillknopf.setScale(1f);
+        skillknopf.addAction(Actions.forever(Actions.sequence(
+                Actions.scaleTo(1.08f, 1.08f, 0.4f),
+                Actions.scaleTo(1f, 1f, 0.4f),
+                Actions.delay(0.15f)
+        )));
+
         Main.uiStage.addActor(skillknopf);
          delay=0;
         SoundManager.play("jubilant_music",0.4f,1f);
@@ -674,7 +716,7 @@ class NewLevelScreen extends Menu {
         skillCostLabels.clear();
         skillUpgrades.clear();
         if (skillWindow != null && skillWindow.hasParent()) return;
-        Skin skin = main.skin;
+        Skin skin = Main.skin;
         skillWindow = new Window("", skin);
         skillWindow.setSize(ScreenWidth, ScreenHeight);
         skillWindow.setPosition(0, 0);
@@ -719,7 +761,7 @@ class NewLevelScreen extends Menu {
     }
 
     private void addSkillRow(Table table, Upgrade upgrade) {
-        Skin skin = main.skin;
+        Skin skin = Main.skin;
         Label skillLabel = new Label(upgrade.getName(), skin);
         skillLabel.setFontScale(1.1f);
         ProgressBar bar = new ProgressBar(0, maxLevel, 1, false, skin);
@@ -784,7 +826,7 @@ class NewLevelScreen extends Menu {
                 label.setText("Max");
                 label.setColor(Color.GRAY);
             } else {
-                label.setText(String.format("%2d", cost) + " Coins");
+                label.setText( cost>9?"":" " +cost + " Coins");
                 if (coins < cost) label.setColor(Color.RED); else label.setColor(Color.GOLD);
             }
         }
@@ -905,7 +947,7 @@ class PauseMenu extends Menu {
         
         resumeButton = new AdvancedTextButton("Resume", ScreenWidth/2f, 280, 0.7f, Color.SKY, Color.WHITE);
         resumeButton.getLabel().setFontScale(0.7f);
-        resumeButton.setOnUp(() -> this.destroy("resume"));
+        resumeButton.setOnUp(this::destroy);
         Main.uiStage.addActor(resumeButton);
         
         settingsButton = new AdvancedTextButton("Settings", ScreenWidth/2f, 220, 0.7f, Color.GOLD, Color.WHITE);
@@ -949,8 +991,8 @@ class PauseMenu extends Menu {
         quitButton.draw(batch, getColor().a);
     }
     
-    void destroy(String state) {
-        main.setState(state);
+    void destroy() {
+        main.setState("resume");
         resumeButton.remove();
         settingsButton.remove();
         restartButton.remove();
@@ -996,9 +1038,23 @@ class Startmenu extends Menu
         main = mainl;
         setPosition(0,0);
         hintergrund = new TextureRegion(new Texture("misty-forest-background.png"));
-        textbox = new Revtext(ScreenWidth/2f, 400, 2, 0.04f,"Press \"Enter\" to start");
-        textbox.setColor(Color.SKY);
+        textbox = new Revtext(ScreenWidth/2f, 400, 1.3f, 0.04f,"Press \"Enter\" to start","subtitle");
+        textbox.setColor(new Color(0.6f,0.9f,1f,1));
         delay=1.4f-dlay;
+       /* textbox.addAction(Actions.forever(new Action() {
+            float t = 0f;
+            @Override
+            public boolean act(float delta) {
+                t += delta*2f;
+                float scale = 1.2f + 0.08f * (float)Math.sin(t);..m.
+                textbox.setScale(scale);
+                return false;
+            }
+        }));
+        textbox.setAlignment(Align.center);*/
+
+        //Main.uiStage.addActor(textbox);
+
         int ran = MathUtils.random(0, Script.startmenuscript.length - 1);
         String message=Script.startmenuscript[ran];
         message= increaseEasterEggProbability(message);
@@ -1010,17 +1066,17 @@ class Startmenu extends Menu
         settingsButton.getLabel().setFontScale(1f);
         settingsButton.setOnUp(this::showSettingsWindow);
         Main.uiStage.addActor(settingsButton);
-        settingsButton.setColor(1,1,1,0);
+        settingsButton.getColor().a=0;
         settingsButton.addAction(Actions.sequence(Actions.delay(dlay),Actions.fadeIn(0.5f)));
 
         startButton = new AdvancedTextButton("Start", ScreenWidth/2f, 100, 0.8f, new Color(0.6f,0.8f,1f,1), Color.WHITE);
         startButton.setOnUp(this::enterGame);
         Main.uiStage.addActor(startButton);
-        startButton.setColor(1,1,1,0);
+        startButton.getColor().a=0;
         startButton.addAction(Actions.sequence(Actions.delay(dlay),Actions.fadeIn(0.5f)));
 
         credits = new SpriteButton(620, 60, "Credits Button V1.png",3);
-        credits.setOnUp( ()->showCreditsWindow());
+        credits.setOnUp(this::showCreditsWindow);
         Main.uiStage.addActor(credits);
     }
 
@@ -1045,6 +1101,7 @@ class Startmenu extends Menu
       credits.remove();
       settingsButton.remove();
       startButton.remove();
+      textbox.remove();
     }
 
     public void enterGame()
@@ -1060,10 +1117,10 @@ class Startmenu extends Menu
         easterEggMessages= new String[]{/*"I was a player once... \nnow I'm just code.",*/ "Das haettest du nicht sehen sollen...",
                 "Now with 10% more bugs!!"};
         boolean alreadyEgg=false;
-        for (int i = 0; i < easterEggMessages.length; i++) {
-            if(mess.equals(easterEggMessages[i]))
-            {
-                alreadyEgg=true;
+        for (String easterEggMessage : easterEggMessages) {
+            if (mess.equals(easterEggMessage)) {
+                alreadyEgg = true;
+                break;
             }
         }
         if(!alreadyEgg&&Math.random()<0.2f)
@@ -1082,7 +1139,7 @@ class Startmenu extends Menu
 
             case "Das haettest du nicht sehen sollen..." :
                 matrix= new Matrix(main.viewport);
-                main.uiStage.addActor(matrix);
+                Main.uiStage.addActor(matrix);
                 matrix.toBack();
                 SequenceAction sequence = new SequenceAction(
                     Actions.rotateBy(-42,0.5F,Interpolation.elastic),
@@ -1115,7 +1172,7 @@ class Startmenu extends Menu
     {
 
         delay+=delta;
-        if(delay<1.4f){return;} // Warte 1.4 Sekunden bevor die Tasten abgefragt werden
+        if(delay<1.4f){return;} // Warte 1.4 Sekunden
         super.act(delta);
         if(!pinDialogVisible && Gdx.input.isKeyPressed(Input.Keys.X)) {
             if(!Main.DevMode){
@@ -1180,7 +1237,7 @@ class Startmenu extends Menu
         okButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (DEV_PIN.toLowerCase().equals(pinField.getText().toLowerCase())) {
+                if (DEV_PIN.equalsIgnoreCase(pinField.getText())) {
                     pinWindow.remove();
                     pinDialogVisible = false;
                     pinField.getStyle().font.getData().setScale(2.5f); // Text normal groß
@@ -1235,11 +1292,7 @@ class DevMenu extends Menu
         texte[6].setColor(Color.WHITE);
         texte[8].setColor(Color.WHITE);
     }
-    void setOnscreen()
-    {
-        onscreen = true;
-        //logic.player.ar.setVisible1(true);
-    }
+
     void setOffscreen()
     {
         onscreen = false;
@@ -1247,7 +1300,7 @@ class DevMenu extends Menu
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        if(!onscreen){return;};
+        if(!onscreen){return;}
       for (int i = 0; i < texte.length; i++)
         {
             if(texte[i]!= null){ texte[i].draw(batch,parentAlpha);}
@@ -1285,7 +1338,7 @@ class DevMenu extends Menu
 
            }
            if (Gdx.input.isKeyJustPressed(Input.Keys.B) ) {
-               main.debugging = !main.debugging;
+               Main.debugging = !Main.debugging;
 
            }
            if(Gdx.input.isKeyJustPressed(Input.Keys.X)) {
@@ -1329,7 +1382,7 @@ class DevMenu extends Menu
           if(delay<=0)
           {
               delay=1;
-              texte[2].setcurrentText("Fps: " + (int)fpscounter/delay +" or "+ 1.0/delta);
+              texte[2].setcurrentText("Fps: " + fpscounter/delay +" or "+ 1.0/delta);
               fpscounter=0;
           }
 
@@ -1341,7 +1394,7 @@ class DevMenu extends Menu
           Vector2 cursorposition= main.viewport.unproject(new Vector2(Gdx.input.getX(), Gdx.input.getY()));
           texte[6].setcurrentText("Cursor Coordinates: " + Math.round(cursorposition.x)+"X " + Math.round(cursorposition.y)+"Y "   );
           texte[7].setcurrentText("line to cursor length: " + new Vector2(cursorposition.x-main.Player.getCenterX(),cursorposition.y-main.Player.getCenterY()).len());
-          texte[8].setcurrentText("Cursor Screen Coordinates: (" + Math.round(Gdx.input.getX())+"|" + Math.round( Gdx.input.getY())+")"   );
+          texte[8].setcurrentText("Cursor Screen Coordinates: (" + Gdx.input.getX()+"|" + Gdx.input.getY()+")"   );
           texte[9].setcurrentText("Gamestate: " +main.gamestate);
 
       }
@@ -1356,7 +1409,6 @@ class SpriteButton extends Button
     private Runnable onClick;  // Wird einmal beim Klick ausgeführt
     private Runnable onHold;   // Wird durchgehend ausgeführt, solange gedrückt
     private Runnable onUp; // Wird einmal nach dem Klick ausgeführt
-    private Consumer<Boolean> onCheck;
     // Funktioniert wie eine Checkbox
     private boolean isChecked = false;
     private boolean isPressed = false;
@@ -1376,7 +1428,7 @@ class SpriteButton extends Button
         addListener(new ClickListener() {
             @Override
             public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
-                if(isDisabled()){return false;};
+                if(isDisabled()){return false;}
                 onMouseDown();
                 if (onClick != null) onClick.run();
                 return true;
@@ -1444,7 +1496,8 @@ class SpriteButton extends Button
     }
     public void setOnClick(Runnable action) { this.onClick = action; } //Code für beim Klicken setzen
     public void setOnHold(Runnable action) { this.onHold = action; }//Code für beim Hold setzen
-    public void setOnCheck(Consumer<Boolean> action) { this.onCheck = action; } //Code für Checkbox setzen
+    public void setOnCheck(Consumer<Boolean> action) {
+    } //Code für Checkbox setzen
     public void setOnUp(Runnable action) { this.onUp = action; }//Code für beim Klicken setzen
 
 
@@ -1457,11 +1510,18 @@ class SpriteButton extends Button
     private Consumer<Boolean> onCheck; // Checkbox-Funktion
     private boolean isChecked = false;
     private boolean isPressed = false;
+    private Color originalColor; // Speichert die Originalfarbe
 
      public AdvancedTextButton(String text, float centerx, float centery, float scale, Color textcolor,Color box )
      {
          this(text,centerx,centery,scale);
-         setColor(box);
+         if(box.r==1&&box.b==1&&box.g==1)
+         {
+             setColor(new Color(27f/240,142f/240,145f/240,1));
+         }
+         else{
+         setColor(box);}
+
          getLabel().setColor(textcolor);
      }
     public AdvancedTextButton(String text, float centerx, float centery, float scale) {
@@ -1477,7 +1537,7 @@ class SpriteButton extends Button
                 if (isDisabled()) return false;
                 onMouseDown();
                 if (onClick != null) onClick.run();
-                return true; // WICHTIG: Muss `true` zurückgeben, damit `touchUp()` ausgelöst wird
+                return true; //  Muss true zurückgeben, damit `touchUp()` ausgelöst wird
             }
 
             @Override
@@ -1499,14 +1559,22 @@ class SpriteButton extends Button
         });
     }
 
-    public void onMouseEnter() {
-        setColor(0.7f, 0.7f, 0.7f, 1);
-        Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Hand);
+     @Override
+     public void setColor(Color color) {
+         super.setColor(color);
+         originalColor = color.cpy();
+
+     }
+
+     public void onMouseEnter() {
+        // Leichtere Tint für Hover-Effekt
+        setColor(originalColor.r * 0.8f, originalColor.g * 0.8f, originalColor.b * 0.8f, 1);
+        Gdx.graphics.setSystemCursor(com.badlogic.gdx.graphics.Cursor.SystemCursor.Hand);
     }
 
     public void onMouseLeave() {
-        setColor(1f, 1f, 1f, 1);
-        //Gdx.graphics.setSystemCursor(Cursor.SystemCursor.Arrow);
+        // Originalfarbe wiederherstellen
+        setColor(originalColor);
         Main.setToDefaultCursor();
         if (isPressed) onMouseEnter();
         isPressed = false;
@@ -1514,7 +1582,7 @@ class SpriteButton extends Button
 
     public void onMouseDown() {
         isPressed = true;
-        setColor(0.5f, 0.5f, 0.5f, 1);
+        setColor(originalColor.r * 0.6f, originalColor.g * 0.6f, originalColor.b * 0.6f,1);
     }
 
     @Override

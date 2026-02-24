@@ -8,17 +8,16 @@ import com.badlogic.gdx.graphics.Color;
 public class Revtext extends OwnText {
     String maintext;
     boolean linefinished;
-    int toline;
     int nummer=0;
     float counter;
-    float charDelay=0.3f;
+    float charDelay;
     float lineDelay=0.1f;
     boolean waitingforLine;
     boolean centered;
     float centerx, centery;
 
     public Revtext(float centerx, float centery, float scale, float chardelay, String mainText) {
-        super("", centerx, centery, scale, Color.WHITE, Color.BLACK);
+        super("", centerx, centery, scale, Color.WHITE);
         centered = true;
         this.centerx = centerx;
         this.centery = centery;
@@ -30,8 +29,22 @@ public class Revtext extends OwnText {
         center(mainText);
 
     }
+    public Revtext(float centerx, float centery, float scale, float chardelay, String mainText, String style) {
+        super("", centerx, centery, scale, Color.WHITE,style);
+        centered = true;
+        this.centerx = centerx;
+        this.centery = centery;
+        charDelay = chardelay;
+        maintext = mainText;
+        setColor(1,1,1,1);
+        lineDelay = (0.1f-chardelay)*mainText.length()+0.2f;
+        toFront();
+        center(mainText);
+
+    }
+
     public Revtext(float leftx, float bottomy, float scale, String mainText) {
-        super("", leftx, bottomy, scale, Color.WHITE, null,false);
+        super("", leftx, bottomy, scale, Color.WHITE, false);
         centered = false;
         charDelay = 0;
         maintext = mainText;
@@ -41,6 +54,7 @@ public class Revtext extends OwnText {
         lineDelay = 2;
         toFront();
     }
+
     @Override
     public void draw(Batch sbatch, float parentalpha) {
         float x = getX();

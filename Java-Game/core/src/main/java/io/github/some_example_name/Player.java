@@ -37,7 +37,6 @@ class Player extends Entity
     Vector2 attackline;
     StorySpeechBox speechbox;
     Displaytext coindisplay;
-    float smokedelay;
 
     Player(float x, float y, Viewport view,Main logic) {
 
@@ -59,7 +58,7 @@ class Player extends Entity
         speechbox.toBack();
         speechbox.setVisible(false);
 
-        coindisplay=new Displaytext("Coins:"+Main.invManager.getValueByKey("Coins"),20,530,1.2f,Color.YELLOW,Color.BLACK,false,"Coins");
+        coindisplay=new Displaytext("Coins:"+Main.invManager.getValueByKey("Coins"),20,530,1.2f,Color.YELLOW,false,"Coins");
         Main.uiStage.addActor(coindisplay);
         coindisplay.setZIndex(Integer.MAX_VALUE-10);//ist wie toFront()
 
@@ -191,7 +190,7 @@ class Player extends Entity
         if(gegnerhitliste.contains(enti)){return false;}
         if(enti.invincible){return false;}
          Vector2 line =new Vector2(enti.getHitboxCenterX() - getHitboxCenterX(), enti.getHitboxCenterY() - getHitboxCenterY());
-        if(line.len()>(Main.DevMode?1000:85)+enti.hitbox.getWidth()/2){return false;}
+         if(line.len()>(Main.DevMode?1000:85)+enti.hitbox.getWidth()/2){return false;}
 
         if(player.currentAnimation==player.sideAttackAnimation){
             if(MathHelper.isAngleOutOfBounds(line,directionline,40)){return false;}
@@ -284,11 +283,11 @@ class Player extends Entity
                 playAnimation(backAttackAnimation);
 
 
-            } else if (angle1<45||angle1>315) {
+            } else if (angle1<45||angle1>315) {/// nach rechts
                 flip(false);
                 playAnimation(sideAttackAnimation);
 
-            } else if (angle1>135&&angle1<225) {
+            } else if (angle1>135&&angle1<225) { /// links
                 flip(true);
                 playAnimation(sideAttackAnimation);
             }
@@ -346,16 +345,7 @@ class Player extends Entity
 
                 playAnimation(walkAnimation);
                 walkAnimation.setFrameDuration(25/speed);
-                smokedelay+=deltatime;
-                if(smokedelay>25/speed*3)
-                {
-                    smokedelay=0;
-                    /*PartikelSprite par=new PartikelSprite(getHitboxCenterX(),getHitboxCenterY(),runSmoke,true);
-                    //par.setSize(hitbox.width,hitbox.height*0.1f);
-                    par.scaleBy(2);
-                    par.centerAt(getHitboxCenterX(),hitbox.y+par.getHeight()/2);
-                    Level.particles.add(par);*/
-                }
+
                 if (Math.round(vecup.angleDeg())>95&&Math.round(vecup.angleDeg())<265) {
                     flip(true);
                 }

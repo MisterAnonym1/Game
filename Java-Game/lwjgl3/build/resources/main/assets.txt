@@ -209,5 +209,4 @@ ui/uiskin.atlas
 ui/uiskin.json
 ui/uiskin.png
 Warrior_Blue.png
-whitebase.png
 _attack_sword_001.wav

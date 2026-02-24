@@ -42,9 +42,7 @@ public class Main implements ApplicationListener {
     boolean inPopUpWindow=false;
     //TiledMap map;
     static Cursor bettercursor;
-    //String predeterminedDeathmessage= "you died of dumb";
-    String predeterminedDeathmessage= "Es ist noch nie ein Meister\n vom Himmel gefallen.";
-    ;
+    String predeterminedDeathmessage= "You died of dumb";
     static Stage uiStage;
     float cameraoffsetx=0, cameraoffsety=0;
    // private OrthogonalTiledMapRenderer renderer;
@@ -100,6 +98,7 @@ public class Main implements ApplicationListener {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
 
         setState("startmenu");
+        Gdx.graphics.setFullscreenMode(Gdx.graphics.getDisplayMode());
         multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(uiStage); // deine UI
         Gdx.input.setInputProcessor(multiplexer);

@@ -78,7 +78,7 @@ class Mage extends Gegner
         Vector2 distancevec=getDistanceVector(player);
 
         if(player.ismoving&&Math.random()<0.5f) {
-            if((distancevec.angleDeg()-player.movement.angleDeg()+360)%360>10)
+            if((distancevec.angleDeg()-player.movement.angleDeg()+360)%360>15)
             {
                 Vector2 attackvec2 = player.movement.cpy();
                 attackvec2.setLength(   (float) Math.sqrt((distancevec.len()*distancevec.len()*player.speed*player.speed)/Math.abs(WeedyBall.speed*WeedyBall.speed-((player.speed-20)*(player.speed-20))))  ); ///brauche es für Triangulation

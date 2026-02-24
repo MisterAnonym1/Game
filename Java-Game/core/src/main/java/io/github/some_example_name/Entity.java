@@ -412,58 +412,6 @@ void reset()
 
 
 
-
-
-class Arrow1 extends Sprite {
-
-
-
-
-
-    float shaperotation=0;
-     float dborderwidth = 10;
-    Arrow1(float x1, float y1, float length, float angle)
-    {
-        setOrigin(x1, y1);
-        setPosition(x1,y1);
-        dborderwidth=length/10;
-
-        //tri = new MeshSpawnShapeValue.Triangle(x1 + dborderwidth * 8, y1 + dborderwidth / 1, x1 + dborderwidth * 8, y1 - dborderwidth / 1, x1 + dborderwidth * 8 + dborderwidth * 2.5, y1);
-        rotate(angle);
-        //setVisible(false);
-    }
-
-    void rotateTo(float angle)
-    {
-        rotate( (-getRotation() - angle));
-
-
-    }
-
-    void draw(ShapeRenderer shape)
-    {
-
-       shape.begin(ShapeRenderer.ShapeType.Filled);
-       shape.setColor(0.1F, 0.1F, 0.8F, 0.5F);
-        shape.rect(1,1,dborderwidth*10,dborderwidth);
-       shape.triangle(getX() + dborderwidth * 10, getY() + dborderwidth *2, getX() + dborderwidth * 10, getY() - dborderwidth , (float) (getX() + dborderwidth * 10 + dborderwidth * 2.5), getY()+dborderwidth/2);
-       shape.end();
-    }
-    void setVisible(boolean visible)
-    {
-        if(visible)
-        {
-            setAlpha(1);
-        }
-        else
-        {
-            setAlpha(0);
-        }
-    }
-
-
-}
-
 class HealthBar extends Actor {
     Rectangle h1;
     Rectangle h2;
